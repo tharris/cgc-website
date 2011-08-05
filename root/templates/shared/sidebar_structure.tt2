@@ -1,0 +1,172 @@
+[%# Should be predefined:                                                       %]
+[%# title   =   title appearing at the top of the page                          %]
+[%# no_layout   =   if true, the layout dropdown will not be displayed          %]
+[%# widgets =   an array of hashrefs corresponding to widgets that will appear  %]
+[%#             in the sidebar and on the page                                  %]
+[%#             each widget:                                                    %]
+[%#             { id = widget id                                                %]
+[%#               title = widget title                                          %]
+[%#               href =  url to load the widget                                %]
+[%#               type = section the widget belongs to (for colour coding)      %]
+[%#             }                                                               %]
+[%#             for a title to appear in sidebar:                               %]
+[%#             { title = title to display                                      %]
+[%#               type = "title"                                                %]
+[%#             }                                                               %]
+
+[% UNLESS c.req.action == 'me' %]
+  [% widgets.push({ title="My WormBase" type="title"}) %]
+  [% FOREACH widget_name IN ['reports', 'my_library'] -%]
+    [% widget = c.config.sections.me.widgets.$widget_name %]
+    [% w = { id = widget_name
+            title = widget.title
+            href =  c.uri_for('/rest','widget','me',widget_name)
+            type = "me"
+            };
+    %]
+    [% widgets.push(w) %]
+  [% END %]
+[% END %]
+
+    [% UNLESS no_layout %]
+    <div id="buttons-nav">
+[% UNLESS c.req.action == 'me' %]
+        <a   tip="report a problem" class="button section-button tip-simple ui-corner-all"  name="issue" ><span class="ui-icon ui-icon-notice"></span></a>
+        <a   tip="view comments" class="button section-button tip-simple ui-corner-all" name="comment"  ><span class="ui-icon ui-icon-comment"></span></a>
+        <a tip="toggle empty fields" class="button tip-simple ui-corner-all" id="hide-empty-fields" href="javascript:void(0)"><span class="ui-icon ui-icon-carat-2-e-w ui-button"></span></a>
+[% END %]
+
+<!--         <a   tip="print page" class="button print tip-simple  ui-corner-all"><span class="ui-icon ui-icon-print"></span></a> -->
+        <div class="columns"><a class="button ui-corner-all tip-simple" tip="settings"><span class="ui-icon ui-icon-gear"></span><span class="ui-icon ui-icon-triangle-1-s"></span></a>
+          <ul>
+            <li><span id="fade">layout</span><span class="ui-icon ui-icon-triangle-1-e" style="float:right;margin-top:0.2em;"></span>
+              <ul>
+              <li onClick="columns(100, 100)"><div class="ui-icon-column ui-icon-1"></div></li>
+              <li onClick="columns(50, 50)"><div class="ui-icon ui-icon-column ui-icon-1-1"></div></li>
+              <li onClick="columns(70, 30)"><div class="ui-icon ui-icon-column ui-icon-2-1"></div></li>
+              <li onClick="columns(30, 70)"><div class="ui-icon ui-icon-column ui-icon-1-2"></div></li>
+              <div class="list-layouts" type="[% page_class %]" style="font-size:0.7em"></div>
+              </ul>
+            </li>
+            <li><a id="fade" onClick="openAllWidgets(); return false;">open all</a></li>
+<!--             <li><a id="fade" class="print">print</a></li> -->
+          </ul>
+        </div>
+
+        <div style="clear:both"></div>
+      </div>
+
+      [% title = '<span id="breadcrumbs">' _ title _ '</span>' %]
+      <div id="page-title" class="[% section %]-bg">
+      <h2>
+[% UNLESS c.req.action == 'me' %]
+          [% wbid = this_object_id.remove('[:/ &\.]') %]
+          <div class="workbench-status-[% wbid %]"></div>
+[% END %]   
+          [% title %]  
+     
+      </h2>
+      </div>
+    [% END %]
+
+
+<div id="widgets">
+     
+
+  <div id="navigation">
+    <div id="title">
+      [% IF c.action.name == 'index' %]
+        <h2><a href="#">WormBase</a></h2>
+      [% ELSE %]
+        [% UNLESS c.req.action == 'me' %]
+          <div class="workbench-status-[% wbid %]"></div>
+        [% END %]
+        [% IF object %]
+          <h4 class="ellipsis">[% tag2link(object.name.data) %]</h4>
+        [% ELSE %]
+          <h4 class="ellipsis"><a href="#">[% title %]</a></h4>
+        [% END %]
+      [% END %]
+    </div>
+    <ul>
+    [% FOREACH w IN widgets -%]
+      [% IF w.type == "title" %]
+      <li class="title">[% w.title %]</li>
+      [% ELSE %]
+      <li id="nav-[% w.id %]" 
+         class="
+          [% IF w.type != "title" %]
+            module-load
+          [% END %]
+          [% w.type %]"
+          wname="[% w.id %]"
+          href="[% w.href %]">[% w.title %]<span class="ui-icon ui-icon-triangle-1-e"></span>
+      </li>
+      [% END %]
+    [% END %]
+  
+      <li class="title">Recent Activity</li>
+      <div class="user-history small" id="user_history"></div>
+      <div class="small">
+[% UNLESS c.req.action == 'me' %]
+      <li id="nav-user_history" 
+          class="module-load me" 
+          wname="user_history"
+          href="[% c.uri_for('/rest','widget','me','user_history') %]" 
+          load=1>see more...</li>[% END %]</div>
+    </ul>
+    <div id="nav-min" title="close sidebar"><div id="nav-min-icon"></div></div>
+  </div>
+
+
+
+  <div id="widget-holder" wclass="[% page_class %]" class="[% class %][% UNLESS no_layout; " title-padding"; END; %]">
+
+
+
+
+
+
+
+    <div class="sortable left">
+      [% FOREACH w IN widgets -%]
+          [% IF w.type == "title"; NEXT; END; %]
+          <li id="[% w.id %]" class="widget">
+          [% PROCESS widget_sortable_block type=w.type id=w.id title=w.title -%]
+          </li>   
+      [% END %]
+[% UNLESS c.req.action == 'me' %]
+          <li id="user_history" class="widget">
+          [% PROCESS widget_sortable_block type="me" id="user_history" title="My History"-%]
+          </li>
+[% END %]   
+    </div>
+    <div class="sortable right"></div>
+  </div>
+</div>
+
+
+
+    <script>
+      ajaxGet($jq(".user-history"), "/rest/history?count=3");
+      [% UNLESS no_layout %] ajaxGet($jq(".list-layouts"), "/rest/layout_list/" + $jq(".list-layouts").attr("type")); [% END %]
+
+      [% PROCESS page_info %]
+      [% lclass = object.name.data.class FILTER lcfirst %]
+      [% save = 'reports' %]
+      [% IF object.name.data.class.match('paper'); save = 'my_library'; END; %]
+
+      $jq(".workbench-status-[% wbid %]").load("/rest/workbench/star?wbid=[% wbid %]&name=[% label | uri  %]&class=[% object.name.data.class FILTER lower %]&type=[% c.stash.section | uri %]&id=[% object.name.data.id | uri %]&url=[% url | uri %]&save_to=[% save %]&is_obj=[% is_obj %]");
+
+
+      if(location.hash.length > 0){
+        readHash();
+      }else{
+        [% IF c.user_session.layout.$page_class.0.defined; %]
+            location.hash = "[% c.user_session.layout.$page_class.0.lstring %]";
+            readHash();
+        [% END %]
+      }
+
+       updateCounts("[% c.req.uri.path %]");
+    </script>

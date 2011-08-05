@@ -1,0 +1,37 @@
+CGC Website Repository
+===========================
+
+This repository contains the CGC Web application.
+
+Installation
+------------
+
+ > cd local/perl/path
+ > perl -Mlocal::lib=./
+ > eval $(perl -Mlocal::lib=./
+ > cd $approot
+ > perl Makefile.PL
+ > make installdeps
+ > mysql -u -p < util/sql/cgc_schema.sql
+
+Running the application
+-----------------------
+
+To run the app using the built-in Catalyst server:
+
+> ./script/cgc_server.pl -p 8000
+
+For more control you can use your own configuration:
+
+> CGC_CONFIG_LOCAL_SUFFIX=tharris ./script/cgc_server.pl -p 8000
+
+This will use configuration in $approot/cgc_tharris.conf
+to override the default cgc.conf file.
+
+
+Running the application via Starman
+-----------------------------------
+
+ > ./bin/starman-tharris.sh
+
+Todd Harris (todd@hiline.co)

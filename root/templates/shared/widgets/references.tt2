@@ -1,0 +1,15 @@
+[%#
+
+   The References widget
+The References widget itself is composed of multiple sections, each of which is handled by one template.
+
+
+%]
+[% path = c.uri_for('/search', 'paper', c.stash.query) %]
+
+  <div id="reference-results">
+                    <script>
+                    ajaxGet($jq("#reference-results"), "[% path _ "?class=" _ c.stash.class _ ";inline=1" %]");
+                    </script>
+  </div>
+
