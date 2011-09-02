@@ -8,7 +8,7 @@ Installation
 
  > cd local/perl/path
  > perl -Mlocal::lib=./
- > eval $(perl -Mlocal::lib=./
+ > eval $(perl -Mlocal::lib=./)
  > cd $approot
  > perl Makefile.PL
  > make installdeps

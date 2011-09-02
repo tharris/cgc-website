@@ -5,7 +5,7 @@ use inc::Module::Install;
 name 'CGC';
 
 # Draw version, author, and licensing from Web.pm
-all_from 'lib/CGC.pm';
+all_from 'lib/CGC/Web.pm';
 
 # Catalyst basics
 requires 'Catalyst::Runtime';                  # => '5.80014';
