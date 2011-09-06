@@ -178,6 +178,10 @@ sub me :Path("/me") Args(0) {
 
 
 
+=pod
+
+WORMBASE CRUFT
+
 
 ##############################################################
 #
@@ -185,6 +189,7 @@ sub me :Path("/me") Args(0) {
 #   URL space : /fields
 #   Params    : class, object, field
 ##############################################################
+
 sub field :Path("/field") Args(3) {
     my ($self,$c,$class,$name,$field) = @_;
     
@@ -241,7 +246,11 @@ sub field :Path("/field") Args(3) {
     # $c->forward('App::Web::View::TT');
 };
 
+=cut
+
 =pod
+
+WORMBASE CRUFT
 
 ##############################################################
 #
@@ -330,6 +339,7 @@ sub widget :Path("/widget") Args(3) {
     # $c->forward('App::Web::View::TT');
 };
 
+=cut
 
 
 
@@ -496,6 +506,10 @@ sub register_basic_search {
 
 
 
+=pod 
+
+WORMBASE CRUFT
+
 #######################################################
 #
 #     CONFIGURATION - PROBABLY BELONGS ELSEWHERE
@@ -512,7 +526,7 @@ sub configure : Chained('/') PathPart('configure') Args(1) {
   
 }
 
-
+=cut
 
 
 

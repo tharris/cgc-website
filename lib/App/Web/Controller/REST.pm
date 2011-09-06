@@ -886,7 +886,7 @@ sub widget_GET {
         #     RESTful action, that likely isn't the case.
 	# TH: Yes, you're absolutely correct. Conditional from pre-REST implementation?
       # Fetch our external model
-      my $api = $c->model('AppAPI');
+      my $api = $c->model('ExternalModel');
       
       # Fetch the object from our driver     
       #$c->log->debug("AppAPI model is $api " . ref($api));

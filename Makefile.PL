@@ -17,20 +17,20 @@ requires 'parent';
 requires 'Catalyst::Action::REST';           
 requires 'Catalyst::Action::RenderView';
 requires 'Catalyst::Action::RenderView::ErrorHandler';
-requires 'Catalyst::Authentication::Credential::OpenID';   # will need to install Math::BigInt::GMP first 
-requires 'Catalyst::Authentication::Store::DBIx::Class';
-requires 'Catalyst::Controller::FormBuilder';
-requires 'Catalyst::Controller::CGIBin';
-requires 'Catalyst::Model::Adaptor';
-requires 'Catalyst::Model::Xapian::Result';
+#requires 'Catalyst::Authentication::Credential::OpenID';   # will need to install Math::BigInt::GMP first 
+#requires 'Catalyst::Authentication::Store::DBIx::Class';
+#requires 'Catalyst::Controller::FormBuilder';
+#requires 'Catalyst::Controller::CGIBin';
+#requires 'Catalyst::Model::Adaptor';
+#requires 'Catalyst::Model::Xapian::Result';
 requires 'Catalyst::Log::Log4perl';
-requires 'Catalyst::Plugin::Authentication';          
-requires 'Catalyst::Plugin::Authorization::Roles';          
-requires 'Catalyst::Plugin::Cache';                # Cache interface
+#requires 'Catalyst::Plugin::Authentication';          
+#requires 'Catalyst::Plugin::Authorization::Roles';          
+#requires 'Catalyst::Plugin::Cache';                # Cache interface
 requires 'Catalyst::Plugin::ConfigLoader';
-requires 'Catalyst::Plugin::ErrorCatcher';
-requires 'Catalyst::Plugin::Unicode';
-requires 'Catalyst::Plugin::Scheduler';
+#requires 'Catalyst::Plugin::ErrorCatcher';
+#requires 'Catalyst::Plugin::Unicode';
+#requires 'Catalyst::Plugin::Scheduler';
 requires 'Catalyst::Plugin::Session';
 requires 'Catalyst::Plugin::Session::PerUser';
 requires 'Catalyst::Plugin::Session::State';
@@ -40,30 +40,29 @@ requires 'Catalyst::Plugin::StackTrace';
 requires 'Catalyst::Plugin::Static::Simple';
 requires 'Catalyst::View::JSON';
 requires 'Catalyst::View::Email';
-requires 'Catalyst::View::GD';
+#requires 'Catalyst::View::GD';
 
 # Application dependencies
-requires 'Ace'                                    => '1.92';     # Good 'ole AcePerl.
 #requires 'AnyEvent::CouchDB';                                   #
-requires 'B::Hooks::EndOfScope';                                 #
-requires 'Cache::Memcached::libmemcached';                       #
-requires 'CGI::Simple::Cookie';                                  #
+#requires 'B::Hooks::EndOfScope';                                 #
+#requires 'Cache::Memcached::libmemcached';                       #
+#requires 'CGI::Simple::Cookie';                                  #
 requires 'Config::General';                                      #
-requires 'Crypt::SaltedHash';                                    # => '0.06';
-requires 'Crypt::SSLeay'; 			                 # For openid support
+#requires 'Crypt::SaltedHash';                                    # => '0.06';
+#requires 'Crypt::SSLeay'; 			                 # For openid support
 #requires 'CHI';                                                  # Cache
 #requires 'CHI::Driver::Memcached::libmemcached';                 # Cache (in memory)
 #requires 'CHI::Driver::File';                                    # Cache (on disk)
-requires 'Class::MOP';                                           # => '1.12';
-requires 'Data::Dump';                                           #
-requires 'Data::OptList';                                        #
+#requires 'Class::MOP';                                           # => '1.12';
+#requires 'Data::Dump';                                           #
+#requires 'Data::OptList';                                        #
 requires 'DBI';                                                  #
 requires 'DBD::mysql';                                           #
-requires 'DB_File::Lock';                                        #
-requires 'Devel::GlobalDestruction';                             #
-requires 'Devel::StackTrace';                                    #
-requires 'HTML::Parser';                                         #
-requires 'HTML::Entities';                                       #
+#requires 'DB_File::Lock';                                        #
+#requires 'Devel::GlobalDestruction';                             #
+#requires 'Devel::StackTrace';                                    #
+#requires 'HTML::Parser';                                         #
+#requires 'HTML::Entities';                                       #
 #requires 'Facebook::Graph';                                      #
 #requires 'GD';                                                   #
 #requires 'GD::SVG';                                              #
@@ -71,42 +70,42 @@ requires 'HTML::Entities';                                       #
 #requires 'GO::Utils';                                            #
 #requires 'go-db-perl';                                           #
 requires 'JSON';                                                 #
-requires 'List::MoreUtils';                                      #
+#requires 'List::MoreUtils';                                      #
 requires 'Log::Log4perl';                                        #
 #requires 'Math::BigInt::GMP';   # will need to install gmp.h header file first(on Debian/Ubuntu is the libgmp3-dev package)
-requires 'Memcached::libmemcached';                              #
-requires 'Module::Install';                                      #
+#requires 'Memcached::libmemcached';                              #
+#requires 'Module::Install';                                      #
 requires 'Moose'                                 => '1.21';      #
-requires 'MooseX::AbstractFactory';                              #
-requires 'MooseX::NonMoose';                                     # => '0.17';
-requires 'MooseX::MethodAttributes::Inheritable';                # => '0.24';
-requires 'MooseX::Role::WithOverloading';                        # => '0.05';
-requires 'MRO::Compat';                                          #
+#requires 'MooseX::AbstractFactory';                              #
+#requires 'MooseX::NonMoose';                                     # => '0.17';
+#requires 'MooseX::MethodAttributes::Inheritable';                # => '0.24';
+#requires 'MooseX::Role::WithOverloading';                        # => '0.05';
+#requires 'MRO::Compat';                                          #
 #requires 'Net::Twitter';                                         #
-requires 'Net::OAuth::Simple';                                   #
-requires 'Number::Format';                                       #
-requires 'namespace::clean';                                     #
-requires 'namespace::autoclean';                                 #
-requires 'Package::DeprecationManager'           => '0.10';      #
-requires 'Package::Stash'                        => '0.21';      # 
-requires 'Package::Stash::XS'                    => '0.18';      #
-requires 'Params::Util';                                         #
-requires 'Term::ReadLine';                                       #
-requires 'Search::Xapian';                                       #
-requires 'Sub::Exporter';                                        #
-requires 'Sub::Install';                                         #
-requires 'Sub::Identify';                                        #
+#requires 'Net::OAuth::Simple';                                   #
+#requires 'Number::Format';                                       #
+#requires 'namespace::clean';                                     #
+#requires 'namespace::autoclean';                                 #
+#requires 'Package::DeprecationManager'           => '0.10';      #
+#requires 'Package::Stash'                        => '0.21';      # 
+#requires 'Package::Stash::XS'                    => '0.18';      #
+#requires 'Params::Util';                                         #
+#requires 'Term::ReadLine';                                       #
+#requires 'Search::Xapian';                                       #
+#requires 'Sub::Exporter';                                        #
+#requires 'Sub::Install';                                         #
+#requires 'Sub::Identify';                                        #
 #requires 'SVG';                                                  #
-requires 'Task::Weaken';                                         #
-requires 'Template::Plugin::Time::Duration';                     #
-requires 'Test::YAML::Valid';                                    #
-requires 'Test::Pod::Coverage';                                  #
-requires 'Text::Glob';                                           #
-requires 'Text::WikiText';                                       #
-requires 'Time::Duration';                                       #
-requires 'WWW::Mechanize';                                       #
-requires 'XML::Simple';                                          #
-requires 'YAML';                                                 #
+#requires 'Task::Weaken';                                         #
+#requires 'Template::Plugin::Time::Duration';                     #
+#requires 'Test::YAML::Valid';                                    #
+#requires 'Test::Pod::Coverage';                                  #
+#requires 'Text::Glob';                                           #
+#requires 'Text::WikiText';                                       #
+#requires 'Time::Duration';                                       #
+#requires 'WWW::Mechanize';                                       #
+#requires 'XML::Simple';                                          #
+#requires 'YAML';                                                 #
 
 #catalyst;
 # The PSGI/Plack/Starman stack
