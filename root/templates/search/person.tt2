@@ -1,3 +1,0 @@
-      [% tag2link(item.name) %]
-    </li>
-    [% item.institution %]

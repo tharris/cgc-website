@@ -1,8 +1,0 @@
-
-
-([% c.stash.count %])
-[% IF c.stash.notify %]
-<script>
-  displayNotification("[% c.stash.notify %]");
-</script>
-[% END %]

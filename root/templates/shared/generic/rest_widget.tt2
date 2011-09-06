@@ -1,3 +1,0 @@
-[% PROCESS $child_template %]	
-
-[% PROCESS timer %]	
