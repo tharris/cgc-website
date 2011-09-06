@@ -1,8 +1,8 @@
-package WormBase::Web::Controller::Species;
+package App::Web::Controller::Species;
 
 use strict;
 use warnings;
-use parent 'WormBase::Web::Controller';
+use parent 'App::Web::Controller';
 
 
 ##############################################################
@@ -89,7 +89,7 @@ sub class_index :Path("/species") Args(2) {
     my @widgets = $page->static_widgets if $page;
     $c->stash->{static_widgets} = \@widgets if (@widgets);
 
-    # Is this a species known to WormBase?
+    # Is this a species known to App?
     if ($species eq 'all' || $self->_is_species($c,$species)) {
 
 #	if ($self->_is_class($c,$class)) {
@@ -141,7 +141,7 @@ sub object_report :Path("/species") Args(3) {
     my @widgets = $page->static_widgets if $page;
     $c->stash->{static_widgets} = \@widgets if (@widgets);
     
-    my $api = $c->model('WormBaseAPI');
+    my $api = $c->model('AppAPI');
     my $object = $api->fetch({class=> ucfirst($class),
 			      name => $name}) || $self->error_custom($c, 500, "can't connect to database");
     

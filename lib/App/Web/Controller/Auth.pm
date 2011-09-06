@@ -1,8 +1,8 @@
-package WormBase::Web::Controller::Auth;
+package App::Web::Controller::Auth;
 
 use strict;
 use warnings;
-use parent 'WormBase::Web::Controller';
+use parent 'App::Web::Controller';
 use Net::Twitter;
 use Facebook::Graph;
 use Data::Dumper;
@@ -68,7 +68,7 @@ sub confirm :Path("/confirm") {
     } 
     
     $c->stash->{message} = $message || "This link is not valid or has already expired.";
-    $c->forward('WormBase::Web::View::TT');
+    $c->forward('App::Web::View::TT');
 }
 
 =pod
@@ -528,7 +528,7 @@ sub profile_update :Path("/profile_update") {
   $c->stash->{message} = $message; 
   $c->stash->{template} = "shared/generic/message.tt2"; 
   $c->stash->{redirect} = $c->uri_for("me");
-  $c->forward('WormBase::Web::View::TT');
+  $c->forward('App::Web::View::TT');
 } 
 
 

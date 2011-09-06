@@ -1,4 +1,4 @@
-package WormBase::Web::Controller::REST::Gene;
+package App::Web::Controller::REST::Gene;
 
 use strict;
 use warnings;
@@ -6,7 +6,7 @@ use base 'Catalyst::Controller::REST';
 
 =head1 NAME
 
-WormBase::Web::Controller::REST - Catalyst Controller
+App::Web::Controller::REST - Catalyst Controller
 
 =head1 DESCRIPTION
 
@@ -26,7 +26,7 @@ Catalyst Controller.
 sub get_params : Chained('/') PathPart("rest/gene") CaptureArgs(1) {
   my ($self,$c,$name) = @_;
   $c->stash->{request} = $name;
-  $c->log->debug("WormBase::Web::Controller::REST::Gene $name");
+  $c->log->debug("App::Web::Controller::REST::Gene $name");
   # my $ace = $c->model('AceDB');
 }
 

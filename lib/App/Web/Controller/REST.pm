@@ -1,4 +1,4 @@
-package WormBase::Web::Controller::REST;
+package App::Web::Controller::REST;
 
 use strict;
 use warnings;
@@ -8,7 +8,7 @@ use XML::Simple;
 use Crypt::SaltedHash;
 use List::Util qw(shuffle);
 use Badge::GoogleTalk;
-use WormBase::API::ModelMap;
+use App::API::ModelMap;
 use URI::Escape;
 use Text::WikiText;
 use Text::WikiText::Output::HTML;
@@ -27,7 +27,7 @@ __PACKAGE__->config(
 
 =head1 NAME
 
-WormBase::Web::Controller::REST - Catalyst Controller
+App::Web::Controller::REST - Catalyst Controller
 
 =head1 DESCRIPTION
 
@@ -59,7 +59,7 @@ sub livechat_GET {
       }
     }
     $c->stash->{noboiler}=1;
-    $c->forward('WormBase::Web::View::TT');
+    $c->forward('App::Web::View::TT');
 }
 sub livechat_POST {
     my ( $self, $c) = @_;
@@ -72,8 +72,8 @@ sub print :Path('/rest/print') :Args(0) :ActionClass('REST') {}
 sub print_POST {
     my ( $self, $c) = @_;
    
-    my $api = $c->model('WormBaseAPI');
-    $c->log->debug("WormBaseAPI model is $api " . ref($api));
+    my $api = $c->model('AppAPI');
+    $c->log->debug("AppAPI model is $api " . ref($api));
      
     my $path = $c->req->param('layout');
     
@@ -127,7 +127,7 @@ sub workbench_GET {
     $c->stash->{count} = $count || 0;
 $c->response->headers->expires(time);
     $c->stash->{template} = "workbench/count.tt2";
-    $c->forward('WormBase::Web::View::TT');
+    $c->forward('App::Web::View::TT');
 } 
 
 sub workbench_star :Path('/rest/workbench/star') :Args(0) :ActionClass('REST') {}
@@ -150,7 +150,7 @@ sub workbench_star_GET{
     $c->stash->{template} = "workbench/status.tt2";
     $c->stash->{noboiler} = 1;
 $c->response->headers->expires(time);
-    $c->forward('WormBase::Web::View::TT');
+    $c->forward('App::Web::View::TT');
 }
 
 sub layout :Path('/rest/layout') :Args(2) :ActionClass('REST') {}
@@ -211,7 +211,7 @@ sub layout_list_GET {
   $c->stash->{template} = "boilerplate/layouts.tt2";
   $c->stash->{noboiler} = 1;
 $c->response->headers->expires(time);
-    $c->forward('WormBase::Web::View::TT');
+    $c->forward('App::Web::View::TT');
 }
 
 
@@ -223,7 +223,7 @@ sub auth_GET {
     $c->stash->{noboiler} = 1;
     $c->stash->{template} = "nav/status.tt2"; 
     $self->status_ok($c,entity => {});
-    $c->forward('WormBase::Web::View::TT');
+    $c->forward('App::Web::View::TT');
 }
 
 sub get_session {
@@ -242,7 +242,7 @@ sub get_user_info :Path('/auth/info') :Args(1) :ActionClass('REST'){}
 sub get_user_info_GET{
   my ( $self, $c, $name) = @_;
 
-  my $api = $c->model('WormBaseAPI');
+  my $api = $c->model('AppAPI');
   my $object = $api->fetch({class => 'Person',
                     name  => $name,
                     }) or die "$!";
@@ -296,7 +296,7 @@ sub history_GET {
       $session->user_history->delete();
       $session->update();
       $c->stash->{history} = "";
-      $c->forward('WormBase::Web::View::TT');
+      $c->forward('App::Web::View::TT');
       $self->status_ok($c,entity => {});
     }
 
@@ -319,7 +319,7 @@ sub history_GET {
     } @hist[0..$count-1];
     $c->stash->{history} = \@histories;
 $c->response->headers->expires(time);
-    $c->forward('WormBase::Web::View::TT');
+    $c->forward('App::Web::View::TT');
     $self->status_ok($c,entity => {});
 }
 
@@ -367,14 +367,14 @@ sub evidence_GET {
    
     unless ($c->stash->{object}) {
     # Fetch our external model
-    my $api = $c->model('WormBaseAPI');
+    my $api = $c->model('AppAPI');
  
     # Fetch the object from our driver   
-    $c->log->debug("WormBaseAPI model is $api " . ref($api));
+    $c->log->debug("AppAPI model is $api " . ref($api));
     $c->log->debug("The requested class is " . ucfirst($class));
     $c->log->debug("The request is " . $name);
     
-    # Fetch a WormBase::API::Object::* object
+    # Fetch a App::API::Object::* object
     # But wait. Some methods return lists. Others scalars...
     $c->stash->{object} =  $api->fetch({class=> ucfirst($class),
                         name => $name}) or die "$!";
@@ -393,7 +393,7 @@ sub evidence_GET {
     my $data = $object-> _get_evidence($node[$index]->right($right));
     $c->stash->{evidence} = $data;
     $c->stash->{template} = "shared/generic/evidence.tt2"; 
-    $c->forward('WormBase::Web::View::TT');
+    $c->forward('App::Web::View::TT');
     my $uri = $c->uri_for("/reports",$class,$name);
     $self->status_ok($c, entity => {
                      class  => $class,
@@ -445,7 +445,7 @@ sub rest_link_wbid_POST {
     $c->stash->{template} = "shared/generic/message.tt2"; 
     $c->stash->{redirect} = $c->req->params->{redirect};
     $c->stash->{noboiler} = 1;
-    $c->forward('WormBase::Web::View::TT');
+    $c->forward('App::Web::View::TT');
 }
  
 sub rest_register :Path('/rest/register') :Args(0) :ActionClass('REST') {}
@@ -497,7 +497,7 @@ sub rest_register_POST {
       $c->stash->{template} = "shared/generic/message.tt2"; 
       $c->stash->{message} = "<h2>Thank you!</h2> <p>Thank you for registering at <a href='" . $c->uri_for("/") . "'>wormbase.org</a>. An email has been sent to " . join(', ', map {"<a href='mailto:$_'>$_</a>"} @emails) . " to confirm your registration</p>" ; 
       $c->stash->{redirect} = $c->req->params->{redirect};
-      $c->forward('WormBase::Web::View::TT');
+      $c->forward('App::Web::View::TT');
 
     }
 
@@ -538,7 +538,7 @@ sub rest_register_email {
   $c->stash->{email} = {
       to       => $email,
       from     => $c->config->{register_email},
-      subject  => "WormBase Account Activation", 
+      subject  => "App Account Activation", 
       template => "auth/register_email.tt2",
   };
   
@@ -597,7 +597,7 @@ sub feed_GET {
     }
       
      $c->stash->{template} = "feed/$type.tt2"; 
-     $c->forward('WormBase::Web::View::TT') ;
+     $c->forward('App::Web::View::TT') ;
     
      #$self->status_ok($c,entity => {});
 }
@@ -743,7 +743,7 @@ sub issue_email{
     my %seen=();  
     $bcc = $bcc.",". join ",", grep { ! $seen{$_} ++ } map {$_->user->primary_email->email if ($_->user && $_->user->primary_email)} @threads;
   }
-  $subject = '[WormBase Issues] '.$subject.' '.$issue->issue_id.': '.$issue->title;
+  $subject = '[App Issues] '.$subject.' '.$issue->issue_id.': '.$issue->title;
 
   $c->stash->{issue}=$issue;
 
@@ -777,7 +777,7 @@ sub pages_GET {
 
     $self->status_ok( $c,
               entity => { resultset => {  data => \%data,
-                          description => 'Available (dynamic) pages at WormBase',
+                          description => 'Available (dynamic) pages at App',
                   }
               }
     );
@@ -886,14 +886,14 @@ sub widget_GET {
         #     RESTful action, that likely isn't the case.
 	# TH: Yes, you're absolutely correct. Conditional from pre-REST implementation?
       # Fetch our external model
-      my $api = $c->model('WormBaseAPI');
+      my $api = $c->model('AppAPI');
       
       # Fetch the object from our driver     
-      #$c->log->debug("WormBaseAPI model is $api " . ref($api));
+      #$c->log->debug("AppAPI model is $api " . ref($api));
       #$c->log->debug("The requested class is " . ucfirst($class));
       #$c->log->debug("The request is " . $name);
       
-      # Fetch a WormBase::API::Object::* object
+      # Fetch a App::API::Object::* object
       if ($name eq '*' || $name eq 'all') {
           $c->stash->{object} = $api->instantiate_empty({class => ucfirst($class)});
       } else {
@@ -915,7 +915,7 @@ sub widget_GET {
       
       # Looking up the template is slow; hard-coded here.
       $c->stash->{template} = 'shared/widgets/references.tt2';
-      $c->forward('WormBase::Web::View::TT');
+      $c->forward('App::Web::View::TT');
       return;
     
       # If you have a tool that you want to display inline as a widget, be certain to add it here.
@@ -991,7 +991,7 @@ sub widget_GET {
     # TODO: AGAIN THIS IS THE REFERENCE OBJECT
     # PERHAPS I SHOULD INCLUDE FIELDS?
     # Include the full uri to the *requested* object.
-    # IE the page on WormBase where this should go.
+    # IE the page on App where this should go.
     my $uri = $c->uri_for("/page",$class,$name);   # THIS IS NO LONGER THE CORRECT URI FOR THE PAGE!
     $self->status_ok($c, 
 		     entity => {
@@ -1086,14 +1086,14 @@ sub widget_data_cache_GET {
         #     RESTful action, that likely isn't the case.
 	# TH: Yes, you're absolutely correct. Conditional from pre-REST implementation?
       # Fetch our external model
-      my $api = $c->model('WormBaseAPI');
+      my $api = $c->model('AppAPI');
       
       # Fetch the object from our driver     
-      $c->log->debug("WormBaseAPI model is $api " . ref($api));
+      $c->log->debug("AppAPI model is $api " . ref($api));
       $c->log->debug("The requested class is " . ucfirst($class));
       $c->log->debug("The request is " . $name);
       
-      # Fetch a WormBase::API::Object::* object
+      # Fetch a App::API::Object::* object
       if ($name eq '*' || $name eq 'all') {
           $c->stash->{object} = $api->instantiate_empty({class => ucfirst($class)});
       } else {
@@ -1114,7 +1114,7 @@ sub widget_data_cache_GET {
       
       # Looking up the template is slow; hard-coded here.
       $c->stash->{template} = "shared/widgets/references.tt2";
-      $c->forward('WormBase::Web::View::TT');
+      $c->forward('App::Web::View::TT');
       return;
     
     # If you have a tool that you want to display inline as a widget, be certain to add it here.
@@ -1179,12 +1179,12 @@ sub widget_data_cache_GET {
 
     # Forward to the view for rendering HTML.
     my $format = $headers->header('Content-Type') || $c->req->params->{'content-type'};
-    $c->detach('WormBase::Web::View::TT') unless ($format) ;
+    $c->detach('App::Web::View::TT') unless ($format) ;
  
     # TODO: AGAIN THIS IS THE REFERENCE OBJECT
     # PERHAPS I SHOULD INCLUDE FIELDS?
     # Include the full uri to the *requested* object.
-    # IE the page on WormBase where this should go.
+    # IE the page on App where this should go.
     my $uri = $c->uri_for("/page",$class,$name);
     $self->status_ok($c, entity => {
 	class   => $class,
@@ -1250,7 +1250,7 @@ sub widget_static_GET {
       my $headers = $c->req->headers;
       # Forward to the view for rendering HTML.
       my $format = $headers->header('Content-Type') || $c->req->params->{'content-type'};
-      $c->detach('WormBase::Web::View::TT') unless($format) ;
+      $c->detach('App::Web::View::TT') unless($format) ;
       
       my $uri = $c->uri_for("/rest/widget",$widget_id);
       $self->status_ok($c, entity => {
@@ -1263,14 +1263,14 @@ sub widget_static_GET {
 
     $format ||= 'text/html';
     if ($format =~m/text\/html/) {
-      $c->forward('WormBase::Web::View::TT');
+      $c->forward('App::Web::View::TT');
       return;
     }
     my $filename = "static-widget-" . $widget_id.".".$c->config->{api}->{content_type}->{$format};
     $c->log->debug("$filename download in the format: $format");
     $c->response->header('Content-Type' => $format);
     $c->response->header('Content-Disposition' => 'attachment; filename='.$filename);
-   }else{$c->forward('WormBase::Web::View::TT');}
+   }else{$c->forward('App::Web::View::TT');}
 }
 
 sub widget_static_POST {
@@ -1353,7 +1353,7 @@ sub widget_class_index_GET {
     }else{
       $c->stash->{template} = "species/$species/$class/$widget.tt2";
     }
-    $c->detach('WormBase::Web::View::TT'); 
+    $c->detach('App::Web::View::TT'); 
 }
 
 
@@ -1374,12 +1374,12 @@ sub widget_home_GET {
     }
     $c->stash->{template} = "classes/home/$widget.tt2";
     $c->stash->{noboiler} = 1;
-    $c->forward('WormBase::Web::View::TT');
+    $c->forward('App::Web::View::TT');
 }
 
 sub recently_saved {
  my ($self,$c,$count) = @_;
-    my $api = $c->model('WormBaseAPI');
+    my $api = $c->model('AppAPI');
     my @saved = $c->model('Schema::Starred')->search(undef,
                 {   select => [ 
                       'page_id', 
@@ -1403,7 +1403,7 @@ sub recently_saved {
 sub most_popular {
  my ($self,$c,$count) = @_;
 
-    my $api = $c->model('WormBaseAPI');
+    my $api = $c->model('AppAPI');
 #     my $interval = "> UNIX_TIMESTAMP() - 604800"; # one week ago
     my $interval = "> UNIX_TIMESTAMP() - 86400"; # one day ago
 #     my $interval = "> UNIX_TIMESTAMP() - 3600"; # one hour ago
@@ -1517,7 +1517,7 @@ sub widget_me :Path('/rest/widget/me') :Args(1) :ActionClass('REST') {}
 
 sub widget_me_GET {
     my ($self,$c,$widget) = @_; 
-    my $api = $c->model('WormBaseAPI');
+    my $api = $c->model('AppAPI');
     my $type;
     $c->stash->{'bench'} = 1;
 $c->response->headers->expires(time);
@@ -1545,7 +1545,7 @@ $c->response->headers->expires(time);
     $c->stash->{'type'} = $type; 
     $c->stash->{template} = "workbench/widget.tt2";
     $c->stash->{noboiler} = 1;
-    $c->forward('WormBase::Web::View::TT');
+    $c->forward('App::Web::View::TT');
     return;
 }
 
@@ -1563,7 +1563,7 @@ sub widget_admin :Path('/rest/widget/admin') :Args(1) :ActionClass('REST') {}
 
 sub widget_admin_GET {
     my ($self,$c,$widget) = @_; 
-    my $api = $c->model('WormBaseAPI');
+    my $api = $c->model('AppAPI');
     my $type;
     $c->stash->{'bench'} = 1;
     $c->res->redirect("/admin/$widget");
@@ -1666,14 +1666,14 @@ sub field_GET {
 
     unless ($c->stash->{object}) {
     # Fetch our external model
-    my $api = $c->model('WormBaseAPI');
+    my $api = $c->model('AppAPI');
  
     # Fetch the object from our driver   
-    $c->log->debug("WormBaseAPI model is $api " . ref($api));
+    $c->log->debug("AppAPI model is $api " . ref($api));
     $c->log->debug("The requested class is " . ucfirst($class));
     $c->log->debug("The request is " . $name);
     
-    # Fetch a WormBase::API::Object::* object
+    # Fetch a App::API::Object::* object
     # * and all are placeholders to match the /species/class/object structure for species/class index pages
     if ($name eq '*' || $name eq 'all') {
         $c->stash->{object} = $api->instantiate_empty({class => ucfirst($class)});
@@ -1700,7 +1700,7 @@ sub field_GET {
     #  $c->stash->{rest} = $data;
     
     # Include the full uri to the *requested* object.
-    # IE the page on WormBase where this should go.
+    # IE the page on App where this should go.
     # TODO: 2011.03.20 TH: THIS NEEDS TO BE UPDATED, TESTED, VERIFIED
     my $uri = $c->uri_for("/species",$class,$name);
 

@@ -1,4 +1,4 @@
-package WormBase::Web::Controller::Admin;
+package App::Web::Controller::Admin;
 
 use strict;
 use warnings;
@@ -6,12 +6,12 @@ use parent 'Catalyst::Controller';
 
 =head1 NAME
 
-WormBase::Web::Controller::Admin - Catalyst Controller
+App::Web::Controller::Admin - Catalyst Controller
 
 =head1 DESCRIPTION
 
-WormBase::Web::Admin - Catalyst Controller for administrative
-functions at WormBase.
+App::Web::Admin - Catalyst Controller for administrative
+functions at App.
 
 =head1 METHODS
 
@@ -25,7 +25,7 @@ functions at WormBase.
 sub index : Private {
     my ( $self, $c ) = @_;
 
-    $c->response->body('Matched WormBase::Web::Controller::Admin in Admin.');
+    $c->response->body('Matched App::Web::Controller::Admin in Admin.');
 }
 
 

@@ -1,4 +1,4 @@
-package WormBase::Web::Controller::Debug;
+package App::Web::Controller::Debug;
 
 use strict;
 use warnings;
@@ -11,7 +11,7 @@ Standardize data structure
 
 =head1 NAME
 
-WormBase::Web::Controller::Debug - Catalyst Controller
+App::Web::Controller::Debug - Catalyst Controller
 
 =head1 DESCRIPTION
 
@@ -30,7 +30,7 @@ Display an index of varioous debugging tools.
 
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
-    $c->response->body('Matched WormBase::Web::Controller::Debug.');
+    $c->response->body('Matched App::Web::Controller::Debug.');
 }
 
 
@@ -42,7 +42,7 @@ A list of available classes
 
 sub classes :Path('classes') :Args(0) {
     my ( $self, $c ) = @_;
-    $c->response->body('Matched WormBase::Web::Controller::Debug::classes.');
+    $c->response->body('Matched App::Web::Controller::Debug::classes.');
 }
 
 

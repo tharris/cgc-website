@@ -1,15 +1,15 @@
-package WormBase::Web::Controller::UserGuide;
+package App::Web::Controller::UserGuide;
 
 use strict;
 use warnings;
-use parent 'WormBase::Web::Controller';
+use parent 'App::Web::Controller';
 use FindBin qw/$Bin/;
 
-__PACKAGE__->config->{libroot} = "$Bin/../../lib/WormBase/API";
+__PACKAGE__->config->{libroot} = "$Bin/../../lib/App/API";
 
 ##############################################################
 #
-#   The WormBase User Guide. Yay!
+#   The App User Guide. Yay!
 # 
 ##############################################################
 
@@ -51,7 +51,7 @@ sub category_index : Chained('/') PathPart('userguide') :Args(1)   {
 #
 #    # Get a list of available classes.
 #    if ($subcategory eq 'api') {  # /userguide/developers/api
-#	my $dir = "$ENV{APP_ROOT}/$ENV{APP}/lib/WormBase/API/Object";
+#	my $dir = "$ENV{APP_ROOT}/$ENV{APP}/lib/App/API/Object";
 #	opendir(DIR,$dir) or $c->log->debug("Couldn't open $dir");
 #	my @classes = grep { !/^\./ && !/\.orig/ && !/^\#/ && !/~$/} readdir(DIR);
 #    	$c->stash->{classes}  = \@classes;
@@ -99,7 +99,7 @@ sub developer_docs : Chained('userguide') Path('developers') Args(1)   {
     # Get a list of available classes.
     # The API index includes a list of available classes.
     if ($subcategory eq 'api') {
-	my $dir = "$ENV{APP_ROOT}/$ENV{APP}/lib/WormBase/API/Object";
+	my $dir = "$ENV{APP_ROOT}/$ENV{APP}/lib/App/API/Object";
 	opendir(DIR,$dir) or $c->log->debug("Couldn't open $dir");
 	my @classes = grep { !/^\./ && !/\.orig/ && !/^\#/ && !/~$/} readdir(DIR);
 	
@@ -118,7 +118,7 @@ sub api_class_docs : Chained('developer_docs') Path('api') Args(1) {
     my($self,$c,$class) = @_;
     
     $class = ucfirst($class);
-    open (LIB,"$ENV{APP_ROOT}/$ENV{APP}/lib/WormBase/API/Object/$class.pm") || $c->log->debug("Couldn't open the current library file");
+    open (LIB,"$ENV{APP_ROOT}/$ENV{APP}/lib/App/API/Object/$class.pm") || $c->log->debug("Couldn't open the current library file");
     
     my $pod = $self->_get_pod($c);
     my @code;
@@ -140,7 +140,7 @@ sub api_class_docs : Chained('developer_docs') Path('api') Args(1) {
     
     # Now turn it into POD...
     my ($title) = ucfirst($class);
-    my $html = `/usr/bin/pod2html --title='WormBase API: $title' /var/tmp/pod.tmp`;
+    my $html = `/usr/bin/pod2html --title='App API: $title' /var/tmp/pod.tmp`;
     
     # Delete the tmpfile
 #    system("rm -f /var/tmp/pod.tmp");
@@ -152,7 +152,7 @@ sub api_class_docs : Chained('developer_docs') Path('api') Args(1) {
 # Parse code snippets from Role/Object.pm
 sub _get_pod {
     my ($self,$c) = @_;
-    open (LIB2,"/usr/local/wormbase/website/tharris/lib/WormBase/API/Role/Object.pm")
+    open (LIB2,"/usr/local/wormbase/website/tharris/lib/App/API/Role/Object.pm")
 	or $c->log->debug("Couldn't open the Role file for fetching boilerplate POD");
     my %pod;
     my $in_stanza;

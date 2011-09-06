@@ -1,4 +1,4 @@
-package WormBase::Web;
+package App::Web;
 
 use Moose;
 use namespace::autoclean;
@@ -19,7 +19,7 @@ use Catalyst qw/
 	  Scheduler
            /;
 extends 'Catalyst';
-our $VERSION = '0.02';
+our $VERSION = '0.01';
 
 use Catalyst::Log::Log4perl; 
 use HTTP::Status qw(:constants :is status_message);
@@ -33,7 +33,7 @@ use HTTP::Status qw(:constants :is status_message);
 #   for installation type; otherwise it defaults to staging.
 #
 ##################################################
-my $installation_type = $ENV{WORMBASE_INSTALLATION_TYPE} || 'staging';
+my $installation_type = $ENV{APP_INSTALLATION_TYPE} || 'staging';
 
 
 # Specific loggers for differnet environments
@@ -122,7 +122,7 @@ __PACKAGE__->config->{authentication} =
 # These should ALWAYS be served in static mode.
 __PACKAGE__->config(
     static => {
-	dirs => [qw/ css js img tmp /],
+	dirs => [qw/css js img tmp /],
 	include_path => [ '/usr/local/wormbase/shared/tmp',
 			  __PACKAGE__->config->{root},
 	    ]
@@ -135,7 +135,7 @@ __PACKAGE__->config(
 # Application-wide configuration is located in wormbase.conf
 # which can be over-ridden by wormbase_local.conf.
 __PACKAGE__->config( 'Plugin::ConfigLoader' => {
-    file => 'wormbase.conf',
+    file => 'app.conf',
     driver => {
         'General' => {
             -InterPolateVars => 1,
@@ -163,9 +163,9 @@ my $expires_in = ($installation_type eq 'production')
 # Memcached/libmemcached support built into the app.
 # Development and mirror distributions should point to localhost.
 # The production installation points to our distributed memcached.
-my $servers = ($installation_type eq 'production')
-    ? [ '206.108.125.175:11211', '206.108.125.177:11211' , '206.108.125.190:11211','206.108.125.168:11211','206.108.125.178:11211']
-    : [ '127.0.0.1:11211' ];
+#my $servers = ($installation_type eq 'production')
+#    ? [ '206.108.125.175:11211', '206.108.125.177:11211' , '206.108.125.190:11211','206.108.125.168:11211','206.108.125.178:11211']
+#    : [ '127.0.0.1:11211' ];
 
 # 1. Dual caches: memcached and file, one of which
 #    needs to have a symbolic name of "default"
@@ -259,24 +259,6 @@ sub is_ajax {
   my $c       = shift;
   my $headers = $c->req->headers;
   return $headers->header('X-Requested-With');
-}
-
-
-
-sub get_example_object {
-  my ($self,$class) = @_;
-  my $api = $self->model('WormBaseAPI');
-
-  my $ace = $api->_services->{acedb};
-  # Fetch the total number of objects
-  my $total = $ace->fetch(-class => ucfirst($class),
-              -name  => '*');
-  
-  my $object_index = 1 + int rand($total-1);
-
-  # Fetch one object starting from the randomly determined one
-  my ($object) = $ace->fetch(ucfirst($class),'*',1,$object_index);
-  return $object;
 }
 
 

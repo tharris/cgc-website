@@ -1,9 +1,9 @@
-package WormBase::Web::Controller::Tool;
+package App::Web::Controller::Tool;
 
 
 use strict;
 use warnings;
-use parent 'WormBase::Web::Controller';
+use parent 'App::Web::Controller';
  
 
 __PACKAGE__->config->{namespace} = '';
@@ -13,7 +13,7 @@ sub tool_summary :Path("/tools") :Args(0) {
 
     $c->stash->{template} = "tool/report.tt2";
     $c->stash->{section} = "tools";
-    $c->forward('WormBase::Web::View::TT')
+    $c->forward('App::Web::View::TT')
 }
 
 sub tool :Path("/tools") Args {
@@ -26,7 +26,7 @@ sub tool :Path("/tools") Args {
     $c->stash->{section} = "tools";
     $c->stash->{template}="tool/$tool/$action.tt2";
     $c->stash->{noboiler} = 1 if($c->req->params->{inline});
-    my $api = $c->model('WormBaseAPI');
+    my $api = $c->model('AppAPI');
     my $data;
     
     # Does the data already exist in the cache?

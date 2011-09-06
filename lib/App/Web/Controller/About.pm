@@ -1,11 +1,11 @@
-package WormBase::Web::Controller::About;
+package App::Web::Controller::About;
 
 use strict;
 use warnings;
-use parent 'WormBase::Web::Controller';
+use parent 'App::Web::Controller';
 #use FindBin qw/$Bin/;
 
-#__PACKAGE__->config->{libroot} = "$Bin/../../lib/WormBase/API";
+#__PACKAGE__->config->{libroot} = "$Bin/../../lib/App/API";
 
 ##############################################################
 #

@@ -1,18 +1,18 @@
-package WormBase::Web::Controller::ClassicCompatibility;
+package App::Web::Controller::ClassicCompatibility;
 
 use strict;
 use warnings;
-use parent 'WormBase::Web::Controller';
+use parent 'App::Web::Controller';
  
 __PACKAGE__->config->{namespace} = '';
 
 =head1 NAME
 
-WormBase::Web::Controller::ClassicCompatibility - Compatibility Controller for WormBase
+App::Web::Controller::ClassicCompatibility - Compatibility Controller for App
 
 =head1 DESCRIPTION
 
-Backwards compatability for old-style WormBase URIs.
+Backwards compatability for old-style App URIs.
 
 =head1 METHODS
 
@@ -41,7 +41,7 @@ sub classic_get :Path("/db/get") Args(0) {
     my $name            = $c->req->param('name');
 
     # TODO: handle when these are not provided and when the object doesn't exist
-    my $api    = $c->model('WormBaseAPI');
+    my $api    = $c->model('AppAPI');
     my $ACE2WB = $api->modelmap->ACE2WB_MAP->{class};
 
     my $class           = $ACE2WB->{$requested_class} or $c->detach;
@@ -53,9 +53,9 @@ sub classic_get :Path("/db/get") Args(0) {
 	unless ($c->stash->{object}) {
 
 	    # Fetch our external model
-	    my $api = $c->model('WormBaseAPI');
+	    my $api = $c->model('AppAPI');
       
-	    # Fetch a WormBase::API::Object::* object
+	    # Fetch a App::API::Object::* object
 	    if ($name eq '*' || $name eq 'all') {
 		$c->stash->{object} = $api->instantiate_empty({class => ucfirst($class)});
 	    } else {
@@ -123,7 +123,7 @@ sub classic_report :Path("/db") Args(2) {
     $c->stash->{query} = $c->request->query_parameters->{name} || "";
 
     # Instantiate our external model directly (see below for alternate)
-    my $api = $c->model('WormBaseAPI');
+    my $api = $c->model('AppAPI');
     
     # TODO
     # I may not want to actually fetch an object.

@@ -1,4 +1,4 @@
-package WormBase::Web::Controller::Library::Login;
+package App::Web::Controller::Library::Login;
 
 use strict;
 use warnings;
@@ -9,7 +9,7 @@ use base 'Catalyst::Controller';
 
 =head1 NAME
 
-WormBase::Web::Controller::Library::Login - Catalyst Controller
+App::Web::Controller::Library::Login - Catalyst Controller
 
 =head1 DESCRIPTION
 
@@ -27,7 +27,7 @@ Catalyst Controller.
 sub index : Private {
     my ( $self, $c ) = @_;
 
-    $c->response->body('Matched WormBase::Web::Controller::Library::Login in Library::Login.');
+    $c->response->body('Matched App::Web::Controller::Library::Login in Library::Login.');
 }
 
 

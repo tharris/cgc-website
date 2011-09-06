@@ -1,8 +1,8 @@
-package WormBase::Web::Controller::Resources;
+package App::Web::Controller::Resources;
 
 use strict;
 use warnings;
-use parent 'WormBase::Web::Controller';
+use parent 'App::Web::Controller';
 
 
 ##############################################################
@@ -120,7 +120,7 @@ sub downloads :Path('/resources/downloads') Args(0) {
 #    if($widget){
 #      $c->stash->{noboiler} = 1;
 #      $c->stash->{template} = "resources/advisory_board/$widget.tt2";
-#      $c->forward('WormBase::Web::View::TT');
+#      $c->forward('App::Web::View::TT');
 #    }
 #
 ##     get_report($self, $c, "advisory_board", "");
@@ -148,7 +148,7 @@ sub _get_report {
     my @widgets = $page->static_widgets if $page;
     $c->stash->{static_widgets} = \@widgets if (@widgets);
     
-    my $api = $c->model('WormBaseAPI');
+    my $api = $c->model('AppAPI');
     my $object = $api->fetch({class=> ucfirst($class),
                   name => $name}) || $self->error_custom($c, 500, "can't connect to database");
      

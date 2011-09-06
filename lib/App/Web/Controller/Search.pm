@@ -1,4 +1,4 @@
-package WormBase::Web::Controller::Search;
+package App::Web::Controller::Search;
 
 use strict;
 use warnings;
@@ -39,7 +39,7 @@ sub search :Path('/search') Args {
     $c->stash->{'search_guide'} = $query if($c->req->param("redirect"));
 
     $c->log->debug("$type search");
-    my $api = $c->model('WormBaseAPI');
+    my $api = $c->model('AppAPI');
 
     $c->stash->{template} = "search/results.tt2";
     if($page_count >1) {
@@ -80,7 +80,7 @@ $c->response->headers->expires(time);
             $c->stash->{page} = $page_count;
             $c->stash->{type} = $type;
             $c->stash->{query} = $query || "*";
-            $c->forward('WormBase::Web::View::TT');
+            $c->forward('App::Web::View::TT');
             return;
     }
 
@@ -103,7 +103,7 @@ $c->response->headers->expires(time);
     $c->stash->{results} = \@ret;
     $c->stash->{querytime} = $it->{querytime};
     $c->stash->{query} = $query || "*";
-    $c->forward('WormBase::Web::View::TT');
+    $c->forward('App::Web::View::TT');
     return;
 }
 
@@ -112,7 +112,7 @@ sub search_autocomplete :Path('/search/autocomplete') :Args(1) {
   my $q = $c->req->param("term");
   $c->stash->{noboiler} = 1;
   $c->log->debug("autocomplete search: $q, $type");
-  my $api = $c->model('WormBaseAPI');
+  my $api = $c->model('AppAPI');
 
  my $search = $type unless($type=~/all/);
  $q =~ s/-/_/g;
@@ -145,7 +145,7 @@ sub search_count :Path('/search/count') :Args(3) {
   my ($self, $c, $species, $type, $q) = @_;
 
   $c->stash->{noboiler} = 1;
-  my $api = $c->model('WormBaseAPI');
+  my $api = $c->model('AppAPI');
 
   my $search = $type unless($type=~/all/);
   $q =~ s/-/_/g;
@@ -164,7 +164,7 @@ sub _get_url {
 
 sub _get_obj {
   my ($self, $c, $doc) = @_;
-  my $api = $c->model('WormBaseAPI');
+  my $api = $c->model('AppAPI');
   $c->log->debug("class:" . $doc->get_value(0) . ", name:" . $doc->get_value(1));
   if($doc->get_value(2) =~ /cell/){ return; } #remove this after you rebuilt the search database
   my $obj = $api->fetch({aceclass=> $doc->get_value(0),
@@ -182,7 +182,7 @@ sub _get_obj {
 
 =head1 NAME
 
-WormBase::Web::Controller::Search - Catalyst Controller
+App::Web::Controller::Search - Catalyst Controller
 
 =head1 DESCRIPTION
 

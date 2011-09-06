@@ -1,17 +1,15 @@
-package WormBase::Web::View::TT;
+package App::Web::View::TT;
 
-#use strict;
-#use parent 'Catalyst::View::TT';
 use Moose;
 extends 'Catalyst::View::TT';
 
 
 __PACKAGE__->config({
 		     INCLUDE_PATH => [
-				      WormBase::Web->path_to( 'root', 'templates' ),
-				      WormBase::Web->path_to( 'root', 'templates' , 'config'),
-				      WormBase::Web->path_to( 'root', 'static',    'css'    ),
-				      WormBase::Web->path_to( 'root', 'static',    'css', 'flora'    ),			 
+				      App::Web->path_to( 'templates' ),
+				      App::Web->path_to( 'templates' , 'config'),
+				      App::Web->path_to( 'static',    'css'    ),
+				      WormBase::Web->path_to( 'static',    'css', 'flora'    ),			 
 				     ],
 		     PRE_PROCESS  => ['config/main','shared/page_elements.tt2'],
 		     WRAPPER      => 'wrapper.tt2',

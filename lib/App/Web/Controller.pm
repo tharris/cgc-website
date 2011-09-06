@@ -1,4 +1,4 @@
-package WormBase::Web::Controller;
+package App::Web::Controller;
 
 use strict;
 use warnings;

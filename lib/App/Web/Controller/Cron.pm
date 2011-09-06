@@ -1,8 +1,8 @@
-package WormBase::Web::Controller::Cron;
+package App::Web::Controller::Cron;
 
 use strict;
 use warnings;
-use parent 'WormBase::Web::Controller';
+use parent 'App::Web::Controller';
 
 sub remove_sessions : Private {
     my ( $self, $c ) = @_;

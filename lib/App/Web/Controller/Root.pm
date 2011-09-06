@@ -1,20 +1,20 @@
-package WormBase::Web::Controller::Root;
+package App::Web::Controller::Root;
 
 use strict;
 use warnings;
-use parent 'WormBase::Web::Controller';
+use parent 'App::Web::Controller';
  
 # Sets the actions in this controller to be registered with no prefix
-# so they function identically to actions created in WormBase.pm
+# so they function identically to actions created in App.pm
 __PACKAGE__->config->{namespace} = '';
 
 =head1 NAME
 
-WormBase::Web::Controller::Root - Root Controller for WormBase
+App::Web::Controller::Root - Root Controller for App
 
 =head1 DESCRIPTION
 
-Root level controller actions for the WormBase web application.
+Root level controller actions for the App web application.
 
 =head1 METHODS
 
@@ -107,7 +107,7 @@ sub draw :Path("/draw") Args(1) {
 							uuid       => $uuid });
         unless($cached_img){ # not cached -- make new image and cache
             # the following line is a security risk
-            my $source = $c->model('WormBaseAPI')->pre_compile->{$params->{class}}
+            my $source = $c->model('AppAPI')->pre_compile->{$params->{class}}
                        . "/".$params->{id} . "." . $format;
             $c->log->debug("Attempt to draw image: $source");
 
@@ -129,7 +129,7 @@ sub draw :Path("/draw") Args(1) {
         $cached_img = $c->flash->{gd};
     }
     $c->stash(gd_image=>$cached_img);
-    $c->detach('WormBase::Web::View::Graphics');
+    $c->detach('App::Web::View::Graphics');
 }
 
 sub issue_rss {
@@ -195,9 +195,9 @@ sub field :Path("/field") Args(3) {
     $c->stash->{noboiler} = 1;
  
     # Fetch our external model
-    my $api = $c->model('WormBaseAPI');
+    my $api = $c->model('AppAPI');
     # Fetch the object from our driver	 
-    $c->log->debug("WormBaseAPI model is $api " . ref($api));
+    $c->log->debug("AppAPI model is $api " . ref($api));
     $c->log->debug("The requested class is " . ucfirst($class));
     $c->log->debug("The request is " . $name);
     
@@ -238,7 +238,7 @@ sub field :Path("/field") Args(3) {
     
     # My end action isn't working... 
     # TH 2010.07.02: no longer necessary but still testing
-    # $c->forward('WormBase::Web::View::TT');
+    # $c->forward('App::Web::View::TT');
 };
 
 =pod
@@ -259,10 +259,10 @@ sub widget :Path("/widget") Args(3) {
     $c->stash->{class}  = $class;
     
     # Fetch our external model
-    my $api = $c->model('WormBaseAPI');
+    my $api = $c->model('AppAPI');
 
     # Fetch the object from our driver	 
-    $c->log->debug("WormBaseAPI model is $api " . ref($api));
+    $c->log->debug("AppAPI model is $api " . ref($api));
     $c->log->debug("The requested class is " . ucfirst($class));
     $c->log->debug("The request is " . $name);
     
@@ -327,7 +327,7 @@ sub widget :Path("/widget") Args(3) {
 
     # My end action isn't working... 
     # TH 2010.07.02: no longer necessary but still testing
-    # $c->forward('WormBase::Web::View::TT');
+    # $c->forward('App::Web::View::TT');
 };
 
 
@@ -368,7 +368,7 @@ sub widget :Path("/widget") Args(3) {
 #     $c->stash->{view} = $c->request->query_parameters->{view};
 #     
 #     # Instantiate our external model directly (see below for alternate)
-#     my $api = $c->model('WormBaseAPI');
+#     my $api = $c->model('AppAPI');
 #     
 #     # TODO
 #     # I may not want to actually fetch an object.
@@ -438,7 +438,7 @@ sub widget :Path("/widget") Args(3) {
 #     $c->stash->{class} = $class;
 #     $c->log->debug($name);
 #     
-#     my $api = $c->model('WormBaseAPI');
+#     my $api = $c->model('AppAPI');
 #     my $object = $api->fetch({class=> ucfirst($class),
 #                   name => $name}) || $self->error_custom($c, 500, "can't connect to database");
 #      
@@ -476,7 +476,7 @@ sub register_basic_search {
 	
 	$c->stash->{template} = "search/basic.tt2";
 	$c->stash->{page}     = $page;   # maybe key should be class instead?
-	$c->forward('WormBase::Web::View::TT');
+	$c->forward('App::Web::View::TT');
     };
     
     my $basic_search_action = $self->create_action(
@@ -489,7 +489,7 @@ sub register_basic_search {
 	},
 	namespace => $page,
 	code      => \&$basic_search_code,
-	class     => 'WormBase::Web::Controller::' . ucfirst($page),
+	class     => 'App::Web::Controller::' . ucfirst($page),
 	);
     $c->dispatcher->register( $c, $basic_search_action ) or warn "Couldn't register basic search action for $page: $!";	
 }
@@ -543,7 +543,7 @@ sub end : ActionClass('RenderView') {
   if($path =~ /\.html/){
 	$c->serve_static_file($c->path_to("root/static/$path"));
   } else{
-  	$c->forward('WormBase::Web::View::TT') unless ($c->req->path =~ /cgi-bin|cgibin/i || $c->action->name eq 'draw');
+  	$c->forward('App::Web::View::TT') unless ($c->req->path =~ /cgi-bin|cgibin/i || $c->action->name eq 'draw');
  }
 
   # 404 errors will be caught in default.
