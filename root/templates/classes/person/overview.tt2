@@ -1,0 +1,58 @@
+[%
+
+'<h2 style="float:left">' _ fields.name.data.label; 
+'</h2>';
+
+WRAPPER highlight_box;
+
+   WRAPPER $field_block title="Email";
+        fields.email.data.join("<br>");
+   END;
+
+   # WRAPPER $field_block title="Lab Phone"; 
+       # fields.lab_phone.data;
+   # END;
+
+   # WRAPPER $field_block title="Office Phone";
+       # fields.office_phone.data.join("<br>");
+   # END; 
+            
+   # WRAPPER $field_block title="Fax";
+          # fields.fax.data;
+   # END;
+
+   WRAPPER $field_block title="WormBase ID";
+         fields.name.data.id;
+   END;
+
+END;
+
+
+
+
+'<div class="text-width" style="clear:left;padding:0.5em 0;">';
+   fields.street_address.data.join('<br>');
+   TRY; IF fields.country.data; "<br>" ; fields.country.data; END; END;
+'</div>';
+
+extended_social_links(fields.name.data.id);
+
+WRAPPER $field_block title="Institution" key="institution";
+    fields.institution.data;
+END;
+      
+WRAPPER $field_block title="Web Page" key="web_page";
+    '<a href="http://' _ fields.web_page.data _ '">' _ fields.web_page.data _ '</a><br>';
+END;
+
+WRAPPER $field_block title="Updates";
+    '<a target="_blank" href="http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/person_lineage.cgi?action=Display&number=' _ object.name.data.id _ '">';
+    'Add or update</a> your information in our lineage of <i>C. elegans</i> scientists.<br />';
+    '<a target="_blank" href="http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/person.cgi?action=Display&number='
+     _  object.name.data.id _ '">';
+     'Add or update</a> your contact information.';
+END;
+
+
+
+%]

@@ -1,0 +1,6 @@
+<script>
+   loadWikiContent('Citing_WormBase');
+</script>
+<div id="test-wiki-content"></div>
+
+<a href="Updating_The_Development_Server" class="wiki-help">help</a>

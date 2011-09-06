@@ -1,0 +1,29 @@
+[% 
+
+# Oftentimes this is an empty widget.
+check_for_empty_widget(['supervised','supervised_by','worked_with']);
+  
+WRAPPER $field_block title="Supervised" key="supervised";
+      build_data_table(
+                    key="supervised",
+                    columns={'name'=>'Name','level'=>'Position','duration'=>'Period'},
+		    order=['name','level','duration']);
+END;
+
+
+WRAPPER $field_block title="Supervised By" key="supervised_by";
+    build_data_table(
+                    key="supervised_by",
+                    columns={'name'=>'Name','level'=>'Position','duration'=>'Period'},
+		    order=['name','level','duration']);
+END;
+
+
+WRAPPER $field_block title="Worked With" key="worked_with";
+   build_data_table(
+                    key="worked_with",
+                    columns={'name'=>'Name','level'=>'Position','duration'=>'Period'},
+		    order=['name','level','duration']);
+END;
+
+%]

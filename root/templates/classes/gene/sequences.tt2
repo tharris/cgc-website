@@ -1,0 +1,80 @@
+[% 
+
+IF fields.gene_models.data;
+
+#   WRAPPER $field_block title=pluralized("Gene model", fields.gene_models.data) key="gene_models";
+
+        rows = [];
+        remarks_seen = {};
+        ordered_footnotes = [];
+
+	# Take apart the data structure JUST to add in the footnotes!
+	# This is really ineffecient.
+        FOREACH r IN fields.gene_models.data;
+
+            # Calculate footnotes for this gene model.
+            footnotes = [];
+	    FOREACH remark IN r.remarks;
+               # Seen it?
+               UNLESS remarks_seen.exists(remark);
+                  remarks_seen.$remark = remarks_seen.size + 1;
+                  ordered_footnotes.push(remark);
+               END;                   
+
+               # Save the footnote number for this model.
+               footnotes.push(remarks_seen.$remark);
+
+            END;
+
+            # now construct the model string, appending footnotes. Jesus.
+            model = r.model;
+            model.class = 'Sequence';
+            r.model = tag2link(model) _ "<span class=\"superscript\">" _ footnotes.join(',') _ "</span>";
+            rows.push(r);
+
+        END;
+
+        build_data_table( order = ['model','status','length_spliced','length_unspliced','protein','length_protein'],
+                          columns = { model => 'Gene Model',
+                                      status => 'Status',
+                                      length_spliced   => 'Length (spliced)',
+                                      length_unspliced => 'Length (unspliced)',
+                                      protein => 'Protein',
+                                      length_protein => 'Amino Acids'},
+                          passed_data = rows,
+                          key = 'gene_models_constructed' );
+
+
+      # Dump out the (ordered) footnotes.
+      '<div class="toggle">Footnotes</div>';
+      '<div class="returned">';
+      FOREACH remark IN ordered_footnotes;
+          '<div style="margin:5px">';
+              '<span class="superscript">' _ loop.count _ '</span>';
+                  remark;
+           '</div>';
+       END;
+      '</div>';
+
+#   END;
+
+ELSE;
+
+    '<div class="caveat-emptor">This gene has not been cloned or placed on the physical map; no sequence information exists.</div>';
+
+END;
+
+
+
+
+
+# TH: Disabled 2011.08.17; Safe to delete after 2011.10.17
+# WRAPPER $field_block title="Other sequences" key="other_sequences";
+#     build_data_table(order=['sequence','description'],
+#                      columns={ sequence    => 'Sequence',
+#		                description => 'Description',
+#                              },
+#                      key='other_sequences');
+#END;
+
+%]

@@ -1,0 +1,15 @@
+<a class="bench-update" 
+    wbid="[% c.stash.star.wbid %]" 
+    href="/rest/workbench" 
+    name="[% c.stash.star.name %]" 
+    objclass="[% c.stash.star.class %]" 
+    is_obj="[% c.stash.star.is_obj %]" 
+    url="[% c.stash.star.url | uri %]">
+<div id="save" class="ui-icon ui-icon-stars
+[% IF c.stash.star.value == 1 %]
+  ui-icon-star-yellow"
+[% ELSE %]
+  ui-icon-star-gray"
+[% END %]
+></div>
+</a>   

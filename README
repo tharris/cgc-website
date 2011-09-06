@@ -32,6 +32,6 @@ to override the default cgc.conf file.
 Running the application via Starman
 -----------------------------------
 
- > ./bin/starman-tharris.sh
+ > script/cgc-init.sh
 
 Todd Harris (todd@hiline.co)

@@ -1,0 +1,23 @@
+[%
+
+WRAPPER $field_block title="Current Members" key="current_members";
+
+   build_data_table(order=['name','level','start_date','end_date'],
+                    columns={ name   => 'Name',
+		              level  => 'Position',
+			      start_date => 'Start',
+			      end_date => 'End' },
+                    key='current_members');
+END; 
+
+WRAPPER $field_block title="Former Members" key="former_members";
+   build_data_table(order=['name','level','start_date','end_date'],
+                    columns={ name   => 'Name',
+		              level  => 'Position',
+			      start_date => 'Start',
+			      end_date => 'End' },
+                    key='former_members');
+
+END;
+
+%]

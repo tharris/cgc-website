@@ -1,0 +1,29 @@
+[%
+
+   WRAPPER $field_block title="Transgenes associated with this phenotype" key="transgene";	
+       build_data_table (
+		order = [ 
+			'transgene',
+			'species'
+			],
+		columns = {				 		
+			transgene => 'Transgene',
+			species => 'Species'
+			},
+		key = 'transgene');
+   END;
+
+   WRAPPER $field_block title="Transgenes NOT associated with this phenotype" key="transgene_not";
+	build_data_table (
+		order = [ 
+                         'transgene',
+			 'species'
+			],
+		columns = {				 		
+			transgene => 'Transgene',
+			species => 'Species'
+			},
+		key = 'transgene_not');
+    END;
+
+%]

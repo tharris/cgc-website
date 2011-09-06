@@ -1,0 +1,39 @@
+<h2>[% fields.historical_name.data %]</h2>
+
+[% 
+
+WRAPPER highlight_box;
+  
+   WRAPPER $field_block title="Experiment" key="name";
+        fields.historical_name.data;
+   END;  
+
+   taxonomy;
+
+   WRAPPER $field_block title="WormBase ID"; 
+             fields.name.data.id;
+   END;     
+
+END;
+
+WRAPPER $field_block title="Historical Name" key="historical_name";
+        fields.historical_name.data;
+END;  
+
+laboratory;
+
+
+# Targets
+WRAPPER $field_block title="Gene targets" key="targets";
+        build_data_table(order=['target_type','gene'],
+                         columns={ target_type       => 'Target Priority',
+	   	                  gene              => 'Gene',
+                               },
+                         key='targets');
+END;
+
+
+remarks;
+
+	 
+%]

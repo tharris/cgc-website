@@ -1,0 +1,14 @@
+[%# Note that the genomic environs image needs to be linked to the correct browser 
+
+  #  return a({-href=>$db eq $BRIGGFF ?  "/db/seq/gbrowse?source=briggsae;name=$absref:$start..$stop"
+  #  	    : HunterUrl($absref,$start,$stop)},$img);
+
+%]
+
+[% SET title="Genomic Environs" %]
+
+[% WRAPPER "boilerplate/field" -%]
+      [%- genomic_environs.img -%]
+[% END %]
+
+

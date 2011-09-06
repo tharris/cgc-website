@@ -1,0 +1,13 @@
+[% 
+
+   IF fields.refers_to.data.size == 0;
+      '<p style="margin:1em">No items related to this paper</p>';
+   ELSE;
+       FOREACH reftype IN fields.refers_to.data.keys.sort;
+          WRAPPER $field_block title=pluralize(reftype.replace('_',' '),fields.refers_to.data.$reftype.size);
+   	       link_objects(fields.refers_to.data.$reftype);
+          END;
+       END;
+   END;
+
+%]

@@ -1,0 +1,1469 @@
+[%#
+####################################################
+#
+#  Widgets, Fields, Subfields
+#
+####################################################
+%]
+[% MACRO user_login_info BLOCK %]
+    [% UNLESS c.user_exists %]  
+          <div style="padding:0.5em">
+            You must <h3 style="display:inline"><a class='lightbox' href="[% c.uri_for('/login') %]" >Login</a></h3> to use this feature
+          </div>
+          <script>
+window.onload = function ()
+{
+          WB.getColorbox(function(){
+            $jq(".lightbox").colorbox();
+          });
+}
+
+          </script>
+    [% END %]
+
+[% END %]
+
+[% MACRO username(user) BLOCK %]
+[% IF user.username %]
+ [% IF user.username.length>20%][% user.username.substr(0,20) %][% ELSE %][% user.username %][% END %]
+[% ELSIF user %]
+ [% IF user.first_name.defined ; name = user.first_name FILTER ucfirst ; END;
+    IF user.last_name.defined; lastname= user.last_name FILTER ucfirst; name = name _ ' ' _ lastname  ; END; %] 
+[% IF name.defined %][% name %][% ELSE %]Anonymous[% END %] 
+[%- END %]
+[%- END %]
+
+[% MACRO linkUser(user,suppress_social) BLOCK;
+    IF (user.wbid && user.wb_link_confirm);
+       text2link('person', user.wbid, user.username);
+    ELSIF user.username;
+       user.username;
+    ELSE;
+      '<span id="fade"><i>[user deleted]</i></span>';
+    END;
+
+#    IF c.user.twitter && !suppress_social;
+#           '&nbsp;&nbsp;<a href="http://twitter.com/' _ c.user.twitter 
+#                                  _ '" class="twitter-follow-button" data-show-count="true">Follow @' 
+#				  _ c.user.twitter 
+#				  _ '</a>'
+#				  _ '<script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>';
+#
+#    END;
+  END;
+%]
+
+
+
+[% MACRO extended_social_links BLOCK;
+
+      IF c.user.open_ids;
+         FOREACH id IN c.user.open_ids;	 
+	    IF id.provider == 'twitter';
+              '&nbsp;&nbsp;<a href="http://twitter.com/' _ id.screen_name
+                                    _ '" class="twitter-follow-button" data-show-count="true">Follow @' 
+	     			    _ id.screen_name
+				    _ '</a>'
+				    _ '<script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>';
+             END;
+         END;
+      END;
+END;
+%]
+
+
+[% MACRO linkPage(page) BLOCK %]
+    [% label = page.title %]
+    [% UNLESS label; label = page.url; END; %]
+    [% IF page.is_obj %]
+      [% array=page.url.split('/') %]
+      [% text2link(array.slice(-2,-2).0, array.last, label, label, array.slice(-3,-3).0) %]
+    [% ELSE %]
+      <a href="[% page.url %]">[% label %]</a>
+    [% END %]
+[% END %]
+ 
+[% MACRO issue_table(issues, issue_type) BLOCK %]
+[% IF issues %]
+  [% USE time_dir = Time.Duration %]
+
+<!-- Eventually provide a filter of results 
+  <p>
+  <h4>Filter (not wired yet)</h4>
+
+    State:
+    <select id="issue_status">
+    <option value="" selected="selected">---------------</option>
+    <option value="new">new</option>
+    <option value="open">open</option>
+    <option value="resolved">resolved</option>
+    <option value="hold">hold</option>
+    <option value="duplicated">duplicated</option>
+    </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+    Severity:
+    <select id="issue_severity">
+    <option value="" selected="selected">---------------</option>
+    <option value="critical">critical</option>
+    <option value="severe">severe</option>
+    <option value="normal">normal</option>
+    <option value="trivial">trivial</option>
+    </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+    Responsible:
+    <select id="issue_assigned_to">
+    <option value="" selected="selected">------------------</option>
+    [% FOREACH p IN curators %]
+      <option value="[% p.id %]">[% username(p) %]</option>
+    [% END %]
+    </select>
+  </p>
+ -->
+
+  <table border="0" cellspacing="0" width="100%" class="issue-table">
+    <tr align=left>
+      <th>#</th>
+      <th>Title</th>
+      <th>State</th>
+      <th>Severity</th>
+      [% UNLESS (issue_type == 'page') %]<th>Page</th>[% END %]
+      <th>Date</th> 
+      <th>Reported by</th>
+      <th>Responsible</th>
+      [% IF c.check_user_roles('admin') %]
+        <th><button class="issue-delete" onClick="WB.issue.isDelete($jq(this));return false;" rel="[% c.uri_for('/rest','feed','issue') %]">Delete</button></th>
+      [% END %]
+    </tr>
+    [% even = 1 %]
+    [% FOREACH IS IN issues %]
+
+      [% IF IS.is_private; 
+         UNLESS (c.check_any_user_role('admin', 'curator') || (c.user.user_id == IS.reporter.user_id)); NEXT ; END;
+      END;
+      %]
+
+
+      [% url = c.uri_for(c.controller('tool').action_for('issue'),IS.id) %]
+      <tr 
+        [% IF (even == 1); 
+	     myclass='r0';
+	     even=0;
+	   ELSE;
+	      myclass='r1';
+	      even=1;
+	   END;	   
+        %]
+	class="[% myclass %] [% IS.severity %] [% IS.state %]">
+
+        <td><a href="[% url %]">[% IS.id %]</a></td>
+        <td><a href="[% c.uri_for(c.controller('tool').action_for('issue'),IS.id) %]">[% IS.title %]</a>
+        [% IF IS.is_private ; ' <em>reported privately</em>' ; END %]</td>
+        <td>[% IS.state %]</td>
+        <td>[% IS.severity %]</td>
+        [% UNLESS (issue_type == 'page') %]<td>[% linkPage(IS.page) %]</td>[% END %]
+        <td>[% time_dir.ago(current_time - IS.timestamp, 1)  %]</td>  
+        <td>[% IF IS.reporter_id; linkUser(IS.reporter); END %]</td>
+        <td>[% IF IS.responsible_id; linkUser(IS.responsible); END %]</td>
+        [% IF c.check_user_roles('admin') %]<td><input type='checkbox' class="issue-deletebox" name="[% IS.id %]" /></td>[% END %]
+      </tr>
+    [% END %]
+  </table>
+  [% ELSE %]
+   <span id="fade">No issues have been reported.</span>
+  [% END %]
+[% END %]
+
+[% BLOCK timer %]
+  [% IF c.check_user_roles('admin') || c.config.timer %]
+    <div class="ui-state-highlight ui-corner-all" style="position:absolute; left:30%; top:0.6em;">
+    <span class="ui-icon ui-icon-clock" style="float: left; margin-right: .3em;"></span>
+    [% FILTER format('%5f') %][% c.stats.elapsed %][% END %] s [% server_details("") %]
+      [% cache %] 
+     
+    </div>
+  [% END %]
+[% END %]
+
+
+[%# The Floating Box on the overview widget %]
+[% BLOCK highlight_box %]
+    <div class="detail-box ui-corner-all">
+       [% content %]
+    </div>
+[% END %] 
+
+[% #get page info %]
+[% BLOCK page_info %]
+  [% path = c.req.path %]
+  [% url = c.req.uri.path %]
+
+  [% label = c.req.path %]
+  [% IF (c.action.name == 'index'); label = 'home'; 
+    ELSIF c.action.name.match('me'); label = 'my wormbase'; 
+    END; %]
+  [% is_obj = object.defined %]
+  [% IF object; label = object.name.data.label; END; %]
+[% END %]
+
+[%# options:
+   print="always" to print the field even if there is no data 
+%]
+
+[% BLOCK field_block %]
+
+    <div class="field
+
+    [%# Add a class to disable / hide empty fields %]
+    [% TRY; IF (key && !fields.$key.data.defined) || disabled; " disabled "; END; END;%]
+
+" id="[% title FILTER html %]">
+         <div class="field-title">
+
+              [%# Is there a description? Set it as a tool tip %]
+               [% IF tooltip OR fields.$key.description %]
+                  <span title="[% tooltip ? tooltip : fields.$key.description %]">
+                     [% IF title ; title _ ': '; END; %]
+                   </span>
+              [% ELSE %]
+                  [% IF title ; title _ ': '; END; %]
+              [% END %]
+
+          </div>
+
+          <div class="field-content">
+             [% content %]
+          </div>
+     </div>
+[% END %]
+
+[% BLOCK subfield_block %]
+    <div class="subfield" id="[% title FILTER html %]">
+         <div class="subfield-title">
+
+              [%# Is there a description? Set it as a tool tip %]
+               [% IF fields.$key.description %]
+                <a title="[% fields.$key.description %]">
+                 [% title %]:
+                 </a>
+              [% ELSE %]
+                  [% title %]:
+              [% END %]
+
+          </div>
+
+          <div class="subfield-content">
+             [% content %]
+          </div>
+     </div>
+[% END %]
+
+
+[% BLOCK curator_block %]
+     [% # Curator (and sometimes admin) specific content) %]
+
+    <div class="field-curator" id="[% title FILTER html %]">
+         <div class="field-title">
+                  [% IF title ; title _ ': '; END; %]
+         </div>
+
+         <div class="field-content">
+             [% content %]
+          </div>
+     </div>
+[% END %]
+
+
+
+
+[% MACRO check_for_empty_widget(keys) BLOCK;
+    data_exists = 0;
+    FOREACH key IN keys;
+       IF fields.$key.data;
+           data_exists = 1;
+	   LAST;
+       END;
+    END;
+
+    UNLESS data_exists;
+        '<div class="caveat-emptor">No additional data available.</div>';
+    END;
+  END;
+%]
+
+[%#
+
+    Build a JQuery dataTable.
+    Parameters:
+        order  : array of columns
+        columns: hash ref associating columns to labels
+        key    : data key for accessing the stash        
+        passed_data : in lieu of passing a key for accessing data,
+                      pass in pre-structured data as passed_data;
+                      useful in cases when you want to change the processing heuristic.
+
+   Note: build_data_table is no longer wrapped in a field BLOCK. This was too
+   restrictive for formatting, for example, in cases where it was
+   necessary to include multiple tables in a single field.
+%]
+
+[% MACRO build_data_table BLOCK;
+
+    # declare rows array
+        local_rows = [];
+
+    # loop through each element in <subroutine>.<return_data_key>.<... to array data> array
+        # (or through data passed in that may have been built by the caller)
+        local_data = passed_data ? passed_data : fields.$key.data;
+
+    FOREACH r IN local_data;
+        row = [];
+            
+        # loop through each element in order array (for columns) , declared above
+        FOREACH o IN order;         
+            # get value (val) from the row r
+                    val = r.$o;
+            IF val.match('^http');
+                 val='<a href="' _ val _ '">Lab link</a>';
+                        END;
+            
+            # enter data in row
+                    row.push(val);
+        END;
+                
+        # enter data row array into rows
+        local_rows.push(row);
+      END;
+              
+      # populate name array;
+      headers = [];
+      FOREACH o IN order; headers.push(columns.$o); END;
+      
+      # generate table
+      jquery_data_table_html(headers, local_rows, "table_${key}_by");   
+
+    END; # END of MACRO
+%]
+
+[%# jquery_data_table_html:
+
+     This is Xq's original jquery data implementation with some
+     sugar added to make it configurable.
+     
+     It might be better to build the table directly from the data
+     structure instead of formatting it into a html table and then
+     styling via javascript.
+%]
+     
+[% MACRO jquery_data_table_html(table_headers,rows,table_name,style) BLOCK %]
+
+  [% IF rows && rows.size > 0;  
+       # Set up some suitable defaults
+       IF rows.size < 11;
+          paginate        = 'false';
+          pagination_type = 'false';
+      	  length          = 'false';
+      	  lengthMenu      = 'false';
+          filter          = 'false';
+          info            = 'false';
+       ELSIF rows.size < 51;
+          paginate        = 'false';
+          pagination_type = 'false';
+      	  length          = 'false';
+      	  lengthMenu      = 'false';
+      	  filter          = 'true';
+          info            = 'false';
+       ELSE;
+          paginate        = 'true';
+          pagination_type = 'full_numbers';
+      	  length          = 'true';
+          lengthMenu      = '[[50, 100, 150, -1], [50, 100, 200, "All"]]';
+          filter          = 'true';
+      	  info            = 'true'; 
+      END;
+
+   %]
+
+
+    <script type="text/javascript" >
+    $jq(document).ready(function() {
+        WB.getDataTables(function(){
+     $jq('#[% table_name %]').dataTable({
+                "bPaginate"        : [% paginate %],
+        "bLengthChange"    : [% length   %],
+//                "bJQueryUI"        : true,
+                "sPaginationType"  : "[% pagination_type %]",
+        "bFilter"          : [% filter %],      
+        "bInfo"            : [% info %],
+                [% style %]
+    } );});
+      } );
+    </script>
+
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" class="display" id="[% table_name %]">
+    <thead>
+        <tr>
+            [% FOREACH header IN table_headers %]  
+            <th>[% header %]</th>
+            [% END %]
+        </tr>
+    </thead>
+    <tbody>
+        [% 
+                FOREACH row IN rows;
+           '<tr>';
+                   FOREACH cell IN row;
+              '<td>'; 
+                      IF cell.species.defined;
+                          '<span class="species">' _ cell.genus.chunk(1).0 _ '.' _ cell.species _ '</span>';
+                      ELSIF cell.class.defined;
+                          tag2link(cell);
+                  ELSIF cell.match('ARRAY');
+                  cell.join('<br>');
+              ELSIF cell.evidence.check.defined;
+              'here';
+                          '<a class="tooltip" href="#" title="evidence" rel="/rest/evidence/gene/'
+              _ obj.name.data.id 
+              _ '/'
+              _ cell.evidence.tag
+              _ '/'
+              _ cell.evidence.index 
+              _ '/'
+              _ cell.evidence.right
+              _ '"></a>';             
+                      ELSE;
+                  cell;
+                      END;
+              '</td>';
+           END;
+           '</tr>';
+           END;
+             %]
+    </tbody>
+
+    <tfoot>
+        <tr>
+             [% FOREACH header IN table_headers %]  
+                       <th>[% header %]</th>
+             [% END %]
+        </tr>
+    </tfoot>
+
+      </table>
+   [% END %] 
+
+[% END %] 
+
+
+
+
+
+
+[%# We SHOULD be able to build data tables from arrays which would be faster
+     than taking a data strucutre from the db, building a second data structure,
+     dumping to a table and then styling it.      
+%]
+
+[% MACRO dataTable_list(header,data,table,style) BLOCK %]
+  The dataTable_list macro is nearly deprecated.  See instead:
+  build_data_table() and jquery_data_table_html(). -- TH
+
+  [% IF data && data.size > 0;  
+       # Set up some suitable defaults
+       IF data.size < 11;
+          paginate        = 'false';
+          pagination_type = 'false';
+          length          = 'false';
+          lengthMenu      = 'false';
+          filter          = 'false';
+          info            = 'false';
+       ELSIF data.size < 51;
+          paginate        = 'false';
+          pagination_type = 'false';
+      	  length          = 'false';
+      	  lengthMenu      = 'false';
+      	  filter          = 'true';
+          info            = 'false';
+       ELSE;
+          paginate        = 'true';
+          pagination_type = 'full_numbers';
+      	  length          = 'true';
+          lengthMenu      = '[[50, 100, 150, -1], [50, 100, 200, "All"]]';
+          filter          = 'true';
+      	  info            = 'true'; 
+      END;
+
+   %]
+
+
+    <script type="text/javascript" >
+    $jq(document).ready(function() {
+        $jq('#[% table %]').dataTable({
+                "bPaginate"        : [% paginate %],
+        "bLengthChange"    : [% length   %],
+//                "bJQueryUI"        : true,
+                "sPaginationType"  : "[% pagination_type %]",
+        "bFilter"          : [% filter %],      
+        "bInfo"            : [% info %],
+                [% style %]
+    } );
+      } );
+    </script>
+    <table cellpadding="0" cellspacing="0" border="0" class="display" id="[% table %]">
+    <thead>
+        <tr>
+            [% FOREACH item IN header %]  
+            <th>[% item %]</th>
+            [% END %]
+        </tr>
+    </thead>
+    <tbody>
+        [% FOREACH row IN data %]
+        <tr>
+              [% FOREACH item IN row %]   
+              <td> 
+                [% IF item.species.defined %]
+                  <span class="species">[% item.genus.chunk(1).0 %]. [% item.species %]</span>
+                [% ELSIF item.class.defined %]
+                  [% tag2link(item) %]
+                [% ELSE %][% item %]
+                [% END %]
+              </td>
+              [% END %]
+        </tr>
+        [% END %]
+    </tbody>
+
+    <tfoot>
+        <tr>
+             [% FOREACH item IN header %]  
+            <th>[% item %]</th>
+            [% END %]
+        </tr>
+    </tfoot>
+
+      </table>
+   [% END %] 
+
+[% END %] 
+
+[% MACRO short_list(objects) BLOCK %]
+
+   [% FOREACH row IN objects.list %]    
+       [% FOREACH item IN row %]
+     [% IF item.class.defined %]
+                [% tag2link(item) %]
+               [% ELSE %][% item %]
+    [% END %]
+      [% UNLESS loop.last %];[% END %]
+      [% END %]
+      [% UNLESS loop.last %]<br>[% END %]
+   [% END %]           
+
+    
+
+[% END %]
+
+[% 
+  # For dsiplaying a list of objects in a field
+  # Should probably be expanded to included some actual formatting,
+  # What to do if there are too many objects, etc
+%]
+[% MACRO object_list(objects) BLOCK %]
+
+            [% FOREACH object IN objects.keys %]
+             [%- tag2link(objects.$object) -%]
+                     [%- UNLESS loop.last -%], [% END %]
+            [% END %]
+[% END %]
+
+
+[% BLOCK status_bar %]
+<div style="float:right;padding:1em;"> | 
+<button id="my-cart"></button> <a href="/bench">([% c.user_session.bench.register.size %])</a>
+</div>
+[% END %]
+
+[% BLOCK links_block %]
+  [% FOREACH link IN external_links.data.keys %]
+    [% IF link == 'aceview' %]
+      <li>[% external_link(link,'AceView', external_links.data.$link) %]</li>
+    [% ELSIF link == 'ncbi_refseq'%]
+      [% FOREACH ref_link IN external_links.data.$link %]
+      <li>[% external_link(link, "NCBI<span id=\"fade\"> - " _ ref_link _ "</span>", ref_link) %]</li>
+      [% END %]
+    [% END %]
+  [% END %]
+[% END %]
+
+
+[% BLOCK widget_sortable_block %]
+ 
+   <!-- start [% id %] widget -->
+          <div id="widget-[% type %]" class="widget-container ui-corner-all">
+                <header> 
+                <div class="ui-corner-top widget-header">
+                    <div class="module-close" wname="[% id %]" title="close"></div>
+[% IF 0 %]                     <div class="module-max" wname="[% id %]" title="pop out"></div>
+[% END %]              
+                    <h3><div class="module-min" wname="[% id %]"></div><span class="widget-title">[% title %]</span>
+        [% IF (type == 'me') %]<span wname="[% id %]" class="reload ui-icon ui-icon-arrowrefresh-1-s" title="reload"></span>[% END %]
+                        <span class="ui-icon ui-icon-arrow-4 hide" title="move"></span>
+                    </h3>
+                </div>
+                </header>
+
+                <div id="[%- id -%]-content" class="content">
+                [% content %]
+                </div>
+         
+                <div id="widget-footer">
+[%# UNLESS c.req.action == '/' %]
+[% UNLESS type.match('(tool)|(me)') %]
+                    <a  tip="download" onClick='$jq(this).toggleClass("ui-state-highlight");' class="button tip-simple tr feed ui-corner-all"  rel="[% c.uri_for('/rest','feed','download',class,this_object_id,w.id,this_object_label) %]"><span class="ui-icon ui-icon-arrowthickstop-1-s ui-button"></span></a>
+[% END %] 
+[% IF id.match('(static-widget)') && (id != 'static-widget--1')  %]
+    [% IF c.check_any_user_role("admin", "curator") %]
+                    <a  tip="edit" id="edit-button"  onClick='WB.StaticWidgets.edit("[% id %]");' class="button tip-simple tr ui-corner-all"><span class="ui-icon ui-icon-pencil ui-button"></span></a>
+    [% END %]
+                    <a  tip="view history" id="history-button" onClick='WB.StaticWidgets.history("[% id %]");' class="button tip-simple tr ui-corner-all"><span class="ui-icon ui-icon-clock ui-button"></span></a>
+[% END %]
+                    
+
+                </div>
+        <div id="widget-feed"></div>  
+
+      </div> 
+   <!-- end [% id %] widget -->
+
+[% END %]
+
+
+[%#
+ #####################################################
+ #
+ #  Server Details: the server that generated the 
+ #  block of code. Mostly useful for debugging. 
+ #  
+ ####################################################
+%]
+[% MACRO server_details(title) PERL %]
+      my $host = `hostname`;
+      chomp $host;
+#     print "\n\n<!-- [% title %] generated by: $host -->\n\n\n\n\n";
+      print "Generated by: $host";
+[% END %]
+
+
+
+
+
+[%#
+####################################################
+#
+#  GA
+#
+####################################################
+%]
+[% BLOCK google_analytics %]
+   <!-- GA -->
+
+
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-16257183-1']);
+  _gaq.push(['_setDomainName', '.wormbase.org']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+
+[% END %]
+
+[%#
+ #####################################################
+ #
+ #  ShareThis
+ #
+ ####################################################
+%]
+[% BLOCK share_this %]
+   <!-- ShareThis. Or not. -->
+
+   <script type="text/javascript"
+   src="http://w.sharethis.com/widget/?tabs=web%2Cpost%2Cemail&amp;charset=utf-8&amp;services=reddit%2Cdigg%2Cfacebook%2Cmyspace%2Cdelicious%2Cstumbleupon%2Ctechnorati%2Cgoogle_bmarks%2Cyahoo_bmarks%2Cslashdot&amp;style=default&amp;publisher=7ab86fe8-5972-4c0c-b8d5-e8a0240bc09d&amp;popup=true">
+   </script>
+[% END %]
+
+
+
+[%
+ ####################################################
+ #
+ #  COMMENTS
+ #
+ ####################################################
+%]
+[% BLOCK disqus_comments %]
+<!-- Commenting powered by Disqus -->
+<script type="text/javascript">
+//<![CDATA[
+(function() {
+    var links = document.getElementsByTagName('a');
+    var query = '?';
+    for(var i = 0; i < links.length; i++) {
+        if(links[i].href.indexOf('#disqus_thread') >= 0) {
+            query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+        }
+    }
+    document.write('<script type="text/javascript" src="http://disqus.com/forums/wormbase/get_num_replies.js' + query + '"></' + 'script>');
+})();
+//]]>
+</script>
+[% END %]
+
+
+
+[% BLOCK suggestions2wormbase %]
+<!-- Suggestion Box -->
+<div class="feedback">
+   <h2>Suggestion Box</h2>
+   <form method="post" action="/db/misc/submit_feedback" enctype="application/x-www-form-urlencoded">
+     We greatly value your feedback.  If you have found
+     something incorrect, broken, or frustrating on this page,
+     let us know so that we can improve the quality of
+     annotation and the ease with which it is available.
+     <br /><br />
+
+     <b>Comments, questions, or feedback:</b>
+     <div class="indent">
+         <table border="0">
+             <tr>
+               <td colspan="3">
+                  <span class="smalldescription">
+                         Supplying your contact information
+             is optional.  Doing so will enable us
+                 to contact you for further details
+                 and to let you know when your
+                 suggestions have been addressed.
+                 </span>
+               </td>
+             </tr>
+        
+             <tr>
+                <td rowspan="4">
+                   <textarea name="comments" rows="7" cols="60" maxlength="10" style="width:95%"></textarea>
+                </td>
+                <td>Category<i>(optional)</i>: </td>
+                <td>
+                    <select name="suggestions">
+                      <option value="general_comment">General comment</option>
+              <option value="annotations_incorrect">Annotations are incorrect</option>
+              <option value="annotations_incomplete">Annotations are incomplete</option>
+              <option value="speed">The page takes too long to load</option>
+              <option value="bug">The page has a software bug in it</option>
+              <option value="requested_feature">Request for a new feature</option>
+            </select>
+               </td>
+            </tr>
+            <tr>
+               <td>Submitted by:</td>
+               <td>
+                  <input type="text" name="submitted_by"  size="50">
+               </td>
+            </tr>
+            <tr>
+               <td>Institution:</td>
+               <td><input type="text" name="institution"  size="50"></td></tr>
+        <tr>
+               <td>Email Address:</td>
+           <td><input type="text" name="submitted_email" size="50"></td>
+        </tr>
+        <tr>
+           <td colspan="2">&nbsp;</td>
+           <td align="right">
+               <input type="submit" name="Submit Comments" value="Submit Comments">
+           <input type="reset" name="Clear Form" value="Clear Form">
+           </td>
+            </tr>
+        </table>
+      </div>
+    </form>
+</div>
+[% END %]
+
+
+
+
+
+
+
+
+
+
+
+[%# is it necessary to link an object back to itself? %]
+[% MACRO name BLOCK;
+   WRAPPER $field_block title="Name" key="name";
+      tag2link(fields.name.data);
+   END;
+END;
+%]
+
+
+[% MACRO common_name GET name # an alias for name %]
+
+[% MACRO other_names BLOCK; 
+      WRAPPER $field_block title="Other names" key="other_names";
+           FOREACH name IN fields.other_names.data;
+              tag2link(name);
+              "<br /";
+           END;
+      END;
+END;
+%]
+
+[% MACRO best_blastp_matches BLOCK;
+
+   WRAPPER $field_block title="Best BLASTP matches" key="best_blastp_matches";
+
+      build_data_table(order=['taxonomy','hit','description','evalue','percent'],
+                              columns={ taxonomy => 'Species',
+                                hit      => 'Hit',
+                         description => 'Description',
+                        evalue   => 'BLAST e-value',
+                        percent  => '% Length' 
+                                 },
+                         key='best_blastp_matches');
+    END;
+
+   
+        WRAPPER $field_block title="";
+           '<div id="blast_details">';
+             '<a class="update blast_details"';
+              ' href="' _ c.uri_for('/rest','field','protein',object.name.data.id,'blast_details') _ '">';
+               '[View full BLASTP List]</a>';
+         '</div>';
+       END;
+
+
+END;
+%]
+
+
+
+[% MACRO expression_patterns BLOCK ;
+
+   WRAPPER $field_block title="Patterns" key="expression_patterns";
+
+       build_data_table(order=['expression_pattern','description','author'],
+                      columns={ expression_pattern => 'Pattern',
+                        description        => 'Description',
+                    author             => 'Author',
+                             },
+                    key='expression_patterns');
+    END;
+
+   END;
+%]
+
+
+[% MACRO genetic_position BLOCK ;
+     WRAPPER $field_block title="Genetic position";
+          IF fields.genetic_position.data.chromosome;
+            fields.genetic_position.data.formatted _ ' (' _ fields.genetic_position.data.method _ ')';
+
+#     fields.genetic_position.data.chromosome _ ': ' _ fields.genetic_position.data.position;
+#       IF fields.genetic_position.data.error;
+#          "+/-";
+#          fields.genetic_position.data.error;
+#       END;
+#    if ($position == 0) {
+#            $label = $link_group . sprintf(":%2.2f +/- %2.3f cM %s","0",$error) ;
+#        } else {
+#            $label = $link_group . ($position ? sprintf(":%2.2f +/- %2.3f cM %s",$position,$error): '');
+
+
+      ELSE;       
+         '<div class="caveat-emptor">This gene has not been placed on the genetic map or its coordinates are unknown.</div>';
+      END;
+
+    END;
+END;
+%]
+
+
+[% MACRO central_dogma BLOCK %]
+  
+  NOT DONE!
+  
+   <table border="1">
+      <tr><td colspan="4">Central Dogma</td></tr>
+
+      <tr>
+         <td rowspan="[% fields.central_dogma.data.gene_models.size + 1 %]">
+              [% tag2link(fields.central_dogma.data.gene) %]
+         </td>
+         <td>Transcript</td><td>Exons</td><td>Protein</td>
+      </tr>
+
+     [% FOREACH gene_model IN fields.central_dogma.data.gene_models %]
+      <tr>
+     <td>
+          [% tag2link(gene_model.cds) %]
+     </td>
+
+         <td>
+          <pre>
+          [% FOREACH exon IN gene_model.exons;
+                   'exon' _ loop.count _ ': ' _ exon.start _ '..' _ exon.stop  _ '<br />';
+               END;
+           %]
+           </pre>
+         </td>
+     
+     <td>
+          [% tag2link(gene_model.protein) %]
+     </td>
+      </tr>
+     [% END %]
+
+          </td>
+      </tr>
+</table>
+
+
+
+       <div class="inline-columns">
+          [% IF fields.central_dogma.data.gene %]
+           <div>
+              <b>Gene</b><br />
+              [%# FOREACH item IN fields.central_dogma.data.genes %]
+                 [% tag2link(gene) %]<br />
+              [%# END %]
+           </div>
+      [% END %]
+
+          [% IF fields.central_dogma.data.transcripts.size > 0 %]
+            <div>
+                 <img src="/img/arrows/right.gif">
+            </div>  
+            <div>
+                <b>Transcripts</b><br />
+                 [% FOREACH item IN fields.central_dogma.data.transcripts %]
+                   [% tag2link(item) %]<br />
+                 [% END %] 
+           </div>
+         [% END %]
+
+          [% IF fields.central_dogma.data.cds.size > 0 %]
+            <div>
+                 <img src="/img/arrows/right.gif">
+            </div>  
+            <div>
+                <b>CDS</b><br />
+                 [% FOREACH item IN fields.central_dogma.data.cds %]
+                   [% tag2link(item) %]<br />
+                 [% END %] 
+           </div>
+         [% END %]
+
+     </div>
+
+[% END %]
+
+
+[% MACRO laboratory BLOCK ;
+     # The Laboratory field
+     # Expects the stash to contain the "laboratory" key.
+     WRAPPER $field_block title="$title"||'Laboratory' key="laboratory";
+         tag2link(fields.laboratory.data.laboratory);
+ 
+         # Include the lab representative, if one exists         
+         IF fields.laboratory.data.representative;
+              " (" ; 
+              tag2link(fields.laboratory.data.representative); 
+              ")" ; 
+         END;
+     END;
+  END;
+%]
+
+[%# 
+
+    Shared phenotypes and phenotypes_not_observed macros. These macros
+    could conceivably be folded into shared/widgets/phenotypes.tt2, although
+    there are some specific phenotype.tt2 widgets that have some additional
+    fields.
+%]
+
+[% MACRO phenotypes BLOCK ;
+
+   WRAPPER $field_block title="Phenotypes" key="phenotypes";
+
+       build_data_table(order=['phenotype','description','remarks'],
+                        columns={ 
+                        phenotype    => 'Phenotype',
+                description  => 'Description',
+            remarks       => 'Remarks',
+                    },
+                    key='phenotypes');
+    END;
+END;
+%]
+
+[% MACRO phenotypes_not_observed BLOCK ;
+
+   WRAPPER $field_block title="Phenotypes NOT Observed" key="phenotypes_not_observed";
+
+   build_data_table(order=['phenotype','description','remarks'],
+                    columns={ 
+                        phenotype      => 'Phenotype',
+                description    => 'Description',
+            remarks        => 'Remark',
+                    },
+                    key='phenotypes_not_observed');
+      END;            
+   
+ END;
+%]
+
+
+[% MACRO remarks BLOCK;
+   # Expects the remarks key to be defined in the data stash
+   # Presents field in a toggle by default; pass "no_toggle=1" to conceal.
+   IF no_toggle == 1;  
+      '<div class="text-width">';
+       WRAPPER $field_block title="Remarks" key="remarks";
+          markup(fields.remarks.data.join('<br>'),0);
+       END;
+      '</div>';
+   ELSE;
+      WRAPPER $field_block title="" key="remarks";
+         '<div class="toggle">Curatorial remarks</div>';
+         '<div class="returned">';
+              markup(fields.remarks.data.join('<br />'),0);
+         '</div>';
+      END;
+   END;
+END;
+%]
+
+[% MACRO summary BLOCK;
+    # Currently only includes Summary but could encompass other tags
+    WRAPPER $field_block title="Summary" key="summary";
+            IF fields.summary.data.defined; fields.summary.data; END;
+    END;
+END;
+%]
+
+[% MACRO status BLOCK; 
+      WRAPPER $field_block title="Status" key="status";
+           IF fields.status.data.defined; fields.status.data; END;
+      END;
+END;
+%]
+
+[% MACRO taxonomy BLOCK; 
+   # Don't display unless we have a genus and species
+   IF fields.taxonomy.data.genus;
+      WRAPPER $field_block title="Species" key="taxonomy";
+          '<span class="species">';
+          fields.taxonomy.data.genus _ ' ' _ fields.taxonomy.data.species;
+          '</span>';
+      END;
+   END;
+END;
+%]
+
+
+
+[% MACRO xrefs BLOCK;
+
+ USE Dumper;
+ '<pre>';
+ Dumper.dump(fields.xrefs.data);
+ '</pre>';
+
+  hash = fields.xrefs.data;
+  FOREACH db IN hash.keys.sort;
+       db;
+       hash.$db.url;
+  END;
+END;
+%]
+
+
+
+
+
+
+
+
+[%# 
+    #######################################################
+
+      Class-specific MACROS, used only by a single class 
+
+    #######################################################
+%]
+
+[% # gene_list_by_species: custom dataTable processing for the Gene Class summary %]
+
+[% MACRO gene_list_by_species BLOCK;
+
+   WRAPPER $field_block title="$title";
+
+       # loop through each element in <subroutine>.<return_data_key>.<... to array data> array
+       # One table for each species
+       # Force C. elegans to the top of the list
+       species_list = fields.$key.data.keys.sort;
+       species_list.unshift('Caenorhabditis elegans');
+       species_list = species_list.unique;
+
+       FOREACH species IN species_list;
+            IF fields.$key.data.$species > 0;
+                WRAPPER $field_block title="" key="$key";
+
+                   # declare array of columns named via keys in the data structure
+               IF key == 'current_genes';
+                    order = ['species','locus', 'sequence'];
+            
+                 # declare hash for column headers, keyed as above
+                     headers = {   species  => 'Species',
+                                       locus    => 'Locus',
+                                       sequence => 'Sequence' };
+                  ELSE;
+                     order = ['species','former_name', 'new_name','sequence'];
+               
+                 # declare hash for column headers, keyed as above
+                     headers = {   species     => 'Species',
+                                       former_name => 'Former name',
+                       new_name    => 'New name',
+                                       sequence    => 'Sequence' };   
+                  END;
+
+                 # declare rows array
+                 rows = [];
+  
+                 FOREACH r IN fields.$key.data.$species;
+                       row = [];
+                   # loop through each element in order array (for columns) , declared above
+                   FOREACH o IN order;          
+                     # get value (val) from the row r
+                             val = r.$o;
+                     # enter data in row
+                             row.push(val);
+                       END;
+                   # enter data row array into rows
+                           rows.push(row);
+                 END;
+                      
+                 # populate name array;
+             names = [];
+             FOREACH o IN order; names.push(headers.$o); END;
+                 table_count = table_count + 1;               
+
+                  # generate table
+                 '<div class="toggle">';
+                         '<span class="species">' 
+                          _ species 
+                          _ '</span> (' 
+                          _ fields.$key.data.$species.size 
+                          _ ' members)'
+                          _ '</div>';
+                 '<div class="returned">';
+#                    dataTable_list(names, rows, "table_${species}_${key}");
+                    jquery_data_table_html(names, rows, "table_${species}_${key}_${table_count}");
+                '</div>';         
+         END; # END of nested WRAPPER
+           END; # END IF species contains data
+         END; # END of SPECIES
+     END; # END of primary WRAPPER 
+  END; # END of MACRO
+%]
+
+
+
+
+[%# 
+
+   gene_ontology; custom data table processing used on the Gene Summary.
+
+   This is essentially generic processing for a nested data structure
+   intended to be multiple tables.
+   
+   eg. data contains a hash.array.hashrefs (instead of single tier array.hashrefs)
+
+%]
+
+[% MACRO gene_ontology BLOCK;
+
+       # One table for each key (here, a GO facet)
+       facets = fields.$key.data.keys.sort;
+
+       FOREACH facet IN facets;
+            IF fields.$key.data.$facet > 0;
+                WRAPPER $field_block title="$facet" key="$key";
+                                  
+                   table_count = table_count + 1;                 
+ 
+                  # generate table
+#                            '<span class="species">'
+#                          _ facet 
+#                          _ '</span> (' 
+#                          _ fields.$key.data.$facet.size 
+#                          _ ' assocations)';
+
+                  # Here we assume that the inner data structure as an array of hashes  
+                  build_data_table(order = ['method','term', 'evidence_code'],
+                             columns = {   method   => 'Method',
+                                                 term   => 'Term',
+                                        evidence_code   => 'Evidence' },
+                             passed_data = fields.$key.data.$facet,
+                         key     = "table_${table_count}_go");   
+
+                 END; # END of WRAPPER
+              END; # END IF facet contains data    
+         END; # END of facets
+  END; # END of MACRO
+%]
+
+[% MACRO add_static_widgets BLOCK %]
+
+  [% FOREACH widget IN static_widgets %]
+    [% widget_name = widget.widget_title %]
+    [% w = { id = 'static-widget-' _ widget.widget_id
+            title = widget.widget_title
+            href =  c.uri_for('/rest','widget','static',widget.widget_id)
+            type = section == 'species' ? class : (section ? section : 'static')
+            };
+    %]
+    [% IF widget.widget_order > 0 %]
+      [% widget_order = widget.widget_order %]
+
+      [% # I assign to ws just so that the result doesn't print %]
+      [% ws = widgets.splice(widget_order, 0, [w]) %]
+    [% ELSE %]
+      [% widgets.push(w) %]
+    [% END %]
+  [% END %]
+  [% IF c.check_user_roles('admin') %]
+    [% w = { id = 'static-widget-0'
+            title = 'Add new widget...'
+            href =  c.uri_for('/rest','widget','static','0') _ '?path=' _ c.req.uri.path  _ '&edit=1'
+            type = section == 'species' ? class : (section ? section : 'static')
+            };
+    %]
+
+      [% widgets.push(w) %]
+  [% END %]
+[% END %]
+
+
+[% # Report Page elements; shared for species, resources, and tools %]
+[% # Called from species/report.tt2 and resources.report.tt2        %]
+[% # Callers should pass an array of widgets and the page title     %]
+
+[% MACRO report_page BLOCK;
+  widgets = [];
+  widgets.push({ title="Page Content" type="title"});
+
+  SET base = '/rest/widget';
+
+  # Conditionally set up different types of pages.
+  IF is_class_index && ((!class || class == 'all') || (species && species != 'all'));
+    SET this_object_id    = class; 
+    SET this_object_label = species; 
+    base = base _ '/index';
+    arg1 = species;
+    IF species; 
+      section_fetch = 'species_list'; 
+      IF class == 'all';
+        section_fetch = c.config.sections.species_list.$species;
+      ELSE;
+        section_fetch = c.config.sections.species_list.$species.$class;
+      END;
+    ELSE;
+        section_fetch = c.config.sections.$section;
+    END;
+  ELSE;
+    SET this_object_id    = object.name.data.id || 'all';
+    SET this_object_label = object.name.data.label || 'all';
+    arg1 = class;
+    section_fetch = c.config.sections.$section.$class;
+  END;
+
+# Debug
+#    'section     : ' _ section      _ "<br />";
+#    'class       : ' _ class   _ "<br />";
+#    'species     : ' _ species   _ "<br />";
+
+  # Get the default (configuration provided) list of widgets.
+  widget_list = section_fetch.widgets.keys.sort;
+  ov_list = widget_list.grep('^overview$');
+  FOREACH ov_list;
+    widget_list.unshift('overview');
+  END;
+  IF ov_list.size > 0; overview = 1; END;
+  widget_list = widget_list.unique;
+
+  FOREACH widget_name IN widget_list;
+    IF widget_name;
+    # Fetch the actual widget configuration.
+    widget = section_fetch.widgets.$widget_name;
+
+    # What context should this widget be displayed in, and what type of page are we?
+    IF is_class_index;
+        NEXT IF widget.display == "report";
+    ELSE;
+        NEXT IF widget.display == "index";
+    END;
+
+    w = {  id    = widget_name
+            title = widget.title
+            href  = c.uri_for(base, arg1, this_object_id, widget_name)
+            type  = section == 'species' ? class : section
+          };
+
+    widgets.push(w);
+    END;
+  END;
+
+  # is_static refers to pages that don't handle objects (/resources/reagents)
+  IF is_class_index && !is_static;
+    index_widgets = ['browse', 'basic_search'];
+    IF((species == 'all')||(class == 'all'));
+      index_widgets.push('summary');
+    END;
+
+    FOREACH widget_name IN index_widgets;
+      t = widget_name FILTER ucfirst;
+      widgets.push({ id = widget_name
+                title = t.replace('_', ' ')
+                href  = c.uri_for('/rest','widget', 'index', species, class, widget_name),
+                type = section == 'species' ? class : section
+            });
+    END;
+  END;
+
+  add_static_widgets;
+
+  # Add tools.
+  tool_list = section_fetch.tools.keys.sort || [];
+
+  # object pages automatically get the tree display
+  IF object; tool_list.unshift('tree'); END;
+
+  widgets.push({ title="Tools" type="title"}); 
+  FOREACH widget_name IN tool_list;
+      widget = c.config.sections.tools.$widget_name;
+      # What context should this widget be displayed in ?
+      IF is_index;
+         NEXT IF widget.display == "report";
+      ELSE;
+         NEXT IF widget.display == "index";
+      END;
+      
+      w = { id = widget_name
+             title = widget.title
+             href =  c.uri_for('/rest','widget',class,this_object_id,widget.name)
+             type = 'tools'
+            };
+    
+      widgets.push(w);
+   END;
+
+
+  FOREACH widget_name IN ['comment', 'issue'];
+      t = widget_name FILTER ucfirst;
+      w = { id = widget_name
+            title = t _ 's ' _ '<a class="' _ widget_name _ '-count"></a>'
+            href =  c.uri_for('/rest','feed',widget_name,class,this_object_id,'',this_object_label) _ '?url=' _ c.req.uri.path
+            type = 'tools'
+          };
+      widgets.push(w);
+  END;
+
+  PROCESS "shared/sidebar_structure.tt2" widgets=widgets overview=overview;
+%]
+
+[% END; %]
+
+
+
+
+
+
+[%# This is an expedient replication of report_page to support the userguide. 
+    Instead of specifying in config a list of widgets, we just pass them in %]
+
+[% MACRO userguide_page BLOCK;
+  widgets = [];
+  widgets.push({ title="Page Content" type="title"});
+
+  SET base = '/rest/widget/userguide';
+
+  # The userguide has a two-tiered hierarchy. eg: /userguide/developer/api
+  # to make it easier to organize templates on the filesystem.
+  # We need to add a param for the top level category.
+  IF category == 'index'; subcategory = 'any'; END;
+
+  FOREACH widget IN widget_list;    
+     hash = widget.keys;
+     name = hash.0;
+     wtitle = widget.$name;
+      w = {  id     = name
+            title = wtitle,
+            href  = c.uri_for(base, category, subcategory, name)
+            type  = 'resources'
+          };
+
+    widgets.push(w);
+  END;
+
+  widgets.push({ title="Tools" type="title"}); 
+
+  FOREACH widget_name IN ['comment', 'issue'];
+      t = widget_name FILTER ucfirst;
+      w = { id = widget_name
+            title = t _ 's ' _ '<a class="' _ widget_name _ '-count"></a>'
+            href =  c.uri_for('/rest','feed',widget_name,class,this_object_id,'',this_object_label) _ '?url=' _ c.req.uri.path
+            type = 'tools'
+          };
+      widgets.push(w);
+  END;
+
+  PROCESS "shared/sidebar_structure.tt2" widgets=widgets overview=overview;
+%]
+
+[% END; %]
+
+
+
+
+
+
+[%#
+ #####################################################
+ #
+ #  Debugging
+ #
+ #    Simple view debugging. Should be passed the name 
+ #    of the component since this is localized to the template
+ #    (or block). That is, it doesn't work as expected when
+ #    used via PROCESS or INCLUDE
+ #  
+ ####################################################
+%]
+
+[% BLOCK generic_debug_info %]
+   <h5>General information:</h5>
+   <pre>
+   Catalyst action : [% c.controller.action_for(this) %]<br />
+          template : [% template.name %]
+   </pre>
+[% END %]

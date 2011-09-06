@@ -1,0 +1,30 @@
+[%
+
+IF object.name.data.class == 'Protein';
+
+   WRAPPER $field_block title="Curatorial History" key="history";
+       build_data_table(order=['prediction','event','version'],
+                         columns={ prediction => 'Predicted gene',
+		                   event      => 'Event',
+			           version    => 'Version',
+                                 },
+                         key='history');
+   END;
+
+ELSE;
+
+    WRAPPER $field_block title="Curatorial History" key="history";
+       build_data_table(order=['version','date','action','remark','gene','curator'],
+                         columns={ version => 'Version',
+		                   date    => 'Date',
+			           action  => 'Action',
+ 				   remark  => 'Remark',
+				   gene    => 'Gene',
+				   curator => 'Curator'
+                                 },
+                         key='history');
+    END;
+
+END;
+
+%]

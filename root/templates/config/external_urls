@@ -1,0 +1,327 @@
+[%#  External URLs currently referenced by WormBase
+
+     Usage: site.external_url.[symbolic_name].base	
+
+     Note that we also store this information in the database
+     but is maintained here for ease of updates between releases.
+
+     When adding an entry, the primary hash key should be the
+     symbolic name of the database, matching that stored there.
+
+     Please add in alphabetical order for ease of editing.
+
+     Each entry should have the following keys:
+        description -> a brief description of the resource
+        maintainer  -> name of the person responsible
+        email       -> the contact email of the person/resource
+        base        -> the home page for the resource
+        search      -> a url constructor for searches/links
+        icon        -> a link to a (local?) thumbnail icon 
+
+     Optional parameters
+        [custom] -> custom pages or searches at the resource
+
+%]
+	
+
+
+[% site.external_urls = {
+
+ AceView 
+   = { description =  'The AceView genes - NCBI'
+       maintainer  =  'Jean-Thierry and Danielle Mieg',
+       email       =  '',
+       base        = 'http://www.ncbi.nlm.nih.gov/IEB/Research/Acembly/index.html'
+       search      = 'http://www.ncbi.nlm.nih.gov/IEB/Research/Acembly/av.cgi?db=worm&q=%s'
+     }
+
+ # No CGC entry in ?Database !
+ cgc
+   = { description  = 'The C. elegans Genetics Center'
+       maintainer   = 'Aric Daul'
+       email        = 'cgc@umn.edu'
+       base         = 'http://www.cbs.umn.edu/CGC/'
+       strains      = 'http://biosci.umn.edu/CGC/strains/'
+       nomenclature = 'http://biosci.umn.edu/CGC/Nomenclature/nomenguid.htm'
+     }
+
+ Refseq 
+   = { description = 'RefSeq'
+       maintainer  = 'NCBI',
+       base        = 'http://www.ncbi.nlm.nih.gov/entrez',
+       email       = '',
+       search      = 'http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Search&db=Nucleotide&term=%s[accn]&doptcmdl=GenPept' 
+     }
+
+# Done to here only!
+
+   genomic_location 
+           = { description  = 'The WormBase Genome Browser'
+               maintainer   = 'WormBase'
+               email        = 'help@wormbase.org',
+          #     base         = 'http://www.wormbase.org/db/gb2/gbrowse/'
+          #     search       = 'http://www.wormbase.org/db/gb2/gbrowse/%s'
+               # base         = '/gb2/gbrowse/'
+	        #search      = '/gb2/gbrowse/%s'   
+                base         = '/tools/genome/gbrowse/'
+            search      = '/tools/genome/gbrowse/%s'   
+             }
+
+   gbrowse_image 
+           = { description  = 'The WormBase Genome Browser Image'
+			      maintainer   = ''
+
+base = 'http://www.wormbase.org/db/gb2/gbrowse_img/'
+search = 'http://www.wormbase.org/db/gb2/gbrowse_img/%s'
+	#		      base         = '/gb2/gbrowse_img/'
+	#		      search      = '/gb2/gbrowse_img/%s'   
+			    }
+		 
+        INTERPRO = { search = 'http://www.ebi.ac.uk/interpro/IEntry?ac=%s' }
+
+
+
+
+         ensembl = { description = 'The Ensembl Project'
+                      search = 'http://www.ensembl.org/%s/protview?peptide=%s'
+                        base = 'http://www.ensembl.org'
+               }
+
+        flybase = { description = 'FlyBase: a database for drosophila genetics and molecular biology'
+		    maintainer  = ''
+                    base = 'http://www.flybase.org'
+                    search = 'http://flybase.org/cgi-bin/quicksearch.cgi?species=Dmel&field=SYM&db=fbgn&addata=all&context=%s'
+		   }
+
+	gadfly  = { description = 'gadfly'
+		    maintainer  = ''
+                    base        = 'http://www.flybase.net/cgi-bin/annot/basic.pl?qtype=batch&qpage=queryresults&format=detail&datatype=annotation&qid=%s'
+                    search = 'http://www.flybase.net/cgi-bin/annot/basic.pl?qtype=batch&qpage=queryresults&format=detail&datatype=annotation&qid=%s'
+                   }
+
+
+          hi = { description = 'H-InvDB: Annotated Human Gene Database'
+                      search = 'http://www.jbirc.jbic.or.jp/hinv/spsoup/transcript_view?hit_id=%s'
+               }
+
+              
+	ncbi_pubmed  =	{ 
+			description = 'PubMed Abstracts'
+			base 		= 'http://www.ncbi.nlm.nih.gov/sites/entrez/'
+			search 		= 'http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=pubmed&cmd=retrieve&dopt=abstract&list_uids=%s'
+			}
+
+	ncbi_taxonomy = { 
+		      description = 'NCBI Taxonomy'
+                      search = 'http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=%s' 
+              }
+
+
+         omim     = { description = 'OMIM: Online Mendelian Inheritance in Man'
+                  maintainer  = 'info@ncbi.nlm.nih.gov'
+                  base        = 'http://www.ncbi.nlm.nih.gov/omim/'
+                  search      = 'http://www.ncbi.nlm.nih.gov/omim/%s'
+                }
+
+
+	pfam    ={ search = 'http://pfam.sanger.ac.uk/family/%s' }
+
+	phosphopep = { description = 'a database of phosphorylation sites'
+		       maintainer  = ''
+		       base   = 'http://www.sbeams.org/dev1/sbeams/cgi/Glycopeptide/peptideSearch.cgi',
+	               search = 'http://www.sbeams.org/dev1/sbeams/cgi/Glycopeptide/peptideSearch.cgi?action=Show_hits_form&search_type=accession&organism=cel&search_term=%s'
+		     }
+
+
+
+	reactome = { description = 'an online resource of curated pathways'
+		     maintainer  = ''
+		     base        = 'http://www.reactome.org/'
+		     search      = 'http://www.reactome.org/cgi-bin/search?QUERY=%s&QUERY_CLASS=DatabaseIdentifier'
+		     }
+
+
+         sgd = { description = 'GO Term finder - Stanford University'
+                      search =  'http://genome-www4.stanford.edu/cgi-bin/SGD/locus.pl?locus=%s'
+                        base =  'http://genome-www4.stanford.edu'
+               }
+
+	treefam  = { description = 'treefam: protein family trees'
+		     maintainer  = ''
+		     base        = 'http://www.treefam.org/'
+		     search      = 'http://www.treefam.org/cgi-bin/TFinfo.pl?ac=%s'
+		     image       = 'http://www.treefam.org/cgi-bin/treeview.pl?pic&ac=%s&stype=clean&highlight=%s'
+		   }
+
+        UniProt = { description = 'UniProt | The Universal Protein Resource | EBI'
+                    maintainer  = ''
+                    base        = 'http://www.ebi.ac.uk/uniprot'
+                    search      = 'http://www.ebi.uniprot.org/entry/%s'
+                   }
+
+	wormbook = { description = 'WormBook: The online reference for C. elegans and related nematodes'
+		     maintainer  = 'help@wormbook.org'
+		     base        = 'http://www.wormbook.org/'
+		     search      = 'http://www.wormbook.org/db/misc/search.cgi?search_html=on;search_preprints=on;query=%s'
+	} 
+   }
+
+-%]
+
+[%
+# The DOI resolver for WormBook chapters
+$DOI             = 'http://dx.doi.org/';
+%]
+
+[%# MIGRATING THESE URLs ON AN AS-NEEDED BASIS 
+
+
+        ensembl = { base = 'http://www.ensembl.org/Homo_sapiens/protview?peptide=%s' }
+
+	ncbi_genbank     = { base              = 'http://www.ncbi.nlm.nih.gov'
+		     nucleotide_search = 'http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=nucleotide&amp;cmd=search&amp;term=%s'
+		   }
+
+	
+        sgd     = { base=  'http://genome-www4.stanford.edu/cgi-bin/SGD/locus.pl?locus=%s' }
+		 
+        wp      ={ base = '/db/seq/protein?class=Protein;name=WP:%s' }
+		  
+        bp      ={ base = '/db/seq/protein?class=Protein;name=BP:%s' }
+		  
+        vg      ={ base = 'http://vega.sanger.ac.uk/Homo_sapiens/protview?peptide=%s&amp;db=core' }
+		  
+        sw      ={ base = 'http://www.ebi.uniprot.org/entry/%s' }
+		  
+        sptrembl ={ base = 'http://www.ebi.uniprot.org/entry/%s' }
+		  
+        tr      ={ base = 'http://www.ebi.uniprot.org/entry/%s' }
+		  
+        pfam    ={ base = 'http://www.sanger.ac.uk//cgi-bin/Pfam/getacc?%s' }
+		  
+        PS      ={ base = 'http://www.expasy.ch/cgi-bin/prosite-search-de?%s' }
+		  
+        INTERPRO ={ base = 'http://www.ebi.ac.uk/interpro/IEntry?ac=%s' }
+		  
+        NCBI ={ base =     'http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=protein&cmd=search&term=%s' }
+		  
+        EMBL ={ base =     'http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=nucleotide&cmd=search&term=%s' }
+		  
+
+		  
+        TARGETDB       ={ base = 'http://targetdb.pdb.org/servlet/TargetSearch?seqname=Query&id=%s&pdbid=&pfamid=&status=&which_lab=%s&which_seq=ALL&Aftermonth=&Afterday=&Afteryear=&Beforemonth=&Beforeday=&Beforeyear=&p_name=&org_name=&Sequence=&evalue=10&format=html&cp=1' }
+		  
+        NESG_TARGET    ={ base = 'http://spine.nesg.org/target.pl?id=%s' }
+		  
+        NESG_GALLERY   ={ base = 'http://spine.nesg.org:7000/gallery/jsp/ShowStructure.jsp?pdb_id=%s' }
+		  
+        PDB            ={ base = 'http://pdb.rcsb.org/pdb/explore.do?structureId=%s' }
+		  
+        PFAM_WITH_PDB  ={ base = 'http://www.sanger.ac.uk//cgi-bin/Pfam/getacc?acc=%s&pdb=%s' }
+	
+
+
+
+	submit_forms = { base      = ''
+                         alleles   = 'http://tazendra.caltech.edu/~azurebrd/cgi-bin/forms/allele.cgi'
+		       }
+
+
+	Interpro = { base         = 'http://www.ebi.ac.uk/interpro/'
+		     search       = 'http://www.ebi.ac.uk/interpro/IEntry?ac='
+		   }
+	Intronerator = { base   = ''
+			 search = 'http://www.cse.ucsc.edu/~kent/cgi-bin/tracks.exe?where='
+
+	PFAM     = { base         = 'http://www.sanger.ac.uk/Software/Pfam/'
+		     search       = 'http://www.sanger.ac.uk//cgi-bin/Pfam/getacc?'
+		   }
+	Prosite  = { base         = ''
+		     search       = 'http://kr.expasy.org/cgi-bin/prosite-search-ac?'
+		   }		
+$HYMAN        = 'http://worm-srv1.mpi-cbg.de/dbScreen/cgi-bin/ViewRNA.py?RNAName=';
+$RNAIDB	      = 'http://www.rnai.org/cgi-bin/rnai/browse/card.rnai.cgi?query=';
+$PHENOBANK    = 'http://worm.mpi-cbg.de/phenobank2';
+$ORFEOME      = 'http://worfdb.dfci.harvard.edu/searchallwormorfs.pl?by=name&sid=';
+$MOVIE        = 'http://www.wormbase.org/ace_images/elegans/external/movies/';
+$KOCONSORTIUM = 'http://celeganskoconsortium.omrf.org/';
+$GO_EVIDENCE  = 'http://www.geneontology.org/GO.evidence.html';
+
+
+# These are redundant with Ace::Browser::GeneSubs
+# but are consolidated here for quicker and easier modification
+#$SRS            = 'http://srs.ebi.ac.uk/srs6bin/cgi-bin/wgetz?-newId+[SWALL-AllText:%s*]+-lv+30+-view+SeqSimpleView';
+#$SRS            = 'http://www.ebi.ac.uk/ebisearch/search.ebi?db=allebi&query=%s&FormsButton3=Go';
+# Link directly to the protein page
+$SRS             = 'http://www.ebi.ac.uk/ebisearch/search.ebi?db=proteinSequences&query=%s';
+
+$NEXTDB         = 'http://spock.genes.nig.ac.jp/~genome/cgi-bin/mas.pl.cgi?cele0:';
+
+$NEXTDB_HOME           = 'http://nematode.lab.nig.ac.jp/db2/index.php';
+$NEXTDB_EXPRESSION     = 'http://nematode.lab.nig.ac.jp/db2/ShowCloneInfo.php?clone=%s';
+
+$UNIPROT        = 'http://www.uniprot.org/entry/';
+# NCBI - Some obvious redunancy here
+$NCBI           = 'http://www.ncbi.nlm.nih.gov/htbin-post/Entrez/query';
+$GENBANK        = 'http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=nucleotide&cmd=search&term=%s';
+
+# NCBI
+$PUBMED         = 'http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Search&term=nematode+AND+';
+
+# Old format
+# $PUBMED       = 'http://www.ncbi.nlm.nih.gov/htbin-post/Entrez/query?db=m&form=4&term=nematode [ORGANISM]+AND+';
+# $PUBMED         = 'http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=PubMed&cmd=Search&term=nematode%20[ORGANISM]+AND+';
+$ENTREZ         = 'http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Search&db=Nucleotide&doptcmdl=GenBank&term=';
+$ENTREZP        = 'http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Search&db=Protein&doptcmdl=GenPep&term=';
+$ENTREZ_GENE    = 'http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=gene&cmd=Retrieve&dopt=full_report&list_uids=';
+
+
+$PROTEOME       = 'http://www.proteome.com/WormPD/';
+$SWISSPROT      = 'http://www.ncbi.nlm.nih.gov/htbin-post/Entrez/query?db=p&form=1&field=Sequence+ID&term=';
+
+$MEOW_CONFIRMED = 'http://iubio.bio.indiana.edu/meow/.bin/moquery?dbid=ACEDB:';
+$MEOW_PREDICTED = 'http://iubio.bio.indiana.edu/meow/.bin/moquery?dbid=ACEPRED:';
+$GENESERVICE    = 'http://www.hgmp.mrc.ac.uk/geneservice/reagents/products/descriptions/Celegans.shtml';
+$GENESERVICE_ORF = 'http://www.geneservice.co.uk/products/cdna/Celegans_ORF.jsp';
+$GENESERVICE_FOSMIDS = 'http://www.geneservice.co.uk/products/clones/Celegans_Fos.jsp';
+$OPENBIO         = 'http://www.openbiosystems.com/Query/dfci.harvard.php?clone=%s';
+
+$TEXTPRESSO     = 'http://www.textpresso.org/cgi-bin/wb/textpressoforwormbase.cgi?allabstracts=on&searchmode=sentence&searchtargets=Paper&searchtargets=Abstract';
+# $TREMBL         = 'http://www.expasy.org/cgi-bin/get-sprot-entry?';
+$TREMBL         = 'http://www.ebi.uniprot.org/entry/%s',
+$WBG            = 'http://elegans.swmed.edu/wli/';
+$KIM_MOUNTAINS  = 'http://www.sciencemag.org/feature/data/kim1061603/gl/gene_list.html';
+
+
+
+###################### PROTEIN LINKS #################
+# This is a misnomer.  It is now being used for all sorts of external database links.
+
+%PROTEIN_LINKS = (
+		  GADFLY  => 'http://www.flybase.net/cgi-bin/annot/basic.pl?qtype=batch&qpage=queryresults&format=detail&datatype=annotation&qid=%s',
+		  FLYBASE => 'http://flybase.net/reports/%s.html',
+		  ENSEMBL => 'http://www.ensembl.org/Homo_sapiens/protview?peptide=%s',
+		  SGD     => 'http://genome-www4.stanford.edu/cgi-bin/SGD/locus.pl?locus=%s',
+		  WP      => '/db/seq/protein?class=Protein;name=WP:%s',
+		  BP      => '/db/seq/protein?class=Protein;name=BP:%s',
+		  VG      => 'http://vega.sanger.ac.uk/Homo_sapiens/protview?peptide=%s&amp;db=core',
+		  SW      => 'http://www.ebi.uniprot.org/entry/%s',
+		  SPTREMBL=> 'http://www.ebi.uniprot.org/entry/%s',
+		  TR      => 'http://www.ebi.uniprot.org/entry/%s',
+		  PFAM    => 'http://www.sanger.ac.uk//cgi-bin/Pfam/getacc?%s',
+		  PS      => 'http://www.expasy.ch/cgi-bin/prosite-search-de?%s',
+		  INTERPRO => 'http://www.ebi.ac.uk/interpro/IEntry?ac=%s',
+		  NCBI =>     'http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=protein&cmd=search&term=%s',
+		  EMBL =>     'http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=nucleotide&cmd=search&term=%s',
+		  REFSEQ  => 'http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Search&db=Protein&term=%s[accn]&doptcmdl=GenPept',
+		  TARGETDB       => 'http://targetdb.pdb.org/servlet/TargetSearch?seqname=Query&id=%s&pdbid=&pfamid=&status=&which_lab=%s&which_seq=ALL&Aftermonth=&Afterday=&Afteryear=&Beforemonth=&Beforeday=&Beforeyear=&p_name=&org_name=&Sequence=&evalue=10&format=html&cp=1',         
+		  NESG_TARGET    => 'http://spine.nesg.org/target.pl?id=%s',
+		  NESG_GALLERY   => 'http://spine.nesg.org:7000/gallery/jsp/ShowStructure.jsp?pdb_id=%s',
+		  PDB            => 'http://pdb.rcsb.org/pdb/explore.do?structureId=%s',
+		  PFAM_WITH_PDB  => 'http://www.sanger.ac.uk//cgi-bin/Pfam/getacc?acc=%s&pdb=%s',
+		  );
+
+
+
+
+%]

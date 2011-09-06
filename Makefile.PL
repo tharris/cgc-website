@@ -2,10 +2,10 @@
 
 use inc::Module::Install;
 
-name 'CGC';
+name 'WormBase';
 
 # Draw version, author, and licensing from Web.pm
-all_from 'lib/CGC/Web.pm';
+all_from 'lib/WormBase/Web.pm';
 
 # Catalyst basics
 requires 'Catalyst::Runtime';                  # => '5.80014';
@@ -40,17 +40,23 @@ requires 'Catalyst::Plugin::StackTrace';
 requires 'Catalyst::Plugin::Static::Simple';
 requires 'Catalyst::View::JSON';
 requires 'Catalyst::View::Email';
+requires 'Catalyst::View::GD';
 
 # Application dependencies
+requires 'Ace'                                    => '1.92';     # Good 'ole AcePerl.
+#requires 'AnyEvent::CouchDB';                                   #
+requires 'Badge::GoogleTalk';                                    # 
+requires 'Bio::Perl'                              => '1.006001'; #
+requires 'Bio::Graphics';                                        # 
 requires 'B::Hooks::EndOfScope';                                 #
 requires 'Cache::Memcached::libmemcached';                       #
 requires 'CGI::Simple::Cookie';                                  #
 requires 'Config::General';                                      #
 requires 'Crypt::SaltedHash';                                    # => '0.06';
 requires 'Crypt::SSLeay'; 			                 # For openid support
-#requires 'CHI';                                                  # Cache
-#requires 'CHI::Driver::Memcached::libmemcached';                 # Cache (in memory)
-#requires 'CHI::Driver::File';                                    # Cache (on disk)
+requires 'CHI';                                                  # Cache
+requires 'CHI::Driver::Memcached::libmemcached';                 # Cache (in memory)
+requires 'CHI::Driver::File';                                    # Cache (on disk)
 requires 'Class::MOP';                                           # => '1.12';
 requires 'Data::Dump';                                           #
 requires 'Data::OptList';                                        #
@@ -62,16 +68,16 @@ requires 'Devel::StackTrace';                                    #
 requires 'HTML::Parser';                                         #
 requires 'HTML::Entities';                                       #
 requires 'Facebook::Graph';                                      #
-#requires 'GD';                                                   #
-#requires 'GD::SVG';                                              #
+requires 'GD';                                                   #
+requires 'GD::SVG';                                              #
 #requires 'GO::Parser';                                           #
 #requires 'GO::Utils';                                            #
 #requires 'go-db-perl';                                           #
 requires 'JSON';                                                 #
 requires 'List::MoreUtils';                                      #
 requires 'Log::Log4perl';                                        #
-#requires 'Math::BigInt::GMP';   # will need to install gmp.h header file first(on Debian/Ubuntu is the libgmp3-dev package)
-#requires 'Memcached::libmemcached';                              #
+requires 'Math::BigInt::GMP';   # will need to install gmp.h header file first(on Debian/Ubuntu is the libgmp3-dev package)
+requires 'Memcached::libmemcached';                              #
 requires 'Module::Install';                                      #
 requires 'Moose'                                 => '1.21';      #
 requires 'MooseX::AbstractFactory';                              #
@@ -93,7 +99,7 @@ requires 'Search::Xapian';                                       #
 requires 'Sub::Exporter';                                        #
 requires 'Sub::Install';                                         #
 requires 'Sub::Identify';                                        #
-#requires 'SVG';                                                  #
+requires 'SVG';                                                  #
 requires 'Task::Weaken';                                         #
 requires 'Template::Plugin::Time::Duration';                     #
 requires 'Test::YAML::Valid';                                    #
@@ -108,9 +114,10 @@ requires 'YAML';                                                 #
 #catalyst;
 # The PSGI/Plack/Starman stack
 requires 'Plack::Test::Adopt::Catalyst';                         #
+requires 'Plack::App::Proxy';                                    #
 requires 'Task::Plack';                                          #
 requires 'Catalyst::Controller::Metal';                          #
-requires 'Catalyst::Engine::PSGI';                               #
+#requires 'Catalyst::Engine::PSGI';                               #
 requires 'Catalyst::Helper::PSGI';                               #
 requires 'Starman';                                              #
 

@@ -1,0 +1,81 @@
+
+[%# This phenotype processing diverges from the standard processing ... %]
+[%# See also Varation.pm for alternative data processing/structure... %]
+
+[% WRAPPER $field_block title="Phenotypes" key="phenotype" %]
+
+  Alleles for which the sequence change is known are listed in <b>boldface</b>.<br><br>
+  [% FOREACH type IN ['pheno','pheno_not'] %]
+    [% IF fields.phenotype.data.$type.size>0 %]
+      [% IF type == "pheno_not" %]<br />
+    <div class="toggle"><i>The following phenotypes have been reported as NOT observed in [% object.name.data.label %]</i></div>
+    <div class="returned">
+      [% ELSE %]
+<i>The following phenotypes have been observed in [% object.name.data.label %]</i><br/>
+      [% END %]
+
+   
+    <table border=1 >
+    <tr><th>Phenotype</th><th>Supporting Evidence</th></tr>
+      [% FOREACH obj IN fields.phenotype.data.$type %]
+	  <tr><td width=45%>[%  tag2link(obj.id) %]</td>
+		<td>
+		[% IF obj.evidence.allele.size>0 %]
+		Alleles:[% FOREACH evidence IN obj.evidence.allele %] 
+			      [% IF evidence.boldface %] 
+			      <b>[%  tag2link(evidence) %]</b>   
+			      [% ELSE %]
+				  [%  tag2link(evidence) %]
+			      [% END %] 
+			  [% END %]<br>
+		[% END %]
+		[% IF obj.evidence.transgene.size>0 %]
+		Transgene(s):[% FOREACH evidence IN obj.evidence.transgene %] [% tag2link(evidence) %] [% END %]<br>
+		[% END %]
+		[% IF obj.evidence.rnai %]
+		Supported by [% obj.evidence.rnai %] RNAi [% pluralize("experiment", obj.evidence.rnai) %]
+		[% END %]
+		</td>
+	  </tr> 
+      [% END %]
+    </table>
+    [% END %]
+      [% IF type == "pheno_not"; "</div>"; END %]
+   [% END %]
+[% END %]
+
+
+[% WRAPPER $field_block title="RNAi" key="rnai" %]
+
+    <div class="toggle">RNAi Summary</div>
+    <div class="returned">
+  [% FOREACH type IN ['rnai','rnai_not'] %]
+    [% IF fields.rnai.data.$type.size>0 %]
+<br />
+    [% IF type == "rnai" %] 
+      <i>The following phenotypes were observed via RNAi of [% object.name.data.label %]</i>
+    [% ELSE %]
+      <i>No abnormalities were observed in the following experiments</i>
+    [% END %]
+       
+    <table border=1 >
+      <tr><th>Experiment</th><th>Phenotypes</th><th>Strain/Genotype</th><th>Cited in</th></tr>
+      [% FOREACH row IN fields.rnai.data.$type %]
+      <tr>
+           
+          <td>[% tag2link(row.rnai) %]</td>
+          <td>[% FOREACH obj IN row.phenotype %] 
+          [% tag2link(obj) %]
+          [% UNLESS loop.last %]<br>[% END %]
+          [% END %]
+          </td>
+          <td>[% row.genotype %]</td>
+          <td>[% tag2link(row.cite) %]</td>
+      </tr> 
+      [% END %]
+    </table>
+    [% END %]
+   [% END %]
+    </div>
+[% END %]
+

@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html>
+  <head>    
+    <meta charset="UTF-8">
+
+    <title>WormBase
+      [%- IF object -%]:  [%- object.name.data.class -%] Summary: [%- object.name.data.label -%]
+      [% ELSE %]    
+         : [% template.title or c.config.site_byline %]      
+      [% END %]
+    </title>
+
+    <link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/smoothness/jquery-ui.css" rel="stylesheet" />
+    <link type="text/css" href="/css/main.css" rel="stylesheet" />
+  </head>
+
+  <body>  
+    [%- content -%]    
+
+
+
+    <script type="text/javascript" src="https://www.google.com/jsapi?key=[% c.config.google_api_key %]"></script>
+    <script>
+      google.load("jquery", "1.6.2");
+      google.load("jqueryui", "1.8.16");
+    </script>
+    <script>
+      var se = document.createElement('script');
+      se.src = "/js/wormbase.min.js";
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(se, s);
+      [% INCLUDE google_analytics %]
+    </script>
+  </body>
+</html>

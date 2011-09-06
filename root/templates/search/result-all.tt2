@@ -1,0 +1,69 @@
+      <div id="page-title" class="species-bg">
+      <h2>  
+
+   <form method="post"  id="searchResultForm" action="" onsubmit="WB.search('SearchResult'); return false;">
+    <div id="searchBody" class="ui-corner-all">
+      <input class="text" id="SearchResult" name="query" type="text" value="[% query %]"> 
+    </div>
+    <div class="searchIcon ui-corner-all" onclick="WB.search('SearchResult'); return false;">
+      <input class="ui-icon ui-icon-search" type="submit" onclick="WB.search('SearchResult'); return false;" value="">
+    </div>
+  </form>
+
+<br style="clear:both" />
+
+      </h2>
+      </div>
+<div id="widgets">
+<div class="navigation" style="margin:0">
+<div id="navigation">
+      <div id="search-count-summary" class="navigation" style="margin:0">
+        <div class="search-summary">
+        <b>[% query %]</b> [class:[% type %]] <br />
+        
+            [%  IF species; '[species:<span class="species">' _ c.config.sections.species_list.$species.title _ '</span>]'; 
+                ELSIF (type && c.config.sections.resources.$type.defined); '';
+                ELSE; '[species:<span class="species">' _ c.config.sections.species_list.all.title _ '</span>]'; 
+                END;%]
+        </div>
+        <ul>
+      [% IF type == 'all' %]
+             <li class="title toggle">Classes<span class="ui-icon ui-icon-triangle-1-s"></span></li><div>
+        [% FOREACH sec IN ['species', 'resources'] %]
+          [% FOREACH cls IN c.config.sections.$sec.keys.sort  %]
+              [% IF cls == 'title'; NEXT; END; %]
+              [% searchurl = "/search/" _ cls _ "/" _ query _ "?inline=1" %]
+              [% IF species; searchurl = searchurl _ "&species=" _ species; END; %]
+              <li onClick='WB.loadResults("[% searchurl %]"); $jq(this).addClass("ui-selected"); return false;' style="display:none">
+                <a onClick='WB.loadResults("[% searchurl %]"); $jq(this).parent().addClass("ui-selected"); return false;' href="[% searchurl %]">[% c.config.sections.$sec.$cls.title %]</a>: 
+                <span class="count" href="/search/count/[% species %]/[% cls %]/[% query %]"></span>
+                <span class="ui-icon ui-icon-triangle-1-e"></span>
+              </li>
+          [% END %]
+        [% END %]
+        </div>
+      [% END %]
+      [% IF( !(species) && (c.config.sections.species.$type.defined || type == 'all') )%]
+             <li class="title toggle">Species<span class="ui-icon ui-icon-triangle-1-s"></span></li><div>
+        [% FOREACH s IN c.config.sections.species_list.keys.sort %]
+          [% IF s == 'all'; NEXT; END; %]
+          [% IF c.config.sections.species_list.$s.display_in_dropdown == 'yes' %]
+            [% searchurl = "/search/" _ type _ "/" _ query _ "?inline=1&species=" _ s %]
+            <li onClick='WB.loadResults("[% searchurl %]"); $jq(this).addClass("ui-selected"); return false;'  style="display:none">
+              <a onClick='WB.loadResults("[% searchurl %]"); $jq(this).parent().addClass("ui-selected"); return false;' class="species" href="[% searchurl %]">[% c.config.sections.species_list.$s.title %]</a>: 
+              <span class="count" href="/search/count/[% s %]/[% type %]/[% query %]"></span>
+              <span class="ui-icon ui-icon-triangle-1-e"></span>
+            </li>
+          [% END %]
+        [% END %]
+        </div>
+      [% END %]
+      </ul>
+      </div>
+<br style="clear:both"/>
+</div>
+</div>
+<div id="widget-holder">
+<div id="all-search-results" data-search='{"type": "[% type %]", "query": "[% query %]", "species": "[% IF species %]&species=[% species; END;%]" }'></div>
+</div>
+</div>

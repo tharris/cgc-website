@@ -1,0 +1,45 @@
+[% IF c.stash.notify %]
+<script>
+  displayNotification("[% c.stash.notify %]");
+</script>
+[% END %]
+
+
+  [% path = c.uri_for('/me') %]
+  [% title = "My WormBase"  %]
+
+
+  [% widgets = [] %]
+  [% widgets.push({ title="Page Content" type="title"}) %]
+  [% widget_list = c.config.sections.me.widgets.keys.sort %]
+  [% FOREACH widget_name IN widget_list -%]
+    [% widget = c.config.sections.me.widgets.$widget_name %]
+    [% IF ((widget.login) AND (NOT (c.user_exists))); NEXT; END; %]
+    [% w = { id = widget_name
+             title = widget.title
+             href =  c.uri_for('/rest','widget','me',widget.name)
+             type = "me"
+            };
+    %]
+    [% widgets.push(w) %]
+  [% END %]
+
+  
+  [% IF c.check_user_roles('admin') %]
+    [% widgets.push({ id    = 'registered_users',
+         	      title = 'Registered Users',
+                      href  =  c.uri_for('/rest','widget','admin','registered_users'),
+                      type  = "me"
+                    });
+	widgets.push({ id    = 'system_status',
+         	      title = 'System Status',
+                      href  =  c.uri_for('/rest','widget','admin','system_status'),
+                      type  = "me"
+                    });
+    %]
+  [% END %]
+ 
+  [% PROCESS "shared/sidebar_structure.tt2" widgets=widgets layout="1-0-5"%]
+
+
+

@@ -1,0 +1,174 @@
+[%# Should be predefined:                                                       %]
+[%# title   =   title appearing at the top of the page                          %]
+[%# no_layout   =   if true, the layout dropdown will not be displayed          %]
+[%# widgets =   an array of hashrefs corresponding to widgets that will appear  %]
+[%#             in the sidebar and on the page                                  %]
+[%#             each widget:                                                    %]
+[%#             { id = widget id                                                %]
+[%#               title = widget title                                          %]
+[%#               href =  url to load the widget                                %]
+[%#               type = section the widget belongs to (for colour coding)      %]
+[%#             }                                                               %]
+[%#             for a title to appear in sidebar:                               %]
+[%#             { title = title to display                                      %]
+[%#               type = "title"                                                %]
+[%#             }                                                               %]
+
+[% UNLESS c.req.action == 'me' %]
+  [% widgets.push({ title="My WormBase" type="title"}) %]
+  [% FOREACH widget_name IN ['reports', 'my_library'] -%]
+    [% widget = c.config.sections.me.widgets.$widget_name %]
+    [% w = { id = widget_name
+            title = widget.title
+            href =  c.uri_for('/rest','widget','me',widget_name)
+            type = "me"
+            };
+    %]
+    [% widgets.push(w) %]
+  [% END %]
+[% END %]
+
+    [% UNLESS no_layout %]
+    <div id="buttons-nav">
+[% UNLESS c.req.action == 'me' %]
+        <a   tip="report a problem" class="button section-button tip-simple ui-corner-all"  wname="issue" ><span class="ui-icon ui-icon-notice"></span></a>
+        <a   tip="view comments" class="button section-button tip-simple ui-corner-all" wname="comment"  ><span class="ui-icon ui-icon-comment"></span></a>
+        <a tip="toggle empty fields" class="button tip-simple ui-corner-all" id="hide-empty-fields" href="javascript:void(0)"><span class="ui-icon ui-icon-carat-2-e-w ui-button"></span></a>
+[% END %]
+        <div class="columns" id="column-dropdown"><a class="button ui-corner-all tip-simple" tip="settings"><span class="ui-icon ui-icon-gear"></span><span class="ui-icon ui-icon-triangle-1-s"></span></a>
+          <ul>
+            <li><span id="fade">layout</span><span class="ui-icon ui-icon-triangle-1-e" style="float:right;margin-top:0.2em;"></span>
+              <ul>
+              <li onClick="WB.columns(100, 100)"><div class="ui-icon-column ui-icon-1"></div></li>
+              <li onClick="WB.columns(50, 50)"><div class="ui-icon ui-icon-column ui-icon-1-1"></div></li>
+              <li onClick="WB.columns(70, 30)"><div class="ui-icon ui-icon-column ui-icon-2-1"></div></li>
+              <li onClick="WB.columns(30, 70)"><div class="ui-icon ui-icon-column ui-icon-1-2"></div></li>
+              <div class="list-layouts" type="[% page_class %]"></div>
+              </ul>
+            </li>
+            <li><a id="fade" onClick="WB.openAllWidgets(); return false;">open all</a></li>
+<!--             <li><a id="fade" id="print">print</a></li> -->
+          </ul>
+        </div>
+
+        <div style="clear:both"></div>
+      </div>
+
+      [% title = '<span id="breadcrumbs">' _ title _ '</span>' %]
+      <div id="page-title" class="[% section %]-bg">
+      <h2
+[% UNLESS c.req.action == 'me' %]
+        class="tip-simple star" tip="save">
+          [% wbid = this_object_id.remove('[:/ &\.\[\]]') %]
+          <div class="workbench-status-[% wbid %]"></div>
+[% ELSE; '>'; END; %]   
+          [% title %]  
+     
+      </h2>
+      </div>
+    [% END %]
+
+
+<div id="widgets">
+     
+  <div class="navigation">
+  <div id="navigation">
+    <div id="title">
+      [% IF c.action.name == 'index' %]
+        <h2><a href="#">WormBase</a></h2>
+      [% ELSE %]
+        [% UNLESS c.req.action == 'me' %]
+          <div class="workbench-status-[% wbid %]"></div>
+        [% END %]
+        [% IF object %]
+          <h4 class="ellipsis">[% tag2link(object.name.data) %]</h4>
+        [% ELSE %]
+          <h4 class="ellipsis"><a href="#">[% title %]</a></h4>
+        [% END %]
+      [% END %]
+    </div>
+    <ul>
+      <div>
+    [% FOREACH w IN widgets -%]
+      [% IF w.type == "title" %]
+      </div>
+      <li class="title toggle"><span class="ui-icon ui-icon-triangle-1-s"></span>[% w.title %]</li>
+      <div>
+     [% ELSE %]
+      <li id="nav-[% w.id %]" 
+         class="
+          [% IF w.type != "title" %]
+            module-load
+          [% END %]
+          [% w.type %]"
+          wname="[% w.id %]"
+          href="[% w.href %]">[% w.title %]<span class="ui-icon ui-icon-triangle-1-e"></span>
+      </li>
+      [% END %]
+    [% END %]
+      </div>
+      <li class="title toggle"><span class="ui-icon ui-icon-triangle-1-s"></span>Recent Activity</li>
+      <div>
+      <div class="user-history small" id="user_history"></div>
+      <div class="small">
+[% UNLESS c.req.action == 'me' %]
+      <li id="nav-user_history" 
+          class="module-load me" 
+          wname="user_history"
+          href="[% c.uri_for('/rest','widget','me','user_history') %]" 
+          load=1>see more...</li>[% END %]</div>
+      </div>
+    </ul>
+    <div id="nav-min" title="close sidebar"><div id="nav-min-icon" class="ui-icon ui-icon-triangle-1-w"></div></div>
+  </div>
+  </div>
+
+
+  <div id="widget-holder" wclass="[% page_class %]" class="[% class %][% UNLESS no_layout; " title-padding"; END; %]"
+
+
+      [% IF c.user_session.layout.$page_class.0.defined || layout %]
+            data-layout = '{"hash": "[% c.user_session.layout.$page_class.0.lstring || layout %]"}'
+      [% ELSE;
+        IF is_class_index;
+          defaults = section_fetch.default_widgets_summary.keys;
+        ELSE;
+          defaults = section_fetch.default_widgets.keys;
+        END;
+        FOREACH defaults.grep('^overview$');
+          defaults.unshift('overview');
+        END;
+        defaults = defaults.unique;
+       %]
+
+        [% UNLESS defaults.first %]
+          [% IF overview %]
+            data-layout='{"leftlist":["overview"]}'
+          [% ELSE %]
+            data-layout='{"leftlist": ["browse"], "rightlist": ["basic_search"], "leftwidth": "50"}'
+          [% END %]
+        [% ELSE %]
+            data-layout='{"leftlist": ["
+             [% defaults.join('", "') %]
+             "]}'
+        [% END %]
+      [% END %]
+
+  >
+
+    <div class="sortable left">
+      [% FOREACH w IN widgets -%]
+          [% IF w.type == "title"; NEXT; END; %]
+          <li id="[% w.id %]" class="widget">
+          [% PROCESS widget_sortable_block type=w.type id=w.id title=w.title -%]
+          </li>   
+      [% END %]
+[% UNLESS c.req.action == 'me' %]
+          <li id="user_history" class="widget">
+          [% PROCESS widget_sortable_block type="me" id="user_history" title="My History"-%]
+          </li>
+[% END %]   
+    </div>
+    <div class="sortable right"></div>
+  </div>
+</div>
