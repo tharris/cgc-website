@@ -7,7 +7,7 @@ Catalyst::ScriptRunner->run('WormBase::Web', 'CGI');
 
 =head1 NAME
 
-wormbase_web_cgi.pl - Catalyst CGI
+app_web_cgi.pl - Catalyst CGI
 
 =head1 SYNOPSIS
 

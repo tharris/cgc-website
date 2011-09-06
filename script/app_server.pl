@@ -11,11 +11,11 @@ Catalyst::ScriptRunner->run('WormBase::Web', 'Server');
 
 =head1 NAME
 
-wormbase_web_server.pl - Catalyst Test Server
+app_web_server.pl - Catalyst Test Server
 
 =head1 SYNOPSIS
 
-wormbase_web_server.pl [options]
+app_web_server.pl [options]
 
    -d --debug           force debug mode
    -f --fork            handle each request in a new process

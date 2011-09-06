@@ -7,11 +7,11 @@ Catalyst::ScriptRunner->run('WormBase::Web', 'FastCGI');
 
 =head1 NAME
 
-wormbase_web_fastcgi.pl - Catalyst FastCGI
+app_web_fastcgi.pl - Catalyst FastCGI
 
 =head1 SYNOPSIS
 
-wormbase_web_fastcgi.pl [options]
+app_web_fastcgi.pl [options]
 
  Options:
    -? -help      display this help and exits

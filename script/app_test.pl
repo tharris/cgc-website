@@ -1,24 +1,24 @@
 #!/usr/bin/env perl
 
 use Catalyst::ScriptRunner;
-Catalyst::ScriptRunner->run('WormBase::Web', 'Test');
+Catalyst::ScriptRunner->run('App::Web', 'Test');
 
 1;
 
 =head1 NAME
 
-wormbase_web_test.pl - Catalyst Test
+app_test.pl - Catalyst Test
 
 =head1 SYNOPSIS
 
-wormbase_web_test.pl [options] uri
+app_web_test.pl [options] uri
 
  Options:
    --help    display this help and exits
 
  Examples:
-   wormbase_web_test.pl http://localhost/some_action
-   wormbase_web_test.pl /some_action
+   app_web_test.pl http://localhost/some_action
+   app_web_test.pl /some_action
 
  See also:
    perldoc Catalyst::Manual

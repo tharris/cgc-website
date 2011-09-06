@@ -2,21 +2,21 @@
 
 use inc::Module::Install;
 
-name 'WormBase';
+name 'App';   # Yes, App. Fully generic.
 
 # Draw version, author, and licensing from Web.pm
 all_from 'lib/App/Web.pm';
 
 # Catalyst basics
-requires 'Catalyst::Runtime';                  # => '5.80014';
-requires 'Catalyst::Devel';                       # REQ'D for development only
-requires 'Task::Catalyst';                        # A slew of basic Catalyst Goodies
-requires 'parent';
+requires 'Catalyst::Runtime';             # => '5.90002';
+requires 'Catalyst::Devel';               # REQ'D for development only
+requires 'Task::Catalyst';                # A slew of basic Catalyst Goodies
+#requires 'parent';
 
 # Catalyst Plugins and extensions
-requires 'Catalyst::Action::REST';           
+#requires 'Catalyst::Action::REST';           
 requires 'Catalyst::Action::RenderView';
-requires 'Catalyst::Action::RenderView::ErrorHandler';
+#requires 'Catalyst::Action::RenderView::ErrorHandler';
 #requires 'Catalyst::Authentication::Credential::OpenID';   # will need to install Math::BigInt::GMP first 
 #requires 'Catalyst::Authentication::Store::DBIx::Class';
 #requires 'Catalyst::Controller::FormBuilder';
@@ -38,8 +38,8 @@ requires 'Catalyst::Plugin::Session::State::Cookie';
 requires 'Catalyst::Plugin::Session::Store::DBI';
 requires 'Catalyst::Plugin::StackTrace';
 requires 'Catalyst::Plugin::Static::Simple';
-requires 'Catalyst::View::JSON';
-requires 'Catalyst::View::Email';
+#requires 'Catalyst::View::JSON';
+#requires 'Catalyst::View::Email';
 #requires 'Catalyst::View::GD';
 
 # Application dependencies
@@ -69,7 +69,7 @@ requires 'DBD::mysql';                                           #
 #requires 'GO::Parser';                                           #
 #requires 'GO::Utils';                                            #
 #requires 'go-db-perl';                                           #
-requires 'JSON';                                                 #
+#requires 'JSON';                                                 #
 #requires 'List::MoreUtils';                                      #
 requires 'Log::Log4perl';                                        #
 #requires 'Math::BigInt::GMP';   # will need to install gmp.h header file first(on Debian/Ubuntu is the libgmp3-dev package)
