@@ -24,19 +24,17 @@ our $VERSION = '0.01';
 use Catalyst::Log::Log4perl; 
 use HTTP::Status qw(:constants :is status_message);
 
-
 ##################################################
 #
-#   What type of installation are we?
-#   
+#   Configure the application based on our environment.
+#
 #   The startup script should set an environment variable
 #   for installation type; otherwise it defaults to staging.
 #
 ##################################################
 my $installation_type = $ENV{APP_INSTALLATION_TYPE} || 'staging';
 
-
-# Specific loggers for differnet environments
+# Different logers.
 __PACKAGE__->log(
     Catalyst::Log::Log4perl->new(__PACKAGE__->path_to( 'conf', 'log4perl', "$installation_type.conf")->stringify)
     );
@@ -115,15 +113,13 @@ __PACKAGE__->config->{authentication} =
 
 
 
-
-
-# Set configuration for static files
 # Force specific directories to be handled by Static::Simple.
 # These should ALWAYS be served in static mode.
+# This also impacts A::W::V::TT configuration.
 __PACKAGE__->config(
     static => {
 	dirs => [qw/css js img tmp /],
-	include_path => [ '/usr/local/wormbase/shared/tmp',
+	include_path => [ "$ENV{APP_ROOT}/tmp",
 			  __PACKAGE__->config->{root},
 	    ]
 #   logging  => 1,
@@ -181,7 +177,7 @@ __PACKAGE__->config->{'Plugin::Cache'}{backends}{memcache} = {
 __PACKAGE__->config->{'Plugin::Cache'}{backends}{default} = {
     class          => 'CHI',
     driver         => 'File',
-    root_dir       => '/usr/local/wormbase/shared/cache',
+    root_dir       => "$ENV{APP_ROOT}/cache",
     store          => 'File',
     depth          => 3,
     max_key_length => 64,
@@ -195,7 +191,7 @@ __PACKAGE__->config->{'Plugin::Cache'}{backends}{default} = {
 #__PACKAGE__->config->{'Plugin::Cache'}{backend} = {
 #    class          => 'CHI',
 #    driver         => 'File',
-#    root_dir       => '/usr/local/wormbase/shared/cache',
+#    root_dir       => "$ENV{APP_ROOT}/cache",
 #    store          => 'File',
 #    depth          => 3,
 #    max_key_length => 64,
@@ -235,11 +231,12 @@ after prepare_path => sub {
 
 
 sub finalize_error {
-	my $c = shift;
-	$c->config->{'response_status'}=$c->response->status;
-	$c->config->{'Plugin::ErrorCatcher'}->{'emit_module'} = ["Catalyst::Plugin::ErrorCatcher::Email", "WormBase::Web::ErrorCatcherEmit"];
- 	shift @{$c->config->{'Plugin::ErrorCatcher'}->{'emit_module'}} unless(is_server_error($c->config->{'response_status'})); 
-	$c->maybe::next::method; 
+    my $c = shift;
+    $c->config->{'response_status'}=$c->response->status;
+    $c->config->{'Plugin::ErrorCatcher'}->{'emit_module'} 
+    = ["Catalyst::Plugin::ErrorCatcher::Email", "App::Web::ErrorCatcherEmit"];
+    shift @{$c->config->{'Plugin::ErrorCatcher'}->{'emit_module'}} unless (is_server_error($c->config->{'response_status'})); 
+    $c->maybe::next::method; 
 }
 
 
@@ -281,7 +278,7 @@ sub check_cache {
     # First, has this content been precached?
     # CouchDB. Located on localhost.
     if ($cache_name eq 'couchdb') {
-	my $couch = WormBase::Web->model('CouchDB');
+	my $couch = App::Web->model('CouchDB');
 	my $host  = $couch->read_host;
 	my $port  = $couch->read_host_port;
 	
@@ -291,7 +288,7 @@ sub check_cache {
 	# We MAY want to parameterize this in the future
 	# so that we can fetch documents, too.
 	my $content = $couch->get_attachment({uuid     => $uuid,
-					      database => lc($self->model('WormBaseAPI')->version),
+					      database => lc($self->model('ExternalModel')->version),
 					     });
 	if ($content) {
 	    $self->log->debug("CACHE: $uuid: ALREADY CACHED in couchdb at $host:$port; retrieving attachment");
@@ -369,7 +366,7 @@ sub set_cache {
     # we will still try and cache it to the core resulting in a conflict.
     if ($cache_name eq 'couchdb') {
 
-	my $couch = WormBase::Web->model('CouchDB');
+	my $couch = App::Web->model('CouchDB');
 
 	# CouchDB Kludge
 	# Make sure the document doesn't already exist.
@@ -377,7 +374,7 @@ sub set_cache {
 	# but attachments may not be available yet.
 	# In these cases, simply return without setting the cache.
 #	return 1 if ($couch->get_document({uuid     => $uuid,
-#					 database => lc($self->model('WormBaseAPI')->version),
+#					 database => lc($self->model('ExternalModel')->version),
 #					}));
 		   
 	my $host = $couch->write_host;
@@ -385,7 +382,7 @@ sub set_cache {
 
 	my $response = $couch->create_document({attachment => $data,
 						uuid       => $uuid,			     
-						database   => lc($self->model('WormBaseAPI')->version),
+						database   => lc($self->model('ExternalModel')->version),
 					       });
 
 	# Instead of pre-checking for cases where newly added documents/attachments
@@ -563,23 +560,23 @@ sub _widget_is_precached {
 
 =head1 NAME
 
-WormBase - Catalyst based application
+Application - Generic Catalyst based application
 
 =head1 SYNOPSIS
 
-    script/wormbase_server.pl
+  script/app_server.pl -p PORT
 
 =head1 DESCRIPTION
 
-WormBase - the WormBase web application
+App - A generic Catalyst based web-application.
 
 =head1 SEE ALSO
 
-L<WormBase::Controller::Root>, L<Catalyst>
+L<App::Web::Controller::Root>, L<Catalyst>
 
 =head1 AUTHOR
 
-Todd Harris
+Todd Harris (todd@hiline.co)
 
 =head1 LICENSE
 

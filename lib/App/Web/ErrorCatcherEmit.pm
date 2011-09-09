@@ -1,4 +1,4 @@
-package WormBase::Web::ErrorCatcherEmit;
+package App::Web::ErrorCatcherEmit;
 
 use strict;
 use warnings;
@@ -13,7 +13,7 @@ sub emit {
       $template  = "status/error.tt2";
     }
 
-    #trim out unwanted line
+    # Purge unwanted new lines. Unsure of provenance.
     my @errors;
     foreach (@{$c->error}) {
 	push @errors, split /\n/, $_;

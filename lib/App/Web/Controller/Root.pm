@@ -26,8 +26,7 @@ Root level controller actions for the App web application.
  
 sub index :Path Args(0) {
     my ($self,$c) = @_;
-    $c->stash->{template} = 'index.tt2';
-    $c->log->warn($c->config->{memcached}->{servers});
+    $c->stash->{template} = 'index.tt2';  # This should be unecessary.  make sure it is.
     my $page = $c->model('Schema::Page')->find({url=>"/"});
     my @widgets = $page->static_widgets if $page;
     $c->stash->{static_widgets} = \@widgets if (@widgets);

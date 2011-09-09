@@ -1,4 +1,5 @@
-package WormBase::Web::Model::Schema;
+#package App::Web::Model::Schema;
+package App::Web::Model::Schema;
 
 use strict;
 use base 'Catalyst::Model::DBIC::Schema';

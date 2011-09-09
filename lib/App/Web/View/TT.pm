@@ -9,14 +9,14 @@ __PACKAGE__->config({
 				      App::Web->path_to( 'templates' ),
 				      App::Web->path_to( 'templates' , 'config'),
 				      App::Web->path_to( 'static',    'css'    ),
-				      WormBase::Web->path_to( 'static',    'css', 'flora'    ),			 
+				      App::Web->path_to( 'static',    'css', 'flora'    ),
 				     ],
-		     PRE_PROCESS  => ['config/main','shared/page_elements.tt2'],
+		     PRE_PROCESS  => ['config/main','core_elements.tt2'],
 		     WRAPPER      => 'wrapper.tt2',
 #		     ERROR        => 'error',
 		     TEMPLATE_EXTENSION => '.tt2',
 		     RECURSION    => 1,
-			 EVAL_PERL => 1,
+		     EVAL_PERL => 1,
 		     # Automatically pre- and post-chomp to keep
 		     # templates simpler and output cleaner.
 		     # Might want to use "2" instead, which collapses.
@@ -34,8 +34,8 @@ __PACKAGE__->config({
 #		     TIMER        => 1,
 		     DEBUG        => 1,
 		     CONSTANTS    => {
-			 acedb_version => sub {
-			     WormBase::Web->model('WormBaseAPI')->version
+			 database_version => sub {
+			     App::Web->model('ExternalModel')->version
 			 }
 		     },
 		    });
@@ -44,7 +44,7 @@ __PACKAGE__->config({
 
 =head1 NAME
 
-WormBase::Web::View::TT - Catalyst View
+App::Web::View::TT - Catalyst View
 
 =head1 SYNOPSIS
 
@@ -56,12 +56,11 @@ Catalyst View.
 
 =head1 AUTHOR
 
-Todd Harris
+Todd Harris (todd@hiline.co)
 
 =head1 LICENSE
 
-This library is free software, you can redistribute it and/or modify
-it under the same terms as Perl itself.
+This library is copyright @ 2011 Hi-Line Informatics, LLC.
 
 =cut
 
