@@ -3,8 +3,11 @@
 use strict;
 use warnings;
 
+use FoxPro::Parser;
+
 MAIN: {
-	;
+	my $parser = FoxPro::Parser->new();
+	
 }
 
 1;
