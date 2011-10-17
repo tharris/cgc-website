@@ -7,7 +7,10 @@ use FoxPro::Parser;
 
 MAIN: {
 	my $parser = FoxPro::Parser->new();
-	
+	$parser->filename($ARGV[0]);
+	while (my $record = $parser->next_record()) {
+	    print $record->as_tsv(), "\n";
+	}
 }
 
 1;
