@@ -3,3 +3,10 @@ extlib/
 *~
 *.sav
 *.save
+*.bbprojectd/
+*.tmproj
+
+# Auto-generated:
+inc/Module/
+/*META.yml
+Makefile
