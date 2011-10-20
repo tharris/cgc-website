@@ -1,0 +1,40 @@
+Shiran Pasternak
+shiranpasternak@gmail.com
+
+Some notes and questions about the existing data dumps.
+
+LABLIST
+=======
+Columns: Updated, Flag, Code, Allele, Name, Country, Location, Namelocat, AnnFeePd, Commercial
+
+* Cardinality for Column 2 (Flag):
+'#'	2688
+'$'	3
+(blank)	864
+Is this column needed?
+
+* Column 3 (Code): 2688 values numeric, 867 values non-numeric. Is this a foreign key?
+
+* Column 10 (Commercial):
+N	2274
+AC	1188
+CO	71
+58	1
+A5	1
+CC	1
+Y	1
+(blank)	18
+
+CGCMAIL
+=======
+Columns: Transnum,Strain,Code,Lab_member,Date,Fee,Invoice,Invsent,Comment
+
+TRANSREC
+========
+Columns: Transnum,Orderdate,Lab_member,Code,Invoice,POnumber,,Amountbill,AnnFeeIncl,Invsent,,Paid,AmountPaid,Form,Comment
+
+STRAIN
+======
+* Is 'outcrossed' the number of times? Can it be ambiguous (e.g., 'x>1', 'x>2').
+* 'made by' could this be tied to the laboratory table, or is the laboratory table strictly for customers?
+* What does 'received' (date + location) mean? Is the strain received by CGC or elsewhere?
