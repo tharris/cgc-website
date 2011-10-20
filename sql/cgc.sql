@@ -7,7 +7,7 @@
 #
 # Host: localhost (MySQL 5.5.15)
 # Database: cgc
-# Generation Time: 2011-10-20 02:48:54 +0000
+# Generation Time: 2011-10-20 15:30:20 +0000
 # ************************************************************
 
 
@@ -18,6 +18,19 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+# Dump of table genotype
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `genotype`;
+
+CREATE TABLE `genotype` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 
 # Dump of table lab_order
@@ -48,9 +61,35 @@ CREATE TABLE `laboratory` (
   `address1` varchar(255) DEFAULT NULL,
   `address2` varchar(255) DEFAULT NULL,
   `state` char(2) DEFAULT NULL,
-  `zip` decimal(5,0) DEFAULT NULL,
+  `zip` decimal(5,0) unsigned DEFAULT NULL,
   `country` varchar(255) DEFAULT NULL,
   `commercial` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Dump of table mutagen
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `mutagen`;
+
+CREATE TABLE `mutagen` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(15) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Dump of table species
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `species`;
+
+CREATE TABLE `species` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -63,7 +102,21 @@ DROP TABLE IF EXISTS `strain`;
 
 CREATE TABLE `strain` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`id`)
+  `name` varchar(20) NOT NULL DEFAULT '',
+  `species_id` int(11) unsigned DEFAULT NULL,
+  `description` mediumtext,
+  `outcrossed` tinyint(2) unsigned DEFAULT NULL COMMENT 'Number of times outcrossed? Another table?',
+  `mutagen_id` int(11) unsigned DEFAULT NULL,
+  `genotype_id` int(11) unsigned DEFAULT NULL,
+  `received` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `made_by` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `strain_genotype_fk` (`genotype_id`),
+  KEY `strain_mutagen_fk` (`mutagen_id`),
+  KEY `strain_species_fk` (`species_id`),
+  CONSTRAINT `strain_genotype_fk` FOREIGN KEY (`genotype_id`) REFERENCES `genotype` (`id`),
+  CONSTRAINT `strain_mutagen_fk` FOREIGN KEY (`mutagen_id`) REFERENCES `mutagen` (`id`),
+  CONSTRAINT `strain_species_fk` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
