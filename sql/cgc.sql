@@ -5,9 +5,9 @@
 # http://www.sequelpro.com/
 # http://code.google.com/p/sequel-pro/
 #
-# Host: localhost (MySQL 5.5.10)
+# Host: localhost (MySQL 5.5.15)
 # Database: cgc
-# Generation Time: 2011-10-20 02:12:15 +0000
+# Generation Time: 2011-10-20 02:45:37 +0000
 # ************************************************************
 
 
@@ -18,6 +18,23 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+# Dump of table lab_order
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `lab_order`;
+
+CREATE TABLE `lab_order` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `laboratory_id` int(11) unsigned DEFAULT NULL,
+  `strain_id` int(11) unsigned DEFAULT NULL,
+  `order_date` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `lab_order_strain_fk` FOREIGN KEY (`id`) REFERENCES `strain` (`id`),
+  CONSTRAINT `lab_order_laboratory_fk` FOREIGN KEY (`id`) REFERENCES `laboratory` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 
 # Dump of table laboratory
@@ -38,14 +55,13 @@ CREATE TABLE `laboratory` (
 
 
 
-# Dump of table lab_order
+# Dump of table strain
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `lab_order`;
+DROP TABLE IF EXISTS `strain`;
 
-CREATE TABLE `lab_order` (
+CREATE TABLE `strain` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `laboratory_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
