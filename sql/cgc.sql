@@ -7,7 +7,7 @@
 #
 # Host: localhost (MySQL 5.5.15)
 # Database: cgc
-# Generation Time: 2011-10-20 02:45:37 +0000
+# Generation Time: 2011-10-20 02:48:54 +0000
 # ************************************************************
 
 
@@ -49,6 +49,7 @@ CREATE TABLE `laboratory` (
   `address2` varchar(255) DEFAULT NULL,
   `state` char(2) DEFAULT NULL,
   `zip` decimal(5,0) DEFAULT NULL,
+  `country` varchar(255) DEFAULT NULL,
   `commercial` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
