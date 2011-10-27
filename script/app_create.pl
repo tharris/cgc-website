@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Catalyst::ScriptRunner;
-Catalyst::ScriptRunner->run('WormBase::Web', 'Create');
+Catalyst::ScriptRunner->run('CGC::Web', 'Create');
 
 1;
 

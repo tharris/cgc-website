@@ -79,7 +79,7 @@ requires 'Moose'                                 => '1.21';      #
 #requires 'MooseX::AbstractFactory';                              #
 #requires 'MooseX::NonMoose';                                     # => '0.17';
 #requires 'MooseX::MethodAttributes::Inheritable';                # => '0.24';
-#requires 'MooseX::Role::WithOverloading';                        # => '0.05';
+requires 'MooseX::Role::WithOverloading';                        # => '0.05';
 #requires 'MRO::Compat';                                          #
 #requires 'Net::Twitter';                                         #
 #requires 'Net::OAuth::Simple';                                   #
@@ -103,6 +103,7 @@ requires 'Moose'                                 => '1.21';      #
 #requires 'Text::Glob';                                           #
 #requires 'Text::WikiText';                                       #
 #requires 'Time::Duration';                                       #
+requires 'Variable::Magic';
 #requires 'WWW::Mechanize';                                       #
 #requires 'XML::Simple';                                          #
 #requires 'YAML';                                                 #

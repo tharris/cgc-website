@@ -5,7 +5,7 @@ BEGIN {
 }
 
 use Catalyst::ScriptRunner;
-Catalyst::ScriptRunner->run('WormBase::Web', 'Server');
+Catalyst::ScriptRunner->run('CGC::Web', 'Server');
 
 1;
 
