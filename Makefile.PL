@@ -48,6 +48,7 @@ requires 'Catalyst::Plugin::Static::Simple';
 #requires 'Cache::Memcached::libmemcached';                       #
 #requires 'CGI::Simple::Cookie';                                  #
 requires 'Config::General';                                      #
+requires 'Config::Tiny';                                         #
 #requires 'Crypt::SaltedHash';                                    # => '0.06';
 #requires 'Crypt::SSLeay'; 			                 # For openid support
 #requires 'CHI';                                                  # Cache
