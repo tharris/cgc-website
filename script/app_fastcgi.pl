@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 use Catalyst::ScriptRunner;
-Catalyst::ScriptRunner->run('WormBase::Web', 'FastCGI');
+Catalyst::ScriptRunner->run('CGC::Web', 'FastCGI');
 
 1;
 

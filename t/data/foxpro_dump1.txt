@@ -1,0 +1,29 @@
+23,|CB3214|,|GS|,|Cathy Savage|,08/03/1992,| |,||,08/11/1992,|ok|
+23,|CB4043|,|GS|,|Cathy Savage|,08/03/1992,| |,||,08/11/1992,|ok|
+23,|CB4354|,|GS|,|Cathy Savage|,08/03/1992,| |,||,08/11/1992,|ok|
+23,|CB4355|,|GS|,|Cathy Savage|,08/03/1992,| |,||,08/11/1992,|ok|
+23,|TR1335|,|GS|,|Cathy Savage|,08/03/1992,| |,||,08/11/1992,|ok|
+23,|TR1336|,|GS|,|Cathy Savage|,08/03/1992,| |,||,08/11/1992,|ok|
+10,|C. remanei|,| 161|,|George Fox|,08/03/1992,| |,|t|,08/05/1992,|moldy|
+5,|BC1782|,|PD|,|Joohong Ahnn|,08/03/1992,| |,||,/  /,||
+5,|BC3470|,|PD|,|Joohong Ahnn|,08/03/1992,| |,||,/  /,||
+5,|BC3473|,|PD|,|Joohong Ahnn|,08/03/1992,| |,||,/  /,||
+5,|BC3476|,|PD|,|Joohong Ahnn|,08/03/1992,| |,||,/  /,||
+5,|BC3541|,|PD|,|Joohong Ahnn|,08/03/1992,| |,||,/  /,||
+5,|BC3727|,|PD|,|Joohong Ahnn|,08/03/1992,| |,||,/  /,||
+5,|BC3955|,|PD|,|Joohong Ahnn|,08/03/1992,| |,||,/  /,||
+5,|BC3957|,|PD|,|Joohong Ahnn|,08/03/1992,| |,||,/  /,||
+5,|BC3958|,|PD|,|Joohong Ahnn|,08/03/1992,| |,||,/  /,||
+5,|BC2507|,|PD|,|Joohong Ahnn|,08/03/1992,| |,||,/  /,||
+5,|BC2837|,|PD|,|Joohong Ahnn|,08/03/1992,| |,||,/  /,||
+5,|BC3100|,|PD|,|Joohong Ahnn|,08/03/1992,| |,||,/  /,||
+5,|GG52|,|PD|,|Joohong Ahnn|,08/03/1992,| |,||,/  /,||
+20,|MT2583|,|TR|,|Ed Maryon|,08/03/1992,| |,||,08/05/1992,|good|
+3,|BE8|,|JT|,|Betsy Malone|,08/03/1992,| |,|t|,/  /,|Bacterial contaminant|
+3,|CB257|,|JT|,|Betsy Malone|,08/03/1992,| |,|t|,/  /,|Bacterial Contaminant|
+9,|DR799|,|MT|,|Erik Jorgensen|,08/03/1992,| |,||,/  /,||
+11,|CB927|,|MT|,|Andrew Chisholm|,08/03/1992,| |,||,/  /,||
+2,|CB3203|,|PB|,|Scott Baird|,08/03/1992,| |,||,08/07/1992,|good|
+2,|CB3257|,|PB|,|Scott Baird|,08/03/1992,| |,||,08/07/1992,|good|
+2,|MT2547|,|PB|,|Scott Baird|,08/03/1992,| |,||,08/07/1992,|good|
+58,|MT2434|,|PB|,|Scott Baird|,08/26/1992,| |,||,09/07/1992,|1st time only Dpys, 2nd try ok|

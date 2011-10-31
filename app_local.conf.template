@@ -94,7 +94,7 @@ register_email = you@youremail.org
 
 # wormbase_user exists only on wb-web6 (206.108.125.165)
 #<Model::Schema>
-#  schema_class = WormBase::Schema
+#  schema_class = CGC::Schema
 #  <connect_info>  
 #        dsn =  dbi:mysql:wormbase_user:hostname=localhost
 #        user = wormbase
