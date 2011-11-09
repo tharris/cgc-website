@@ -5,6 +5,7 @@ extlib/
 *.save
 *.bbprojectd/
 *.tmproj
+.DS_store
 
 # Auto-generated:
 inc/Module/

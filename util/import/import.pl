@@ -8,7 +8,7 @@ use Readonly;
 use Pod::Usage;
 use IO::Dir;
 use IO::Handle;
-use Config::General qw/ParseConfig/;
+use Config::Tiny;
 use Data::Dumper;
 
 MAIN: {
@@ -19,10 +19,10 @@ MAIN: {
     if ($options{man})  { pod2usage(-verbose => 2); }
 
     $options{conf} ||= './import.conf';
-    my %conf = load_import_configuration($options{conf});
+    my $conf = load_import_configuration($options{conf});
     $options{dir} ||= '.';
 
-    print Data::Dumper::Dumper(%conf);
+    print Data::Dumper::Dumper($conf);
     exit 0;
 
     my $io = IO::Dir->new();
@@ -40,7 +40,7 @@ MAIN: {
 =cut
 sub load_import_configuration {
     my ($filename) = @_;
-    return ParseConfig($filename);
+    return Config::Tiny->read($filename);
 }
 
 
