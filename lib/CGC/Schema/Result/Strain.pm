@@ -1,4 +1,4 @@
-package App::Schema::CGC::Result::Strain;
+package CGC::Schema::Result::Strain;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
@@ -15,7 +15,7 @@ __PACKAGE__->load_components("InflateColumn::DateTime");
 
 =head1 NAME
 
-App::Schema::CGC::Result::Strain
+CGC::Schema::Result::Strain
 
 =cut
 
@@ -131,17 +131,32 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
+=head2 freezer_samples
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::FreezerSample>
+
+=cut
+
+__PACKAGE__->has_many(
+  "freezer_samples",
+  "CGC::Schema::Result::FreezerSample",
+  { "foreign.strain_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 lab_order
 
 Type: might_have
 
-Related object: L<App::Schema::CGC::Result::LabOrder>
+Related object: L<CGC::Schema::Result::LabOrder>
 
 =cut
 
 __PACKAGE__->might_have(
   "lab_order",
-  "App::Schema::CGC::Result::LabOrder",
+  "CGC::Schema::Result::LabOrder",
   { "foreign.id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -150,13 +165,13 @@ __PACKAGE__->might_have(
 
 Type: belongs_to
 
-Related object: L<App::Schema::CGC::Result::Genotype>
+Related object: L<CGC::Schema::Result::Genotype>
 
 =cut
 
 __PACKAGE__->belongs_to(
   "genotype",
-  "App::Schema::CGC::Result::Genotype",
+  "CGC::Schema::Result::Genotype",
   { id => "genotype_id" },
   {
     is_deferrable => 1,
@@ -170,13 +185,13 @@ __PACKAGE__->belongs_to(
 
 Type: belongs_to
 
-Related object: L<App::Schema::CGC::Result::Mutagen>
+Related object: L<CGC::Schema::Result::Mutagen>
 
 =cut
 
 __PACKAGE__->belongs_to(
   "mutagen",
-  "App::Schema::CGC::Result::Mutagen",
+  "CGC::Schema::Result::Mutagen",
   { id => "mutagen_id" },
   {
     is_deferrable => 1,
@@ -190,13 +205,13 @@ __PACKAGE__->belongs_to(
 
 Type: belongs_to
 
-Related object: L<App::Schema::CGC::Result::Species>
+Related object: L<CGC::Schema::Result::Species>
 
 =cut
 
 __PACKAGE__->belongs_to(
   "species",
-  "App::Schema::CGC::Result::Species",
+  "CGC::Schema::Result::Species",
   { id => "species_id" },
   {
     is_deferrable => 1,
@@ -207,8 +222,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-10-27 17:33:44
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:a67b2iS7NU1FE980jLhh/g
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-11-09 21:54:50
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:zPCIT2GgOTmr+Oooutijkg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

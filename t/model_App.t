@@ -3,6 +3,6 @@ use warnings;
 use Test::More;
 use Test::More;
 
-BEGIN { use_ok 'CGC::Web::Model::CGC' }
+BEGIN { use_ok 'CGC::Web::Model::App' }
 
 done_testing();

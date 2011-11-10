@@ -1,13 +1,13 @@
 # ************************************************************
 # Sequel Pro SQL dump
-# Version 3448
+# Version 3451
 #
 # http://www.sequelpro.com/
 # http://code.google.com/p/sequel-pro/
 #
 # Host: localhost (MySQL 5.5.15)
 # Database: cgc
-# Generation Time: 2011-10-20 15:30:20 +0000
+# Generation Time: 2011-10-31 19:53:23 +0000
 # ************************************************************
 
 
@@ -18,6 +18,40 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+# Dump of table freezer
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `freezer`;
+
+CREATE TABLE `freezer` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) DEFAULT '',
+  `location` char(10) DEFAULT NULL COMMENT 'Not sure yet how to represent location',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Dump of table freezer_sample
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `freezer_sample`;
+
+CREATE TABLE `freezer_sample` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `freezer_id` int(11) unsigned DEFAULT NULL,
+  `strain_id` int(11) unsigned DEFAULT NULL,
+  `vials` tinyint(11) unsigned DEFAULT NULL,
+  `freeze_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `freezer_sample_freezer_fk` (`freezer_id`),
+  KEY `freezer_sample_strain_fk` (`strain_id`),
+  CONSTRAINT `freezer_sample_strain_fk` FOREIGN KEY (`strain_id`) REFERENCES `strain` (`id`),
+  CONSTRAINT `freezer_sample_freezer_fk` FOREIGN KEY (`freezer_id`) REFERENCES `freezer` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 
 # Dump of table genotype
@@ -44,8 +78,8 @@ CREATE TABLE `lab_order` (
   `strain_id` int(11) unsigned DEFAULT NULL,
   `order_date` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  CONSTRAINT `lab_order_strain_fk` FOREIGN KEY (`id`) REFERENCES `strain` (`id`),
-  CONSTRAINT `lab_order_laboratory_fk` FOREIGN KEY (`id`) REFERENCES `laboratory` (`id`)
+  CONSTRAINT `lab_order_laboratory_fk` FOREIGN KEY (`id`) REFERENCES `laboratory` (`id`),
+  CONSTRAINT `lab_order_strain_fk` FOREIGN KEY (`id`) REFERENCES `strain` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

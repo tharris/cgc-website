@@ -1,4 +1,4 @@
-package App::Schema::CGC::Result::Mutagen;
+package CGC::Schema::Result::Freezer;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
@@ -15,11 +15,11 @@ __PACKAGE__->load_components("InflateColumn::DateTime");
 
 =head1 NAME
 
-App::Schema::CGC::Result::Mutagen
+CGC::Schema::Result::Freezer
 
 =cut
 
-__PACKAGE__->table("mutagen");
+__PACKAGE__->table("freezer");
 
 =head1 ACCESSORS
 
@@ -33,8 +33,15 @@ __PACKAGE__->table("mutagen");
 =head2 name
 
   data_type: 'varchar'
+  default_value: (empty string)
   is_nullable: 1
-  size: 15
+  size: 50
+
+=head2 location
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 10
 
 =cut
 
@@ -47,30 +54,32 @@ __PACKAGE__->add_columns(
     is_nullable => 0,
   },
   "name",
-  { data_type => "varchar", is_nullable => 1, size => 15 },
+  { data_type => "varchar", default_value => "", is_nullable => 1, size => 50 },
+  "location",
+  { data_type => "char", is_nullable => 1, size => 10 },
 );
 __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 strains
+=head2 freezer_samples
 
 Type: has_many
 
-Related object: L<App::Schema::CGC::Result::Strain>
+Related object: L<CGC::Schema::Result::FreezerSample>
 
 =cut
 
 __PACKAGE__->has_many(
-  "strains",
-  "App::Schema::CGC::Result::Strain",
-  { "foreign.mutagen_id" => "self.id" },
+  "freezer_samples",
+  "CGC::Schema::Result::FreezerSample",
+  { "foreign.freezer_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-10-27 17:33:44
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:/VvYlwDuoN6hfJBsWwH5Ag
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-11-09 21:54:50
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:eRJ9kDN4SqiYKg5ale1lSQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

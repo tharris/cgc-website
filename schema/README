@@ -25,6 +25,13 @@ CC	1
 Y	1
 (blank)	18
 
+FRZLOC
+======
+Columns:Strain,Bigliqloc,Liqloc,Liqvials,Revloc,Revvials,BigLiqFrz,LiqFrz, RevFrz
+
+* How is location represented here?
+* What's rev?
+
 CGCMAIL
 =======
 Columns: Transnum,Strain,Code,Lab_member,Date,Fee,Invoice,Invsent,Comment

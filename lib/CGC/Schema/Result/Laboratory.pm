@@ -1,4 +1,4 @@
-package App::Schema::CGC::Result::Laboratory;
+package CGC::Schema::Result::Laboratory;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
@@ -15,7 +15,7 @@ __PACKAGE__->load_components("InflateColumn::DateTime");
 
 =head1 NAME
 
-App::Schema::CGC::Result::Laboratory
+CGC::Schema::Result::Laboratory
 
 =cut
 
@@ -111,20 +111,20 @@ __PACKAGE__->set_primary_key("id");
 
 Type: might_have
 
-Related object: L<App::Schema::CGC::Result::LabOrder>
+Related object: L<CGC::Schema::Result::LabOrder>
 
 =cut
 
 __PACKAGE__->might_have(
   "lab_order",
-  "App::Schema::CGC::Result::LabOrder",
+  "CGC::Schema::Result::LabOrder",
   { "foreign.id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-10-27 17:33:44
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dwYDpFklCLzK4K2ZVOJmsg
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-11-09 21:54:50
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:gt36nGp54yNT8x9oXlhmYA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
