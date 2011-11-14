@@ -5,7 +5,11 @@ use Exporter 'import';
 use strict;
 use warnings;
 
+use Readonly;
+
 our @EXPORT_OK = qw(curry_tsv_processor curry_ego_processor);
+
+Readonly my $EGO_FIELDNAME_LENGTH => 13;
 
 =head2 curry_tsv_processor
 
@@ -61,11 +65,12 @@ sub curry_ego_processor {
         if ($line =~ m/^\s*\-+\s*/) {    # Item delimiter
             $set_item_key->();
             push @$input, $item;
-            $index->{$item->{$primary}} = $item;
+            $index->{ $item->{$primary} } = $item;
             $item = {};
             return;
         }
-        my ($key, $value) = unpack('A11 x A*', $line);    # Key: Value
+        my ($key, $value)
+            = unpack("A$EGO_FIELDNAME_LENGTH x A*", $line);    # Key: Value
         $key   =~ s/^\s+|\s+$//g;
         $value =~ s/^\s+|\s+$//g;
         if ($key ne '') {

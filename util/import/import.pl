@@ -68,10 +68,10 @@ Readonly my %IMPORTS => (
             qw(
                 strain     species    genotype   description mutagen
                 outcrossed reference  made_by    received
-            )
+                )
         ],
-        primary => 'name',
-        type => 'vertical',
+        primary   => 'strain',
+        type      => 'vertical',
         extension => 'ego',
     },
 );
@@ -198,6 +198,9 @@ sub load_import_file {
     my ($primary_idx)
         = grep { $conf->{fields}->[$_] eq $conf->{primary} }
         (0 .. $#{ $conf->{fields} });
+    die "Primary index could not be determined for "
+        . " $conf->{type}:$conf->{primary}. Aborting\n"
+        unless (defined $primary_idx);
     DEBUG("Primary ($conf->{primary}) at index $primary_idx");
 
     my $process_currier;
@@ -245,6 +248,53 @@ sub populate_schema {
 
     # my $freezer = $schema->resultset('Freezer')->new({ name => 'Shiran' });
     # $freezer->insert();
+}
+
+=head2 load_strains
+
+    Populate strain data in the database
+
+=cut
+
+sub load_strains {
+    my ($schema, $strains) = @_;
+
+    my $finder = sub {
+        my ($input, $table) = @_;
+        return find_or_create($schema, $table, { name => $input->{$table} });
+    };
+    for my $input (@{ $strains->[0] }) {
+        my $strain = $schema->resultset('Strain')->new(
+            {   name        => $input->{'Strain'},
+                description => $input->{'Description'},
+                received    => $input->{'Received'},
+                made_by     => $input->{'Made by'},
+                outcrossed  => $input->{'Outcrossed'},
+                mutagen     => $finder->($input, 'Mutagen'),
+                genotype    => $finder->($input, 'Genotype'),
+                species     => $finder->($input, 'Species'),
+
+            }
+        );
+        $strain->insert();
+    }
+}
+
+=head2 find_or_create
+
+    Find a schema object based on params. If doesn't exist, create.
+
+=cut
+
+sub find_or_create {
+    my ($schema, $name, $params) = @_;
+    my $resultset = $schema->resultset($name);
+    my $object    = $resultset->find($params);
+    if (!$object) {
+        $object = $resultset->new($params);
+        $object->insert();
+    }
+    return $object;
 }
 
 =head1 NAME
