@@ -1,13 +1,13 @@
 # ************************************************************
 # Sequel Pro SQL dump
-# Version 3451
+# Version 3452
 #
 # http://www.sequelpro.com/
 # http://code.google.com/p/sequel-pro/
 #
 # Host: localhost (MySQL 5.5.15)
 # Database: cgc
-# Generation Time: 2011-10-31 19:53:23 +0000
+# Generation Time: 2011-11-14 16:03:57 +0000
 # ************************************************************
 
 
@@ -48,8 +48,8 @@ CREATE TABLE `freezer_sample` (
   PRIMARY KEY (`id`),
   KEY `freezer_sample_freezer_fk` (`freezer_id`),
   KEY `freezer_sample_strain_fk` (`strain_id`),
-  CONSTRAINT `freezer_sample_strain_fk` FOREIGN KEY (`strain_id`) REFERENCES `strain` (`id`),
-  CONSTRAINT `freezer_sample_freezer_fk` FOREIGN KEY (`freezer_id`) REFERENCES `freezer` (`id`)
+  CONSTRAINT `freezer_sample_freezer_fk` FOREIGN KEY (`freezer_id`) REFERENCES `freezer` (`id`),
+  CONSTRAINT `freezer_sample_strain_fk` FOREIGN KEY (`strain_id`) REFERENCES `strain` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -139,7 +139,7 @@ CREATE TABLE `strain` (
   `name` varchar(20) NOT NULL DEFAULT '',
   `species_id` int(11) unsigned DEFAULT NULL,
   `description` mediumtext,
-  `outcrossed` tinyint(2) unsigned DEFAULT NULL COMMENT 'Number of times outcrossed? Another table?',
+  `outcrossed` char(2) DEFAULT NULL COMMENT 'Number of times outcrossed? Another table?',
   `mutagen_id` int(11) unsigned DEFAULT NULL,
   `genotype_id` int(11) unsigned DEFAULT NULL,
   `received` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,

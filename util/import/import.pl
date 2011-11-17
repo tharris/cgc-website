@@ -244,27 +244,27 @@ sub populate_schema {
         qw/dsn user password/;
     DEBUG('Connecting to database');
     my $schema = CGC::Schema->connect(@connect_info);
-    load_strains($schema, $import->{strain});
-
-    # my $freezer = $schema->resultset('Freezer')->new({ name => 'Shiran' });
-    # $freezer->insert();
+    # populate_strains($schema, $import->{strain});
+    populate_laboratories($schema, $import->{lablist});
+    populate_freezers($schema, $import->{frzloc});
 }
 
-=head2 load_strains
+=head2 populate_strains
 
     Populate strain data in the database
 
 =cut
 
-sub load_strains {
+sub populate_strains {
     my ($schema, $strains) = @_;
 
     my $finder = sub {
         my ($input, $table) = @_;
         return find_or_create($schema, $table, { name => $input->{$table} });
     };
+    my $resultset = $schema->resultset('Strain');
     for my $input (@{ $strains->[0] }) {
-        my $strain = $schema->resultset('Strain')->new(
+        my $strain = $resultset->new(
             {   name        => $input->{'Strain'},
                 description => $input->{'Description'},
                 received    => $input->{'Received'},
@@ -273,12 +273,35 @@ sub load_strains {
                 mutagen     => $finder->($input, 'Mutagen'),
                 genotype    => $finder->($input, 'Genotype'),
                 species     => $finder->($input, 'Species'),
-
             }
         );
         $strain->insert();
     }
 }
+
+sub populate_laboratories {
+    my ($schema, $labs) = @_;
+    my $resultset = $schema->resultset('Laboratory');
+    for my $input (@{ $labs->[0] }) {
+        DEBUG(Data::Dumper::Dumper($input));
+        # my $laboratory = $resultset->new(
+        #     {
+        #         name => $input->{name},
+        #         
+        #     }
+        # );
+    }
+}
+
+=head2 populate_freezers
+
+    Populates freezer-related tables
+
+=cut
+sub populate_freezers {
+    # body...
+}
+
 
 =head2 find_or_create
 
