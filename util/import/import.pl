@@ -249,6 +249,7 @@ sub populate_schema {
     populate_strains($schema, $import->{strain});
     populate_laboratories($schema, $import->{lablist});
     populate_freezers($schema, $import->{frzloc});
+    populate_transactions($schema, $import->{transrec});
 }
 
 =head2 populate_strains
@@ -286,6 +287,7 @@ sub populate_strains {
 sub populate_laboratories {
     my ($schema, $labs) = @_;
     my $resultset = $schema->resultset('Laboratory');
+    my $legacy_rs = $schema->resultset('LegacyLablist');
     for my $input (@{ $labs->[0] }) {
         my $labdata = App::Util::Import::Parser::parse_lab_name($input);
         my $is_commercial
@@ -299,6 +301,15 @@ sub populate_laboratories {
                 country     => $input->country,
             }
         );
+        
+        # Add legacy data and associate with laboratory.
+        my $rawdata = join("\t",
+            map { $input->{$_} } @{ $IMPORTS{lablist}->{fields} });
+        $legacy_rs->find_or_create(
+            {   laboratory => $laboratory,
+                entry      => $rawdata,
+            }
+        );
     }
 }
 
@@ -309,9 +320,29 @@ sub populate_laboratories {
 =cut
 
 sub populate_freezers {
-
-    # body...
+    my ($schema, $freezers) = @_;
+    my $freezer_rs = $schema->resultset('Freezer');
+    my $sample_rs  = $schema->resultset('FreezerSample');
+    my $legacy_rs  = $schema->resultset('FrzLoc');
+    
+    for my $input (@{ $freezers->[0] }) {
+        
+    }
 }
+
+=head2 populate_transactions
+
+    Populate the lab orders in the database.
+
+=cut
+sub populate_transactions {
+    my ($schema, $transactions) = @_;
+    my $orders = $schema->resultset('LabOrder');
+    for my $input (@{ $transactions->[0] }) {
+        
+    }
+}
+
 
 =head2 find_or_create
 
