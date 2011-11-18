@@ -51,9 +51,9 @@ __PACKAGE__->table("strain");
 
 =head2 outcrossed
 
-  data_type: 'tinyint'
-  extra: {unsigned => 1}
+  data_type: 'char'
   is_nullable: 1
+  size: 2
 
 =head2 mutagen_id
 
@@ -103,7 +103,7 @@ __PACKAGE__->add_columns(
   "description",
   { data_type => "mediumtext", is_nullable => 1 },
   "outcrossed",
-  { data_type => "tinyint", extra => { unsigned => 1 }, is_nullable => 1 },
+  { data_type => "char", is_nullable => 1, size => 2 },
   "mutagen_id",
   {
     data_type => "integer",
@@ -128,6 +128,7 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 50 },
 );
 __PACKAGE__->set_primary_key("id");
+__PACKAGE__->add_unique_constraint("strain_name_unique", ["name"]);
 
 =head1 RELATIONS
 
@@ -222,8 +223,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-11-09 21:54:50
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:zPCIT2GgOTmr+Oooutijkg
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-11-17 19:39:56
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xQV0AxqavlPR7vCZLiU+5A
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -18,6 +18,7 @@ use FindBin;
 use lib "$FindBin::Bin/../../lib";
 
 use CGC::Schema;
+use App::Util::Import;
 use App::Util::Import::Parser;
 
 use Data::Dumper;
@@ -215,7 +216,8 @@ sub load_import_file {
                 = \&App::Util::Import::Parser::curry_ego_processor;
         }
     }
-    $process_line = $process_currier->(\@input, \%index, $primary_idx);
+    $process_line
+        = $process_currier->(\@input, \%index, $primary_idx, $conf->{fields});
 
     while (my $line = <$io>) {
         chomp $line;
@@ -244,7 +246,7 @@ sub populate_schema {
         qw/dsn user password/;
     DEBUG('Connecting to database');
     my $schema = CGC::Schema->connect(@connect_info);
-    # populate_strains($schema, $import->{strain});
+    populate_strains($schema, $import->{strain});
     populate_laboratories($schema, $import->{lablist});
     populate_freezers($schema, $import->{frzloc});
 }
@@ -259,23 +261,25 @@ sub populate_strains {
     my ($schema, $strains) = @_;
 
     my $finder = sub {
-        my ($input, $table) = @_;
-        return find_or_create($schema, $table, { name => $input->{$table} });
+        my ($input, $table, $column) = @_;
+        my $value;
+        eval "\$value = \$input->$column";
+        return find_or_create($schema, $table, { name => $value });
     };
     my $resultset = $schema->resultset('Strain');
     for my $input (@{ $strains->[0] }) {
-        my $strain = $resultset->new(
-            {   name        => $input->{'Strain'},
-                description => $input->{'Description'},
-                received    => $input->{'Received'},
-                made_by     => $input->{'Made by'},
-                outcrossed  => $input->{'Outcrossed'},
-                mutagen     => $finder->($input, 'Mutagen'),
-                genotype    => $finder->($input, 'Genotype'),
-                species     => $finder->($input, 'Species'),
-            }
+        my $strain = $resultset->find_or_create(
+            {   name        => $input->strain,
+                description => $input->description,
+                received    => $input->received,
+                made_by     => $input->made_by,
+                outcrossed  => $input->outcrossed,
+                mutagen     => $finder->($input, 'Mutagen', 'mutagen'),
+                genotype    => $finder->($input, 'Genotype', 'genotype'),
+                species     => $finder->($input, 'Species', 'species'),
+            },
+            { primary => 'name' }
         );
-        $strain->insert();
     }
 }
 
@@ -283,13 +287,18 @@ sub populate_laboratories {
     my ($schema, $labs) = @_;
     my $resultset = $schema->resultset('Laboratory');
     for my $input (@{ $labs->[0] }) {
-        DEBUG(Data::Dumper::Dumper($input));
-        # my $laboratory = $resultset->new(
-        #     {
-        #         name => $input->{name},
-        #         
-        #     }
-        # );
+        my $labdata = App::Util::Import::Parser::parse_lab_name($input);
+        my $is_commercial
+            = ($input->commercial ne 'N' && $input->commercial ne '');
+        my $laboratory = $resultset->find_or_create(
+            {   head        => $labdata->{head},
+                institution => $labdata->{institution},
+                city        => $labdata->{city},
+                state       => $labdata->{state},
+                commercial  => $is_commercial,
+                country     => $input->country,
+            }
+        );
     }
 }
 
@@ -298,10 +307,11 @@ sub populate_laboratories {
     Populates freezer-related tables
 
 =cut
+
 sub populate_freezers {
+
     # body...
 }
-
 
 =head2 find_or_create
 

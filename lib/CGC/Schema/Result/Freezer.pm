@@ -77,9 +77,24 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 legacy_frzlocs
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-11-09 21:54:50
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:eRJ9kDN4SqiYKg5ale1lSQ
+Type: has_many
+
+Related object: L<CGC::Schema::Result::LegacyFrzloc>
+
+=cut
+
+__PACKAGE__->has_many(
+  "legacy_frzlocs",
+  "CGC::Schema::Result::LegacyFrzloc",
+  { "foreign.freezer_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-11-17 18:48:26
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:qjiwHvuTAQazlaT6TsYddA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

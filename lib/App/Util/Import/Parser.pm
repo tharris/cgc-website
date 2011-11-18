@@ -8,9 +8,14 @@ use warnings;
 use Readonly;
 use App::Util::MonkeyPatcher qw/add_class_method/;
 
-our @EXPORT_OK = qw(curry_tsv_processor curry_ego_processor);
+our @EXPORT_OK = qw(curry_tsv_processor curry_ego_processor parse_lab_name);
 
 Readonly my $EGO_FIELDNAME_LENGTH => 13;
+Readonly my @STATES               => qw/AL AK AZ AR CA CO CT DE FL GA
+    HI ID IL IN IA KS KY LA ME MD
+    MA MI MN MS MO MT NE NV NH NJ
+    NM NY NC ND OH OK OR PA RI SC
+    SD TN TX UT VT VA WA WV WI WY/;
 my $class_counter = 1;
 
 =head2 curry_tsv_processor
@@ -30,9 +35,9 @@ sub curry_tsv_processor {
 
         # Populate record
         for (my $i = 0; $i < @$columns; $i++) {
-            $record->{$columns->[$i]} = $fields[$i];
+            $record->{ $columns->[$i] } = $fields[$i];
         }
-        
+
         push @$input, $record;
         $index->{$primary} ||= [];
         push @{ $index->{$primary} }, $record;
@@ -47,14 +52,15 @@ sub curry_tsv_processor {
 
 sub curry_ego_processor {
     my ($input, $index, $primary_idx, $fields) = @_;
-    my $is_header    = 1;
-    my @values       = ();
-    my $current_key  = undef;
-    my $current_idx  = 0;
-    my $primary      = undef;
-    my $package      = _record_class($fields);
-    my $item         = $package->new();
+    my $is_header   = 1;
+    my @values      = ();
+    my $current_key = undef;
+    my $current_idx = 0;
+    my $primary     = undef;
+    my $package     = _record_class($fields);
+    my $item        = $package->new();
     my $set_item_key = sub {    # Set key-value in $item, reset state.
+
         if (defined $current_key) {
             $item->{$current_key} = join(' ', @values) || undef;
             if ($primary_idx == $current_idx) {
@@ -77,7 +83,7 @@ sub curry_ego_processor {
             $set_item_key->();
             push @$input, $item;
             $index->{ $item->{$primary} } = $item;
-            $item = {};
+            $item = $package->new();
             return;
         }
         my ($key, $value)
@@ -85,6 +91,8 @@ sub curry_ego_processor {
         $key   =~ s/^\s+|\s+$//g;
         $value =~ s/^\s+|\s+$//g;
         if ($key ne '') {
+            $key = lc $key;
+            $key =~ s/ /_/g;
             $set_item_key->();
             $current_key = $key;
         }
@@ -92,17 +100,42 @@ sub curry_ego_processor {
     };
 }
 
+sub parse_lab_name {
+    my ($laboratory) = @_;
+    my @fields = split(/,\s?/, $laboratory->namelocat);
+    my $labdata
+        = { map { $_ => shift @fields } qw/head institution city state/ };
+    if (defined($labdata->{city})) {
+
+        if (!defined($labdata->{state}) && _is_state($labdata->{city})) {
+            $labdata->{state} = $labdata->{city};
+            $labdata->{city}  = undef;
+        } elsif ($labdata->{city} eq $laboratory->country) {
+            $labdata->{city} = undef;
+        }
+    }
+    return $labdata;
+}
+
+sub _is_state {
+    my ($place) = @_;
+    return scalar grep({ $_ eq $place } @STATES) == 1;
+}
+
 sub _record_class {
     my ($fields) = @_;
     my $package = "App::Util::Import::Record" . $class_counter++;
     no strict 'refs';
-    @{"${package}::ISA"} = "App::Util::Import::Record";
+    @{"${package}::ISA"} = ('App::Util::Import::Record');
     use strict 'refs';
     for my $field (@$fields) {
-        my $method = lc $field; $method =~ s/ /_/;
+        my $method = lc $field;
+        $method =~ s/ /_/;
         add_class_method(
             $package,
-            $method => sub : lvalue { shift->{$field}; }
+            $method => sub  : lvalue {
+                shift->{$field};
+            }
         );
     }
     return $package;
