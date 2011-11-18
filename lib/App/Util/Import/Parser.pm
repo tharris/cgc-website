@@ -6,10 +6,12 @@ use strict;
 use warnings;
 
 use Readonly;
+use App::Util::MonkeyPatcher qw/add_class_method/;
 
 our @EXPORT_OK = qw(curry_tsv_processor curry_ego_processor);
 
 Readonly my $EGO_FIELDNAME_LENGTH => 13;
+my $class_counter = 1;
 
 =head2 curry_tsv_processor
 
@@ -18,14 +20,22 @@ Readonly my $EGO_FIELDNAME_LENGTH => 13;
 =cut
 
 sub curry_tsv_processor {
-    my ($input, $index, $primary_idx) = @_;
+    my ($input, $index, $primary_idx, $columns) = @_;
+    my $package = _record_class($columns);
     return sub {
         my $line    = shift;
-        my $fields  = [ split("\t", $line) ];
-        my $primary = $fields->[$primary_idx];
-        push @$input, $fields;
+        my @fields  = split("\t", $line);
+        my $primary = $fields[$primary_idx];
+        my $record  = $package->new();
+
+        # Populate record
+        for (my $i = 0; $i < @$columns; $i++) {
+            $record->{$columns->[$i]} = $fields[$i];
+        }
+        
+        push @$input, $record;
         $index->{$primary} ||= [];
-        push @{ $index->{$primary} }, $fields;
+        push @{ $index->{$primary} }, $record;
     };
 }
 
@@ -36,13 +46,14 @@ sub curry_tsv_processor {
 =cut
 
 sub curry_ego_processor {
-    my ($input, $index, $primary_idx) = @_;
+    my ($input, $index, $primary_idx, $fields) = @_;
     my $is_header    = 1;
     my @values       = ();
     my $current_key  = undef;
     my $current_idx  = 0;
     my $primary      = undef;
-    my $item         = {};
+    my $package      = _record_class($fields);
+    my $item         = $package->new();
     my $set_item_key = sub {    # Set key-value in $item, reset state.
         if (defined $current_key) {
             $item->{$current_key} = join(' ', @values) || undef;
@@ -79,6 +90,31 @@ sub curry_ego_processor {
         }
         push @values, $value;
     };
+}
+
+sub _record_class {
+    my ($fields) = @_;
+    my $package = "App::Util::Import::Record" . $class_counter++;
+    no strict 'refs';
+    @{"${package}::ISA"} = "App::Util::Import::Record";
+    use strict 'refs';
+    for my $field (@$fields) {
+        my $method = lc $field; $method =~ s/ /_/;
+        add_class_method(
+            $package,
+            $method => sub : lvalue { shift->{$field}; }
+        );
+    }
+    return $package;
+}
+
+package App::Util::Import::Record;
+
+sub new {
+    my $class = shift;
+    $class = ref $class if ref $class;
+    my $self = bless {}, $class;
+    $self;
 }
 
 1;

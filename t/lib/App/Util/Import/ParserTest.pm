@@ -48,7 +48,7 @@ Readonly my $EGO_FIXTURE => {
     Mutagen    => 'EMS',
     Outcrossed => 'x1',
     Reference  => undef,
-    'Made by'  => 'Lucy Liu',
+    'Made by'    => 'Lucy Liu',
     Received =>
         qq{09/30/09 from Moerman D, C. elegans Reverse Genetics Core, Vancouver, BC, Canada}
 };
@@ -72,30 +72,62 @@ sub tear_down {
 sub test_tsv_processor {
     my $self = shift;
 
+    my $primary_index = 1;    # Second column
     my $processor
-        = App::Util::Import::Parser::curry_tsv_processor($input, $index, 1);
+        = App::Util::Import::Parser::curry_tsv_processor($input, $index,
+        $primary_index, [qw/col1 col2 col3/]);
     $processor->("a\tb\tc");
     $processor->("d\te\tf");
     $processor->("g\tb\th");
 
-    $self->assert_deep_equals([ [qw/a b c/], [qw/d e f/], [qw/g b h/] ],
-        $input);
+    my $prototype = $input->[0];
+    $self->assert($prototype->col1(),
+        "Record was not monkey-patched with col1().");
+    $self->assert($prototype->col2(),
+        "Record was not monkey-patched with col2().");
+    $self->assert($prototype->col3(),
+        "Record was not monkey-patched with col3().");
+
+    my $cloner = sub {
+        my (@cols) = @_;
+        my $record = $prototype->new();
+        $record->col1 = $cols[0];
+        $record->col2 = $cols[1];
+        $record->col3 = $cols[2];
+        return $record;
+    };
+    my $recs = [ $cloner->(qw/a b c/), $cloner->(qw/d e f/),
+        $cloner->(qw/g b h/) ];
+
+    $self->assert_deep_equals($recs, $input);
     $self->assert_deep_equals(
-        { b => [ [qw/a b c/], [qw/g b h/] ], e => [ [qw/d e f/] ] }, $index);
+        { b => [ $recs->[0], $recs->[2] ], e => [ $recs->[1] ] }, $index);
 }
 
 sub test_ego_processor {
-    my $self = shift;
+    my $self          = shift;
+    my $primary_index = 0;                        # First field
+    my $fields        = [ keys %$EGO_FIXTURE ];
     my $processor
-        = App::Util::Import::Parser::curry_ego_processor($input, $index, 0);
+        = App::Util::Import::Parser::curry_ego_processor($input, $index,
+        $primary_index, $fields);
 
     for (@EGO_INPUT) {
         $processor->($_);
     }
-    $self->assert_deep_equals([$EGO_FIXTURE], $input);
-    $self->assert_deep_equals({
-        'VC1705' => $EGO_FIXTURE
-    }, $index)
+
+    my $result = $input->[0];
+    $self->assert_equals($EGO_FIXTURE->{Strain},      $result->strain());
+    $self->assert_equals($EGO_FIXTURE->{Species},     $result->species());
+    $self->assert_equals($EGO_FIXTURE->{Genotype},    $result->genotype());
+    $self->assert_equals($EGO_FIXTURE->{Mutagen},     $result->mutagen());
+    $self->assert_equals($EGO_FIXTURE->{'Made by'},     $result->made_by());
+    $self->assert_equals($EGO_FIXTURE->{Description}, $result->description());
+    $self->assert_equals($EGO_FIXTURE->{Received},    $result->received());
+    $self->assert_equals($EGO_FIXTURE->{Reference},   $result->reference());
+    $self->assert_equals($EGO_FIXTURE->{Outcrossed},  $result->outcrossed());
+
+    $self->assert_deep_equals({ 'VC1705' => $result }, $index);
 }
 
 1;
