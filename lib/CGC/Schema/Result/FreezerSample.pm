@@ -1,4 +1,4 @@
-package App::Schema::CGC::Result::FreezerSample;
+package CGC::Schema::Result::FreezerSample;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
@@ -15,7 +15,7 @@ __PACKAGE__->load_components("InflateColumn::DateTime");
 
 =head1 NAME
 
-App::Schema::CGC::Result::FreezerSample
+CGC::Schema::Result::FreezerSample
 
 =cut
 
@@ -93,37 +93,17 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 strain
-
-Type: belongs_to
-
-Related object: L<App::Schema::CGC::Result::Strain>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "strain",
-  "App::Schema::CGC::Result::Strain",
-  { id => "strain_id" },
-  {
-    is_deferrable => 1,
-    join_type     => "LEFT",
-    on_delete     => "CASCADE",
-    on_update     => "CASCADE",
-  },
-);
-
 =head2 freezer
 
 Type: belongs_to
 
-Related object: L<App::Schema::CGC::Result::Freezer>
+Related object: L<CGC::Schema::Result::Freezer>
 
 =cut
 
 __PACKAGE__->belongs_to(
   "freezer",
-  "App::Schema::CGC::Result::Freezer",
+  "CGC::Schema::Result::Freezer",
   { id => "freezer_id" },
   {
     is_deferrable => 1,
@@ -133,9 +113,29 @@ __PACKAGE__->belongs_to(
   },
 );
 
+=head2 strain
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-10-31 16:23:01
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:fAJeBf/nST1AniqbyWS+LQ
+Type: belongs_to
+
+Related object: L<CGC::Schema::Result::Strain>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "strain",
+  "CGC::Schema::Result::Strain",
+  { id => "strain_id" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE",
+  },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-11-09 21:54:50
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ek03D+YTMKAkivNhj178KQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

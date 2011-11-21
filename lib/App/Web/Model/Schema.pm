@@ -1,4 +1,3 @@
-#package App::Web::Model::Schema;
 package App::Web::Model::Schema;
 
 use strict;
@@ -8,11 +7,11 @@ use base 'Catalyst::Model::DBIC::Schema';
 
 =head1 NAME
 
-WormBase::Web::Model::Schema - Catalyst DBIC Schema Model
+App::Web::Model::Schema - Catalyst DBIC Schema Model
 
 =head1 SYNOPSIS
 
-See L<WormBase::Web>
+See L<App::Web>
 
 =head1 DESCRIPTION
 

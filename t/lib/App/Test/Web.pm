@@ -80,7 +80,7 @@ The WormBase web app.
 
 =cut
 
-Readonly our $APP_BASE => 'WormBase::Web';
+Readonly our $APP_BASE => 'App::Web';
 sub APP_BASE () { return $APP_BASE; }
 
 =back

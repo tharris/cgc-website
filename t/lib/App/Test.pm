@@ -208,7 +208,7 @@ sub get_class_specific_methods {
 =item B<fully_qualified_class_name($class)>
 
     my $full_class = WormBase::Test->fully_qualified_class_name('Web');
-    # WormBase::Web
+    # App::Web
 
 Takes a class name and fully qualifies it with the WB_BASE constant a prefix
 if not already done. Useful for dynamically creating objects.

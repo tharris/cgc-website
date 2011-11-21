@@ -1,7 +1,7 @@
 <h3>Debug Index</h3>
 
 <div class="byline">
-     This is the debugging index for WormBase::Web.  
+     This is the debugging index for App::Web.  
 </p>
 
 [% PROCESS generic_debug_info() %]

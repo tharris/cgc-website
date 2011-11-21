@@ -1,4 +1,4 @@
-package App::Schema::CGC::Result::LabOrder;
+package CGC::Schema::Result::LabOrder;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
@@ -15,7 +15,7 @@ __PACKAGE__->load_components("InflateColumn::DateTime");
 
 =head1 NAME
 
-App::Schema::CGC::Result::LabOrder
+CGC::Schema::Result::LabOrder
 
 =cut
 
@@ -79,13 +79,13 @@ __PACKAGE__->set_primary_key("id");
 
 Type: belongs_to
 
-Related object: L<App::Schema::CGC::Result::Strain>
+Related object: L<CGC::Schema::Result::Laboratory>
 
 =cut
 
 __PACKAGE__->belongs_to(
   "id",
-  "App::Schema::CGC::Result::Strain",
+  "CGC::Schema::Result::Laboratory",
   { id => "id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
@@ -94,20 +94,20 @@ __PACKAGE__->belongs_to(
 
 Type: belongs_to
 
-Related object: L<App::Schema::CGC::Result::Laboratory>
+Related object: L<CGC::Schema::Result::Strain>
 
 =cut
 
 __PACKAGE__->belongs_to(
   "id",
-  "App::Schema::CGC::Result::Laboratory",
+  "CGC::Schema::Result::Strain",
   { id => "id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-10-27 17:33:44
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:lboO/xDXMa9N+ttO8yjceQ
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-11-09 21:54:50
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:qcvuGWy5KgRfIq3GbVcMqg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

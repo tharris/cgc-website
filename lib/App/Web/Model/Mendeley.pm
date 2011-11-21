@@ -1,11 +1,11 @@
-package WormBase::Web::Model::Mendeley;
+package App::Web::Model::Mendeley;
 
 use strict;
 use warnings;
 use parent 'Catalyst::Model::Adaptor';
 
 __PACKAGE__->config(
-    class => 'WormBase::Web::ThirdParty::Mendeley',
+    class => 'App::Web::ThirdParty::Mendeley',
     );
     
 

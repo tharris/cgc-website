@@ -24,12 +24,12 @@ __PACKAGE__->config({
 		     PRE_CHOMP    => 2,
 		     POST_CHOMP   => 2,
 		     # NOT CURRENTLY IN USE!
-#		     PLUGIN_BASE  => 'WormBase::Web::View::Template::Plugin',
+#		     PLUGIN_BASE  => 'App::Web::View::Template::Plugin',
 		     PLUGINS      => {
-#				      url    => 'WormBase::Web::View::Template::Plugin::URL',
+#				      url    => 'App::Web::View::Template::Plugin::URL',
 #				      image  => 'Template::Plugin::Image',
 #				      format => 'Template::Plugin::Format',
-#				      util   => 'WormBase::Web::View::Template::Plugin::Util',
+#				      util   => 'App::Web::View::Template::Plugin::Util',
 				     },
 #		     TIMER        => 1,
 		     DEBUG        => 1,

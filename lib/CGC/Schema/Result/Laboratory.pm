@@ -1,4 +1,4 @@
-package App::Schema::CGC::Result::Laboratory;
+package CGC::Schema::Result::Laboratory;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
@@ -15,7 +15,7 @@ __PACKAGE__->load_components("InflateColumn::DateTime");
 
 =head1 NAME
 
-App::Schema::CGC::Result::Laboratory
+CGC::Schema::Result::Laboratory
 
 =cut
 
@@ -30,7 +30,7 @@ __PACKAGE__->table("laboratory");
   is_auto_increment: 1
   is_nullable: 0
 
-=head2 name
+=head2 head
 
   data_type: 'varchar'
   default_value: (empty string)
@@ -73,6 +73,18 @@ __PACKAGE__->table("laboratory");
   data_type: 'tinyint'
   is_nullable: 1
 
+=head2 institution
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 255
+
+=head2 city
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 255
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -83,7 +95,7 @@ __PACKAGE__->add_columns(
     is_auto_increment => 1,
     is_nullable => 0,
   },
-  "name",
+  "head",
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
   "address1",
   { data_type => "varchar", is_nullable => 1, size => 255 },
@@ -102,8 +114,13 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "commercial",
   { data_type => "tinyint", is_nullable => 1 },
+  "institution",
+  { data_type => "varchar", is_nullable => 1, size => 255 },
+  "city",
+  { data_type => "varchar", is_nullable => 1, size => 255 },
 );
 __PACKAGE__->set_primary_key("id");
+__PACKAGE__->add_unique_constraint("laboratory_head_institution_unique", ["head", "institution"]);
 
 =head1 RELATIONS
 
@@ -111,20 +128,35 @@ __PACKAGE__->set_primary_key("id");
 
 Type: might_have
 
-Related object: L<App::Schema::CGC::Result::LabOrder>
+Related object: L<CGC::Schema::Result::LabOrder>
 
 =cut
 
 __PACKAGE__->might_have(
   "lab_order",
-  "App::Schema::CGC::Result::LabOrder",
+  "CGC::Schema::Result::LabOrder",
   { "foreign.id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 legacy_lablists
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-10-27 17:33:44
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dwYDpFklCLzK4K2ZVOJmsg
+Type: has_many
+
+Related object: L<CGC::Schema::Result::LegacyLablist>
+
+=cut
+
+__PACKAGE__->has_many(
+  "legacy_lablists",
+  "CGC::Schema::Result::LegacyLablist",
+  { "foreign.laboratory_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-11-18 16:37:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8YVJKgF1SkzqM8xdZC+LrA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -1,4 +1,4 @@
-package App::Schema::CGC;
+package CGC::Schema;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
@@ -10,8 +10,8 @@ extends 'DBIx::Class::Schema';
 __PACKAGE__->load_namespaces;
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-10-27 17:33:44
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:EIU0kRet63GBSIscZtp4fQ
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-11-09 21:54:49
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:0tjY5gK5+bXtaX7ZBR4QEg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

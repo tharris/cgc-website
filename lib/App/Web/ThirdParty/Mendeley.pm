@@ -1,4 +1,4 @@
-package WormBase::Web::ThirdParty::Mendeley;
+package App::Web::ThirdParty::Mendeley;
 
 use Moose;
 use JSON::Any;

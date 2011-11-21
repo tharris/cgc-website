@@ -1,3 +1,16 @@
 Scripts and related files for importing data from the old FoxPro database.
 
+    foxpro_parser.pl
+        A utility that parses FoxPro formatted dumps of the legacy CGC
+        database and produces tab-delimited files that can be imported into
+        the new relational database.
+
+    import.pl
+        Loads a set of expected files and populates the relational CGC
+        database. The script operates on an input directory that contains
+        converted FoxPro dumps and other custom data. Since data in individual
+        tables in the new schema potentially draws from multiple import files,
+        the files are read in together. The script uses the DBIx::Schema model
+        framework to interact (i.e., insert) the data into the database.
+
 Shiran Pasternak (shiranpasternak@gmail.com)
