@@ -6,7 +6,7 @@ use FindBin;
 use lib "$FindBin::Bin/lib";
 # Supplied by environment.
 #use lib "$FindBin::Bin/../../extlib";
-use WormBase::Web;
+use App::Web;
 use Plack::App::CGIBin;
 #use Plack::App::WrapCGI;
 #use Plack::App::Proxy;
@@ -52,14 +52,14 @@ my $gbrowse = Plack::App::CGIBin->new(
 ######################
 # The WormBase APP
 ######################
-my $wormbase = WormBase::Web->psgi_app(@_);
+my $wormbase = App::Web->psgi_app(@_);
 
 
 builder {
 
 # Default middlewares will NOT be added.
 # Might want to add these manually.
-#my $app = WormBase::Web->apply_default_middlewares(WormBase::Web->psgi_app);
+#my $app = App::Web->apply_default_middlewares(App::Web->psgi_app);
 #$app;
     
     # Typically running behind reverse proxy.
@@ -87,7 +87,7 @@ builder {
 # Without using URLMap::mount
 #builder {
 #    enable "Plack::Middleware::ReverseProxy";
-#    WormBase::Web->psgi_app;
+#    App::Web->psgi_app;
 #};
 
 

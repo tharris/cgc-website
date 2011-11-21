@@ -1,4 +1,4 @@
-package CGC::Web::Model::CGC;
+package App::Web::Model::CGC;
 
 use strict;
 use base 'Catalyst::Model::DBIC::Schema';
@@ -16,11 +16,11 @@ __PACKAGE__->config(
 
 =head1 NAME
 
-CGC::Web::Model::CGC - Catalyst DBIC Schema Model
+App::Web::Model::CGC - Catalyst DBIC Schema Model
 
 =head1 SYNOPSIS
 
-See L<CGC::Web>
+See L<App::Web>
 
 =head1 DESCRIPTION
 

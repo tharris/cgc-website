@@ -1,4 +1,4 @@
-package WormBase::Web::ErrorCatcherEmit;
+package App::Web::ErrorCatcherEmit;
 
 use strict;
 use warnings;

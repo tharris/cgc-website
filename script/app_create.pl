@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Catalyst::ScriptRunner;
-Catalyst::ScriptRunner->run('CGC::Web', 'Create');
+Catalyst::ScriptRunner->run('App::Web', 'Create');
 
 1;
 

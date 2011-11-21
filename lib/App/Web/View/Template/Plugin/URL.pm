@@ -1,4 +1,4 @@
-package WormBase::Web::View::Template::Plugin::URL;
+package App::Web::View::Template::Plugin::URL;
 
 use strict;
 use CGI qw/:standard/;

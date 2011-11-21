@@ -17,7 +17,7 @@ requires 'Task::Catalyst';                # A slew of basic Catalyst Goodies
 #requires 'Catalyst::Action::REST';           
 requires 'Catalyst::Action::RenderView';
 #requires 'Catalyst::Action::RenderView::ErrorHandler';
-#requires 'Catalyst::Authentication::Credential::OpenID';   # will need to install Math::BigInt::GMP first 
+requires 'Catalyst::Authentication::Credential::OpenID';   # will need to install Math::BigInt::GMP first 
 #requires 'Catalyst::Authentication::Store::DBIx::Class';
 #requires 'Catalyst::Controller::FormBuilder';
 #requires 'Catalyst::Controller::CGIBin';
@@ -28,9 +28,9 @@ requires 'Catalyst::Log::Log4perl';
 #requires 'Catalyst::Plugin::Authorization::Roles';          
 #requires 'Catalyst::Plugin::Cache';                # Cache interface
 requires 'Catalyst::Plugin::ConfigLoader';
-#requires 'Catalyst::Plugin::ErrorCatcher';
-#requires 'Catalyst::Plugin::Unicode';
-#requires 'Catalyst::Plugin::Scheduler';
+requires 'Catalyst::Plugin::ErrorCatcher';
+requires 'Catalyst::Plugin::Unicode';
+requires 'Catalyst::Plugin::Scheduler';
 requires 'Catalyst::Plugin::Session';
 requires 'Catalyst::Plugin::Session::PerUser';
 requires 'Catalyst::Plugin::Session::State';
@@ -38,9 +38,9 @@ requires 'Catalyst::Plugin::Session::State::Cookie';
 requires 'Catalyst::Plugin::Session::Store::DBI';
 requires 'Catalyst::Plugin::StackTrace';
 requires 'Catalyst::Plugin::Static::Simple';
-#requires 'Catalyst::View::JSON';
-#requires 'Catalyst::View::Email';
-#requires 'Catalyst::View::GD';
+requires 'Catalyst::View::JSON';
+requires 'Catalyst::View::Email';
+requires 'Catalyst::View::GD';
 
 # Application dependencies
 #requires 'AnyEvent::CouchDB';                                   #
@@ -82,7 +82,7 @@ requires 'Moose'                                 => '1.21';      #
 #requires 'MooseX::MethodAttributes::Inheritable';                # => '0.24';
 requires 'MooseX::Role::WithOverloading';                        # => '0.05';
 #requires 'MRO::Compat';                                          #
-#requires 'Net::Twitter';                                         #
+requires 'Net::Twitter';                                         #
 #requires 'Net::OAuth::Simple';                                   #
 #requires 'Number::Format';                                       #
 #requires 'namespace::clean';                                     #

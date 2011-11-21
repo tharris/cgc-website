@@ -1,4 +1,4 @@
-package WormBase::Web::Model::CouchDB;
+package App::Web::Model::CouchDB;
 
 # Simple class for interacting with our CouchDB.
 # Currently only supports creating databases,

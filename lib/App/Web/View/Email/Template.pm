@@ -1,4 +1,4 @@
-package WormBase::Web::View::Email::Template;
+package App::Web::View::Email::Template;
 
 use strict;
 use base 'Catalyst::View::Email::Template';
@@ -16,11 +16,11 @@ __PACKAGE__->config(
 
 =head1 NAME
 
-WormBase::Web::View::Email::Template - Templated Email View for WormBase::Web
+App::Web::View::Email::Template - Templated Email View for App::Web
 
 =head1 DESCRIPTION
 
-View for sending template-generated email from WormBase::Web. 
+View for sending template-generated email from App::Web. 
 
 =head1 AUTHOR
 
@@ -28,7 +28,7 @@ A clever guy
 
 =head1 SEE ALSO
 
-L<WormBase::Web>
+L<App::Web>
 
 =head1 LICENSE
 

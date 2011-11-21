@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 use Catalyst::ScriptRunner;
-Catalyst::ScriptRunner->run('CGC::Web', 'FastCGI');
+Catalyst::ScriptRunner->run('App::Web', 'FastCGI');
 
 1;
 

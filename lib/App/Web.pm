@@ -163,9 +163,9 @@ my $expires_in = ($installation_type eq 'production')
 # Memcached/libmemcached support built into the app.
 # Development and mirror distributions should point to localhost.
 # The production installation points to our distributed memcached.
-#my $servers = ($installation_type eq 'production')
-#    ? [ '206.108.125.175:11211', '206.108.125.177:11211' , '206.108.125.190:11211','206.108.125.168:11211','206.108.125.178:11211']
-#    : [ '127.0.0.1:11211' ];
+my $servers = ($installation_type eq 'production')
+   ? [ '206.108.125.175:11211', '206.108.125.177:11211' , '206.108.125.190:11211','206.108.125.168:11211','206.108.125.178:11211']
+   : [ '127.0.0.1:11211' ];
 
 # 1. Dual caches: memcached and file, one of which
 #    needs to have a symbolic name of "default"
@@ -237,7 +237,7 @@ after prepare_path => sub {
 sub finalize_error {
 	my $c = shift;
 	$c->config->{'response_status'}=$c->response->status;
-	$c->config->{'Plugin::ErrorCatcher'}->{'emit_module'} = ["Catalyst::Plugin::ErrorCatcher::Email", "WormBase::Web::ErrorCatcherEmit"];
+	$c->config->{'Plugin::ErrorCatcher'}->{'emit_module'} = ["Catalyst::Plugin::ErrorCatcher::Email", "App::Web::ErrorCatcherEmit"];
  	shift @{$c->config->{'Plugin::ErrorCatcher'}->{'emit_module'}} unless(is_server_error($c->config->{'response_status'})); 
 	$c->maybe::next::method; 
 }
@@ -281,7 +281,7 @@ sub check_cache {
     # First, has this content been precached?
     # CouchDB. Located on localhost.
     if ($cache_name eq 'couchdb') {
-	my $couch = WormBase::Web->model('CouchDB');
+	my $couch = App::Web->model('CouchDB');
 	my $host  = $couch->read_host;
 	my $port  = $couch->read_host_port;
 	
@@ -369,7 +369,7 @@ sub set_cache {
     # we will still try and cache it to the core resulting in a conflict.
     if ($cache_name eq 'couchdb') {
 
-	my $couch = WormBase::Web->model('CouchDB');
+	my $couch = App::Web->model('CouchDB');
 
 	# CouchDB Kludge
 	# Make sure the document doesn't already exist.
@@ -463,7 +463,8 @@ sub merge_session_to_user {
       unless($u_history){
         $s_history->session_id("user:$uid");
       }else{
-        $u_history->timestamp < $s_history->timestamp ? $u_history->timestamp($s_history->timestamp) : '' ;
+        $u_history->timestamp($s_history->timestamp)
+            if ($u_history->timestamp < $s_history->timestamp);
         $u_history->visit_count($u_history->visit_count + $s_history->visit_count);
         $s_history->delete();
         $u_history->update();
