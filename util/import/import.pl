@@ -361,7 +361,7 @@ sub populate_laboratories {
 
         # Add legacy data and associate with laboratory.
         my $rawdata = join("\t",
-            map { $input->{$_} } @{ $IMPORTS{lablist}->{fields} });
+            map { $input->{$_} || q{} } @{ $IMPORTS{lablist}->{fields} });
         $legacy_rs->find_or_create(
             {   laboratory => $laboratory,
                 entry      => $rawdata,
