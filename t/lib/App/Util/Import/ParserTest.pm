@@ -47,9 +47,27 @@ Readonly my @EGO_INPUT => split("\n", <<EGO);
       Made by: Cameron Diaz
      Received: Another date
                --------------------
+       Strain: MT2547
+      Species: Caenorhabditis elegans
+     Genotype: ced-4(n1162)III.
+  Description: Cells that normally die survive.   [3/02: A mutation that
+               was not reported (nucleotide 1251 C-> T causing codon 80
+               ->ochre) was found by Tak Hung.  It turns out the mutation
+               was misannotated in the original paper (Development, 1992,
+               116:309). Bob Horvitz also confirmed the discovery.
+      Mutagen:
+   Outcrossed: x
+    Reference: CGC #870   Ellis HM;Horvitz HR
+               Genetic control of programmed cell death in the nematode C.
+               elegans.
+               Cell 44: 817-829 1986
+      Made by: Chand Desai
+     Received: 05/01/85 from Horvitz B, Massachusetts Institute of
+               Technology, Cambridge, MA
+               --------------------
 EGO
 
-Readonly my $EGO_FIXTURE => {
+Readonly my $EGO_FIXTURE1 => {
     strain   => 'VC1705',
     species  => 'Caenorhabditis elegans',
     genotype => 'ehbp-1(ok2140) V/nT1[qIs51](IV;V).',
@@ -61,6 +79,21 @@ Readonly my $EGO_FIXTURE => {
     made_by    => 'Lucy Liu',
     received =>
         qq{09/30/09 from Moerman D, C. elegans Reverse Genetics Core, Vancouver, BC, Canada}
+};
+
+Readonly my $EGO_FIXTURE2 => {
+    strain   => 'MT2547',
+    species  => 'Caenorhabditis elegans',
+    genotype => 'ced-4(n1162)III.',
+    description =>
+        qq{Cells that normally die survive.   [3/02: A mutation that was not reported (nucleotide 1251 C-> T causing codon 80 ->ochre) was found by Tak Hung.  It turns out the mutation was misannotated in the original paper (Development, 1992, 116:309). Bob Horvitz also confirmed the discovery.},
+    mutagen    => undef,
+    outcrossed => 'x',
+    reference =>
+        qq{CGC #870   Ellis HM;Horvitz HR Genetic control of programmed cell death in the nematode C. elegans. Cell 44: 817-829 1986},
+    made_by => 'Chand Desai',
+    received =>
+        '05/01/85 from Horvitz B, Massachusetts Institute of Technology, Cambridge, MA',
 };
 
 my ($input, $index);
@@ -116,8 +149,8 @@ sub test_tsv_processor {
 
 sub test_ego_processor {
     my $self          = shift;
-    my $primary_index = 0;                        # First field
-    my $fields        = [ keys %$EGO_FIXTURE ];
+    my $primary_index = 0;                         # First field
+    my $fields        = [ keys %$EGO_FIXTURE1 ];
     my $processor
         = App::Util::Import::Parser::curry_ego_processor($input, $index,
         $primary_index, $fields);
@@ -127,20 +160,47 @@ sub test_ego_processor {
     }
 
     my $result = $input->[0];
-    $self->assert_equals($EGO_FIXTURE->{strain},      $result->strain());
-    $self->assert_equals($EGO_FIXTURE->{species},     $result->species());
-    $self->assert_equals($EGO_FIXTURE->{genotype},    $result->genotype());
-    $self->assert_equals($EGO_FIXTURE->{mutagen},     $result->mutagen());
-    $self->assert_equals($EGO_FIXTURE->{made_by},     $result->made_by());
-    $self->assert_equals($EGO_FIXTURE->{description}, $result->description());
-    $self->assert_equals($EGO_FIXTURE->{received},    $result->received());
-    $self->assert_equals($EGO_FIXTURE->{reference},   $result->reference());
-    $self->assert_equals($EGO_FIXTURE->{outcrossed},  $result->outcrossed());
+    $self->assert_equals($EGO_FIXTURE1->{strain},   $result->strain());
+    $self->assert_equals($EGO_FIXTURE1->{species},  $result->species());
+    $self->assert_equals($EGO_FIXTURE1->{genotype}, $result->genotype());
+    $self->assert_equals($EGO_FIXTURE1->{mutagen},  $result->mutagen());
+    $self->assert_equals($EGO_FIXTURE1->{made_by},  $result->made_by());
+    $self->assert_equals($EGO_FIXTURE1->{description},
+        $result->description());
+    $self->assert_equals($EGO_FIXTURE1->{received},   $result->received());
+    $self->assert_equals($EGO_FIXTURE1->{reference},  $result->reference());
+    $self->assert_equals($EGO_FIXTURE1->{outcrossed}, $result->outcrossed());
 
-    $self->assert_deep_equals($result, $index->{VC1705});
+    $self->assert_deep_equals($result, $index->{$EGO_FIXTURE1->{strain}});
 
-    # $self->assert($result->isa("App::Util::Parser::Record"),
-    #     "Record is not a subclass of 'App::Util::Parser::Record'");
+}
+
+sub test_ego_processor_2 {
+    my $self          = shift;
+    my $primary_index = 0;                         # First field
+    my $fields        = [ keys %$EGO_FIXTURE2 ];
+    my $processor
+        = App::Util::Import::Parser::curry_ego_processor($input, $index,
+        $primary_index, $fields);
+
+    for (@EGO_INPUT) {
+        $processor->($_);
+    }
+	
+
+    my $result = $input->[2];
+    $self->assert_equals($EGO_FIXTURE2->{strain},   $result->strain());
+    $self->assert_equals($EGO_FIXTURE2->{species},  $result->species());
+    $self->assert_equals($EGO_FIXTURE2->{genotype}, $result->genotype());
+    $self->assert_null($EGO_FIXTURE2->{mutagen});
+    $self->assert_equals($EGO_FIXTURE2->{made_by},  $result->made_by());
+    $self->assert_equals($EGO_FIXTURE2->{description},
+        $result->description());
+    $self->assert_equals($EGO_FIXTURE2->{received},   $result->received());
+    $self->assert_equals($EGO_FIXTURE2->{reference},  $result->reference());
+    $self->assert_equals($EGO_FIXTURE2->{outcrossed}, $result->outcrossed());
+
+    $self->assert_deep_equals($result, $index->{$EGO_FIXTURE2->{strain}});
 }
 
 sub test_parse_lab_name {

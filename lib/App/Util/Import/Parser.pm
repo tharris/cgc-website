@@ -79,7 +79,7 @@ sub curry_ego_processor {
             }
             return;
         }
-        if ($line =~ m/^\s*\-+\s*/) {    # Item delimiter
+        if ($line =~ m/^\s*\-+\s*$/) {    # Item delimiter
             $set_item_key->();
             push @$input, $item;
             $index->{ $item->{$primary} } = $item;

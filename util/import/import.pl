@@ -23,6 +23,54 @@ use App::Util::Import::Parser;
 
 use Data::Dumper;
 
+=head1 NAME
+
+    import - Description
+
+=head1 SYNOPSIS
+
+    perl import [options]
+
+    Options:
+        -h --help -?
+        -c --conf
+        -d --dir
+        -m --man
+        -v --verbose
+
+=head1 OPTIONS
+
+B<-h,--help, -?>
+        Displays a brief help message and exits.
+
+B<-c --conf>
+        Optional configuration file for overriding import types and column definitions.
+        
+B<-d --dir>
+        [REQUIRED] Directory containing the data to import (Default: .).
+        
+B<-m --man>
+        Display more verbose help.
+        
+B<-v --verbose>
+        Prints progress, can use an integer value to indicate level (off/0: WARN, on/1: INFO, 2: DEBUG).
+        
+
+=head1 DESCRIPTION
+
+B<This program>
+    [Description]
+
+=head1 AUTHOR
+
+    Shiran Pasternak (shiranpasternak@gmail.com)
+
+=head1 COPYRIGHT
+
+    Copyright (c) 2011 Shiran Pasternak.
+
+=cut
+
 Readonly my %IMPORTS => (
     lablist => {
         fields => [
@@ -84,14 +132,14 @@ MAIN: {
     if ($options{help}) { pod2usage(-verbose => 1); }
     if ($options{man})  { pod2usage(-verbose => 2); }
 
-    $options{conf} ||= './import.ini';
     init_log($options{verbose});
     INFO('Loading import configuration');
     my $conf = load_import_configuration($options{conf});
     $options{dir} ||= '.';
-    die "Import directory $options{dir} was not found.\n"
+    pod2usage("Import directory $options{dir} was not found.\n")
         unless (-e $options{dir});
-    die "Import directory $options{dir} is not, in fact, a directory.\n"
+    pod2usage(
+        "Import directory $options{dir} is not, in fact, a directory.\n")
         unless (-d $options{dir});
 
     $options{db} ||= './dbic.conf';
@@ -112,6 +160,10 @@ MAIN: {
     populate_schema(\%import, $dbconf);
     exit 0;
 }
+
+=head1 METHODS
+
+=cut
 
 =head2 init_log
 
@@ -137,9 +189,9 @@ sub init_log {
 sub check_readable_file {
     my ($filename, $description) = @_;
     $description ||= 'File';
-    die "$description $filename was not found.\n"
+    pod2usage("$description $filename was not found.\n")
         unless (-e $filename);
-    die "$description $filename cannot be read.\n"
+    pod2usage("$description $filename cannot be read.\n")
         unless (-r $filename);
 }
 
@@ -151,8 +203,11 @@ sub check_readable_file {
 
 sub load_import_configuration {
     my ($filename) = @_;
-    check_readable_file($filename, 'Import configuration');
-    my $conf = Config::Tiny->read($filename);
+    my $conf = {};
+    if (defined $filename) {
+        check_readable_file($filename, 'Import configuration');
+        $conf = Config::Tiny->read($filename);
+    }
     for my $key (keys %IMPORTS) {
         if (exists $conf->{$key}) {
             my %subhash = %{ $IMPORTS{$key} };
@@ -291,7 +346,9 @@ sub populate_laboratories {
     for my $input (@{ $labs->[0] }) {
         my $labdata = App::Util::Import::Parser::parse_lab_name($input);
         my $is_commercial
-            = ($input->commercial ne 'N' && $input->commercial ne '');
+            = (    defined $input->commercial
+                && $input->commercial ne 'N'
+                && $input->commercial ne '');
         my $laboratory = $resultset->find_or_create(
             {   head        => $labdata->{head},
                 institution => $labdata->{institution},
@@ -301,7 +358,7 @@ sub populate_laboratories {
                 country     => $input->country,
             }
         );
-        
+
         # Add legacy data and associate with laboratory.
         my $rawdata = join("\t",
             map { $input->{$_} } @{ $IMPORTS{lablist}->{fields} });
@@ -323,10 +380,10 @@ sub populate_freezers {
     my ($schema, $freezers) = @_;
     my $freezer_rs = $schema->resultset('Freezer');
     my $sample_rs  = $schema->resultset('FreezerSample');
-    my $legacy_rs  = $schema->resultset('FrzLoc');
-    
+    my $legacy_rs  = $schema->resultset('LegacyFrzloc');
+
     for my $input (@{ $freezers->[0] }) {
-        
+
     }
 }
 
@@ -335,14 +392,14 @@ sub populate_freezers {
     Populate the lab orders in the database.
 
 =cut
+
 sub populate_transactions {
     my ($schema, $transactions) = @_;
     my $orders = $schema->resultset('LabOrder');
     for my $input (@{ $transactions->[0] }) {
-        
+
     }
 }
-
 
 =head2 find_or_create
 
@@ -360,51 +417,3 @@ sub find_or_create {
     }
     return $object;
 }
-
-=head1 NAME
-
-    import - Description
-
-=head1 SYNOPSIS
-
-    perl import [options]
-
-    Options:
-        -h --help -?
-        -c --conf
-        -d --dir
-        -m --man
-        -v --verbose
-
-=head1 OPTIONS
-
-B<-h,--help, -?>
-        Print a brief help message and exits.
-
-B<-c --conf>
-        Does something cool.
-        
-B<-d --dir>
-        Does something cool.
-        
-B<-m --man>
-        Does something cool.
-        
-B<-v --verbose>
-        Does something cool.
-        
-
-=head1 DESCRIPTION
-
-B<This program>
-    [Description]
-
-=head1 AUTHOR
-
-    Shiran Pasternak (shiran@cshl.edu)
-
-=head1 COPYRIGHT
-
-    Copyright (c) 2011 Cold Spring Harbor Laboratory.
-
-=cut

@@ -101,7 +101,7 @@ requires 'Net::Twitter';                                         #
 #requires 'Template::Plugin::Time::Duration';                     #
 #requires 'Test::YAML::Valid';                                    #
 #requires 'Test::Pod::Coverage';                                  #
-requires 'Test::Unit::TestCase';
+requires 'Test::Unit::TestCase'; #PerlUnit TODO: Replace with Test::Class
 #requires 'Text::Glob';                                           #
 #requires 'Text::WikiText';                                       #
 #requires 'Time::Duration';                                       #

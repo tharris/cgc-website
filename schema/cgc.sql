@@ -7,7 +7,7 @@
 #
 # Host: localhost (MySQL 5.5.15)
 # Database: cgc
-# Generation Time: 2011-11-18 21:37:48 +0000
+# Generation Time: 2011-12-23 16:03:35 +0000
 # ************************************************************
 
 
@@ -93,7 +93,7 @@ DROP TABLE IF EXISTS `laboratory`;
 
 CREATE TABLE `laboratory` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `head` varchar(255) NOT NULL DEFAULT '',
+  `head` varchar(255) DEFAULT '',
   `address1` varchar(255) DEFAULT NULL,
   `address2` varchar(255) DEFAULT NULL,
   `state` char(2) DEFAULT NULL,
