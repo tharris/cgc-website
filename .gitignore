@@ -6,6 +6,7 @@ extlib/
 *.bbprojectd/
 *.tmproj
 .DS_store
+schema/cgc.mwb.*
 
 # Auto-generated:
 inc/Module/

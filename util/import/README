@@ -13,4 +13,43 @@ Scripts and related files for importing data from the old FoxPro database.
         the files are read in together. The script uses the DBIx::Schema model
         framework to interact (i.e., insert) the data into the database.
 
-Shiran Pasternak (shiranpasternak@gmail.com)
+
+Creating and populating the CGC Database
+========================================
+Here's a very terse outline of commands to create and populate the database based on the legacy dumps:
+
+	# Variables
+	CGC_DB=cgc
+	IMPORT_DIR=$HOME/Dropbox/umn-cgc/foxpro_dumps/TSV
+
+	# Create database
+	mysqladmin create $CGC_DB
+
+	# Initialize schema
+	mysql $CGC_DB < schema/cgc.sql
+
+	# Import data from legacy dumps
+	./util/import/import.pl --verbose 2 --dir $IMPORT_DIR
+	
+Typical (and probably unhelpful) output from the import:
+
+	2011/12/23 11:13:58 Loading import configuration
+	2011/12/23 11:13:58 Reading data from import/strain.ego
+	2011/12/23 11:13:58 Primary (strain) at index 0
+	2011/12/23 11:14:02 Read 14002 lines, indexed to 14000 items.
+	2011/12/23 11:14:02 Reading data from import/lablist.tsv
+	2011/12/23 11:14:02 Primary (name) at index 4
+	2011/12/23 11:14:02 Read 3555 lines, indexed to 3361 items.
+	2011/12/23 11:14:02 Reading data from import/cgcmail.tsv
+	2011/12/23 11:14:02 Primary (transnum) at index 0
+	2011/12/23 11:14:16 Read 237878 lines, indexed to 62816 items.
+	2011/12/23 11:14:16 Reading data from import/frzloc.tsv
+	2011/12/23 11:14:16 Primary (strain) at index 0
+	2011/12/23 11:14:17 Read 13326 lines, indexed to 13170 items.
+	2011/12/23 11:14:17 Reading data from import/transrec.tsv
+	2011/12/23 11:14:17 Primary (transnum) at index 0
+	2011/12/23 11:14:22 Read 63545 lines, indexed to 63440 items.
+	2011/12/23 11:14:22 Loaded all import data.
+	2011/12/23 11:14:22 Connecting to database
+
+**Author:** Shiran Pasternak (shiranpasternak@gmail.com)
