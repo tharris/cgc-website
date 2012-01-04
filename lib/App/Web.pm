@@ -16,7 +16,6 @@ use Catalyst qw/
 	  Session::Store::DBI
  	  Session::State::Cookie
           StackTrace
-	  Scheduler
            /;
 extends 'Catalyst';
 our $VERSION = '0.01';
@@ -34,7 +33,7 @@ use HTTP::Status qw(:constants :is status_message);
 ##################################################
 my $installation_type = $ENV{APP_INSTALLATION_TYPE} || 'staging';
 
-# Different logers.
+# Different loggers.
 __PACKAGE__->log(
     Catalyst::Log::Log4perl->new(__PACKAGE__->path_to( 'conf', 'log4perl', "$installation_type.conf")->stringify)
     );
@@ -156,25 +155,7 @@ my $expires_in = ($installation_type eq 'production')
     ? '4 weeks'
     : '1 minute';
 
-# Memcached/libmemcached support built into the app.
-# Development and mirror distributions should point to localhost.
-# The production installation points to our distributed memcached.
-my $servers = ($installation_type eq 'production')
-   ? [ '206.108.125.175:11211', '206.108.125.177:11211' , '206.108.125.190:11211','206.108.125.168:11211','206.108.125.178:11211']
-   : [ '127.0.0.1:11211' ];
-
-# 1. Dual caches: memcached and file, one of which
-#    needs to have a symbolic name of "default"
-__PACKAGE__->config->{'Plugin::Cache'}{backends}{memcache} = {
-    class          => 'CHI',
-    driver         => 'Memcached::libmemcached',
-    servers        => $servers,
-    expires_in     => $expires_in,
-};
-
-# Path to the cache is hard-coded.
-# If I pre-cache via WWW::Mech will the cache be portable?
-__PACKAGE__->config->{'Plugin::Cache'}{backends}{default} = {
+__PACKAGE__->config->{'Plugin::Cache'}{backend} = {
     class          => 'CHI',
     driver         => 'File',
     root_dir       => "$ENV{APP_ROOT}/cache",
@@ -183,29 +164,7 @@ __PACKAGE__->config->{'Plugin::Cache'}{backends}{default} = {
     max_key_length => 64,
 };
 
-# For now, let's make the file cache the default. NOT NECESSARY.
-#__PACKAGE__->config->{'Plugin::Cache'}{default_store} = 'filecache';
 
-
-# 2. Using a single cache of either File or memcache
-#__PACKAGE__->config->{'Plugin::Cache'}{backend} = {
-#    class          => 'CHI',
-#    driver         => 'File',
-#    root_dir       => "$ENV{APP_ROOT}/cache",
-#    store          => 'File',
-#    depth          => 3,
-#    max_key_length => 64,
-#};
-
-#__PACKAGE__->config->{'Plugin::Cache'}{backend} = {
-#    class          => 'CHI',
-#    driver         => 'Memcached::libmemcached',
-#    servers        => $servers, 
-#    expires_in     => $expires_in,	
-#};
-
-
-# Start the application!
 __PACKAGE__->setup;
 
 
@@ -239,12 +198,6 @@ sub finalize_error {
 }
 
 
-#if __PACKAGE__->config->{debug}
-#$ENV{CATALYST_DEBUG_CONFIG} && print STDERR 'cat config looks like: '. dump(__PACKAGE__->config) . "\n";# . dump(%INC)."\n";
-
-
- 
-
 =pod
 
 Detect if a controller request is via ajax to disable template wrapping.
@@ -271,72 +224,19 @@ sub check_cache {
     # return if ($c->check_any_user_role(qw/admin curator/));
 
     return unless (ref($params) eq "HASH");  # TH: we should fix all calls so check is unnecessary.
-    my $cache_name = $params->{cache_name};
-    my $uuid       = $params->{uuid};
-
-    # First, has this content been precached?
-    # CouchDB. Located on localhost.
-    if ($cache_name eq 'couchdb') {
-	my $couch = App::Web->model('CouchDB');
-	my $host  = $couch->read_host;
-	my $port  = $couch->read_host_port;
-	
-	$self->log->debug("    ---> Checking cache $cache_name at $host:$port for $uuid...");
-
-	# Here, we're using couch to store HTML attachments.
-	# We MAY want to parameterize this in the future
-	# so that we can fetch documents, too.
-	my $content = $couch->get_attachment({uuid     => $uuid,
-					      database => lc($self->model('ExternalModel')->version),
-					     });
-	if ($content) {
-	    $self->log->debug("CACHE: $uuid: ALREADY CACHED in couchdb at $host:$port; retrieving attachment");
-	    return ($content,'couchdb');
-	}
-    }
-
-    # Not in Couch? Perhaps we've been cached by the app.
-    # 1. Single cache approach    
-    # First get the cache.
-    # my $cache = $self->cache;
-
-    # 2. Dual cache approach: filecache or memcache?
-    # Kludge: Plugin::Cache requires one of the backends to be symbolically named 'default'
-    $cache_name = 'default' if $cache_name eq 'filecache' || $cache_name eq 'couchdb';
-    my $cache = $self->cache(backend => $cache_name);
-    
-#    # Version entries in the cache.
-#    # Now get the database version from the cache. Heh.    
-#    my $version;
-#    unless ($version = $cache->get('wormbase_version')) {
-#	
-#	# The version isn't cached. So on this our first
-#	# check of the cache, stash the database version.	
-#	$version = $self->model('WormBaseAPI')->version;
-#	$cache->set('wormbase_version',$version);
-#    }
-
-    # Check the cache for the data we are looking for.
+    my $cache_name  = $params->{cache_name};
+    my $uuid        = $params->{uuid};
+  
+    my $cache       = $self->cache;
     my $cached_data = $cache->get($uuid);
     
-    # From which memcached server did this come from?
-    my $cache_server;
-    if ($cache_name eq 'memcache'
-	&& ($self->config->{timer} || $self->check_user_roles('admin'))) {
-	if ($cached_data) {
-	    $cache_server = 'memcache: ' . $cache->get_server_for_key($uuid);
-	}
-    } else {
-	$cache_server = 'filecache' if $cached_data;
-    }
-    
     if ($cached_data) {
-	$self->log->debug("CACHE: $uuid: ALREADY CACHED in $cache_name; retrieving from server $cache_server.");
+	$self->log->debug("CACHE: $uuid: ALREADY CACHED; retrieving");
     } else {
-	$self->log->debug("CACHE: $uuid: NOT PRESENT in $cache_name; generating widget.");
+	$self->log->debug("CACHE: $uuid: NOT PRESENT; generating content.");
     }
 
-    return ($cached_data,$cache_server);
+    return $cached_data;
 }
 
  
@@ -348,61 +248,10 @@ sub set_cache {
     return if ($self->check_any_user_role(qw/admin curator/));
     return if ($self->config->{installation_type} eq 'development'); 
 
-    my $cache_name = $params->{cache_name},
     my $uuid       = $params->{uuid};
     my $data       = $params->{data};
 
-    # 1. Dual cache approach
-    # filecache or memcache?
-    # Kludge: Plugin::Cache requires one of the backends to be symbolically named 'default'
-
-    # One approach: store everything in a *single* couch.
-    # No replication or NFS required.
-
-    # BEWARE!  Some set_cache operations will FAIL if the cache is distributed.
-    # We're PUTting everything to one place, but the read caches are distributed.
-    # If we look in a read cache and don't yet see something,
-    # we will still try and cache it to the core resulting in a conflict.
-    if ($cache_name eq 'couchdb') {
-
-	my $couch = App::Web->model('CouchDB');
-
-	# CouchDB Kludge
-	# Make sure the document doesn't already exist.
-	# Documents may already be listed in the couchdb
-	# but attachments may not be available yet.
-	# In these cases, simply return without setting the cache.
-#	return 1 if ($couch->get_document({uuid     => $uuid,
-#					 database => lc($self->model('ExternalModel')->version),
-#					}));
-		   
-	my $host = $couch->write_host;
-	$self->log->debug("SETTING CACHE: $uuid into $cache_name on $host");
-
-	my $response = $couch->create_document({attachment => $data,
-						uuid       => $uuid,			     
-						database   => lc($self->model('ExternalModel')->version),
-					       });
-
-	# Instead of pre-checking for cases where newly added documents/attachments
-	# aren't yet present, we'll just ignore inserts that raise conflicts.
-	return 1;
-
-#	if ($response->{error}) {
-#	    $self->log->warn("Couldn't set the cache for $uuid!" . $response->{error});
-#	} else {
-#	    return 1;
-#	}
-
-    # The unified cache interface
-    } else {
-	$cache_name = 'default' if $cache_name eq 'filecache';
-	my $cache = $self->cache(backend => $cache_name);
-	$cache->set($uuid,$data) or $self->log->warn("Couldn't cache data into $cache_name: $!");
-    }    
-	
-    # 2. single cache approach
-    # $self->cache->set($cache_id,$data) or $self->log->warn("Couldn't cache data: $!");
+    $self->cache->set($uuid,$data) or $self->log->warn("Couldn't cache data: $!");
     return;
 }
 

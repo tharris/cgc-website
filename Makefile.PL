@@ -14,19 +14,19 @@ requires 'Task::Catalyst';                # A slew of basic Catalyst Goodies
 #requires 'parent';
 
 # Catalyst Plugins and extensions
-#requires 'Catalyst::Action::REST';           
+requires 'Catalyst::Action::REST';           
 requires 'Catalyst::Action::RenderView';
-#requires 'Catalyst::Action::RenderView::ErrorHandler';
-requires 'Catalyst::Authentication::Credential::OpenID';   # will need to install Math::BigInt::GMP first 
-#requires 'Catalyst::Authentication::Store::DBIx::Class';
-#requires 'Catalyst::Controller::FormBuilder';
+requires 'Catalyst::Action::RenderView::ErrorHandler';
+#requires 'Catalyst::Authentication::Credential::OpenID';   # will need to install Math::BigInt::GMP first 
+requires 'Catalyst::Authentication::Store::DBIx::Class';
+requires 'Catalyst::Controller::FormBuilder';
 #requires 'Catalyst::Controller::CGIBin';
-#requires 'Catalyst::Model::Adaptor';
+requires 'Catalyst::Model::Adaptor';
 #requires 'Catalyst::Model::Xapian::Result';
 requires 'Catalyst::Log::Log4perl';
-#requires 'Catalyst::Plugin::Authentication';          
-#requires 'Catalyst::Plugin::Authorization::Roles';          
-#requires 'Catalyst::Plugin::Cache';                # Cache interface
+requires 'Catalyst::Plugin::Authentication';          
+requires 'Catalyst::Plugin::Authorization::Roles';          
+requires 'Catalyst::Plugin::Cache';                # Cache interface
 requires 'Catalyst::Plugin::ConfigLoader';
 requires 'Catalyst::Plugin::ErrorCatcher';
 requires 'Catalyst::Plugin::Unicode';
@@ -45,15 +45,13 @@ requires 'Catalyst::View::GD';
 # Application dependencies
 #requires 'AnyEvent::CouchDB';                                   #
 #requires 'B::Hooks::EndOfScope';                                 #
-#requires 'Cache::Memcached::libmemcached';                       #
 #requires 'CGI::Simple::Cookie';                                  #
 requires 'Config::General';                                      #
-requires 'Config::Tiny';                                         #
+#requires 'Config::Tiny';                                         #
 #requires 'Crypt::SaltedHash';                                    # => '0.06';
 #requires 'Crypt::SSLeay'; 			                 # For openid support
-#requires 'CHI';                                                  # Cache
-#requires 'CHI::Driver::Memcached::libmemcached';                 # Cache (in memory)
-#requires 'CHI::Driver::File';                                    # Cache (on disk)
+requires 'CHI';                                                  # Cache
+requires 'CHI::Driver::File';                                    # Cache (on disk)
 #requires 'Class::MOP';                                           # => '1.12';
 #requires 'Data::Dump';                                           #
 #requires 'Data::OptList';                                        #
@@ -64,25 +62,19 @@ requires 'DBD::mysql';                                           #
 #requires 'Devel::StackTrace';                                    #
 #requires 'HTML::Parser';                                         #
 #requires 'HTML::Entities';                                       #
-#requires 'Facebook::Graph';                                      #
 #requires 'GD';                                                   #
 #requires 'GD::SVG';                                              #
-#requires 'GO::Parser';                                           #
-#requires 'GO::Utils';                                            #
-#requires 'go-db-perl';                                           #
 #requires 'JSON';                                                 #
 #requires 'List::MoreUtils';                                      #
 requires 'Log::Log4perl';                                        #
 #requires 'Math::BigInt::GMP';   # will need to install gmp.h header file first(on Debian/Ubuntu is the libgmp3-dev package)
-#requires 'Memcached::libmemcached';                              #
 #requires 'Module::Install';                                      #
 requires 'Moose'                                 => '1.21';      #
-#requires 'MooseX::AbstractFactory';                              #
+requires 'MooseX::AbstractFactory';                              #
 #requires 'MooseX::NonMoose';                                     # => '0.17';
 #requires 'MooseX::MethodAttributes::Inheritable';                # => '0.24';
 requires 'MooseX::Role::WithOverloading';                        # => '0.05';
 #requires 'MRO::Compat';                                          #
-requires 'Net::Twitter';                                         #
 #requires 'Net::OAuth::Simple';                                   #
 #requires 'Number::Format';                                       #
 #requires 'namespace::clean';                                     #
