@@ -25,8 +25,6 @@ foxpro_parser.pl - Parses FoxPro dumps
 
 =head1 DESCRIPTION
 
-
-
 =head1 AUTHOR
 
 Shiran Pasternak, C<shiranpasternak@gmail.com>

@@ -30,6 +30,7 @@ sub index :Path Args(0) {
 #    my $page = $c->model('Schema::Page')->find({url=>"/"});
 #    my @widgets = $page->static_widgets if $page;
 #    $c->stash->{static_widgets} = \@widgets if (@widgets);
+    $c->stash->{template} = 'index.tt2';
 }
 
 

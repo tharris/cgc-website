@@ -22,7 +22,7 @@
   [% PROCESS "boilerplate/search_bar.tt2" %]
 
   <div id="title">
-       <h1><a href="/" title="WormBase Home">[% template.title or c.config.site_name %]</a></h1>
+       <h1><a href="/" title="[% c.config.site_name %]">[% template.title or c.config.site_name %]</a></h1>
      <p>  
           [% # The current release of the software and its codename %]
           Version: [% constants.acedb_version %]

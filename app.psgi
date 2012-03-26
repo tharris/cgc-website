@@ -28,16 +28,7 @@ my $app_root = $ENV{APP_ROOT};
 #       mount '/staging'  => $staging_app;
 #   }
 
-# GBrowse:
-# For now, nginx is proxying requests to back end machine gbrowse host.
 
-# A better way to do this would be to wrap the GBrowse CGIs.
-# Then every checked out source could have their own gbrowse instance
-# without having to fiddle with webserver configuration.
-
-# 1. WrapCGI
-#my $gb2 = Plack::App::WrapCGI->new(script => "/usr/local/wormbase/website/tharris/root/gbrowse/cgi/gbrowse")->to_app;
-#my $gb2 = Plack::App::WrapCGI->new(script => "/usr/local/wormbase/services/gbrowse2/current/cgi/gb2/gbrowse")->to_app;
 
 # 2. Or CGIBin. Still hard-coded for user.
 my $gbrowse = Plack::App::CGIBin->new(
