@@ -23,7 +23,7 @@ requires 'Catalyst::Controller::FormBuilder';
 #requires 'Catalyst::Controller::CGIBin';
 requires 'Catalyst::Model::Adaptor';
 #requires 'Catalyst::Model::Xapian::Result';
-requires 'Catalyst::Log::Log4perl';
+requires 'Log::Log4perl::Catalyst';
 requires 'Catalyst::Plugin::Authentication';          
 requires 'Catalyst::Plugin::Authorization::Roles';          
 requires 'Catalyst::Plugin::Cache';                # Cache interface
@@ -40,7 +40,7 @@ requires 'Catalyst::Plugin::StackTrace';
 requires 'Catalyst::Plugin::Static::Simple';
 requires 'Catalyst::View::JSON';
 requires 'Catalyst::View::Email';
-requires 'Catalyst::View::GD';
+# requires 'Catalyst::View::GD';
 
 # Application dependencies
 #requires 'AnyEvent::CouchDB';                                   #

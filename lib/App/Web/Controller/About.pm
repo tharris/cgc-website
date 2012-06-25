@@ -13,7 +13,7 @@ use parent 'App::Web::Controller';
 # 
 ##############################################################
 
-sub about :Path('/about') :Args(0)   {
+sub about :Path('/about') :Args(0) {
     my ($self,$c) = @_;
     $c->stash->{section}  = 'about';
     $c->stash->{template} = 'about/index.tt2';  # necessary?
@@ -25,13 +25,10 @@ sub about :Path('/about') :Args(0)   {
 
 }
 
-sub citing_cgc :Path ('/citing_the_cgc') :Args(0) {
+sub citing_cgc :Path('/citing_the_cgc') :Args(0) {
     my ($self,$c) = @_;
     $c->stash->{section}  = 'about';
     $c->stash->{template} = 'about/acknowleging_the_cgc.tt2';  # necessary?
 }
-
-
-
 
 1;
