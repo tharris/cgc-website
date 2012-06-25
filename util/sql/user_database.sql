@@ -1,9 +1,9 @@
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
-            user_id            INTEGER AUTO_INCREMENT PRIMARY KEY, 
-            username      char(255),
+            user_id       INTEGER AUTO_INCREMENT PRIMARY KEY, 
+			username      char(255),
             password      char(255),
-            gtalk_key	  text,
+            // gtalk_key	  text,
             active        int(11),
             wbid          char(255),
             wb_link_confirm     BOOLEAN

@@ -1296,7 +1296,6 @@ div#footer a:hover{
 #footer, #spacer {
     clear:both;
     padding: 0;
-    height:30em;
 }
 
 #footercredit {
@@ -1326,7 +1325,7 @@ div#footercredit a{
 #footer #footer-nav {
     margin:0 1.5em;
     height:2em;
-    padding:0 0 10em 0;
+    padding:0 0 5px 0;
     position:relative;
 }
 
