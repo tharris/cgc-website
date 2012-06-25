@@ -12,7 +12,8 @@ Installation
  > cd $approot
  > perl Makefile.PL
  > make installdeps
- > mysql -u -p < util/sql/cgc_schema.sql
+ > mysql -u -p cgc < schema/cgc.sql
+ > mysql -u -p cgc < util/sql/user_database.sql
 
 Running the application
 -----------------------
