@@ -12,3 +12,4 @@ schema/cgc.mwb.*
 inc/Module/
 /*META.yml
 Makefile
+Makefile.old
