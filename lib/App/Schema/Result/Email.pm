@@ -1,4 +1,4 @@
-package WormBase::Schema::Result::Email;
+package App::Schema::Result::Email;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE

@@ -1,7 +1,3 @@
-DROP DATABASE IF EXISTS wormbase_user;
-CREATE DATABASE wormbase_user;
-USE wormbase_user;
-
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
             user_id            INTEGER AUTO_INCREMENT PRIMARY KEY, 

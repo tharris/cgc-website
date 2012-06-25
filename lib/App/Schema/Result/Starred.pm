@@ -1,4 +1,4 @@
-package WormBase::Schema::Result::Starred;
+package App::Schema::Result::Starred;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
