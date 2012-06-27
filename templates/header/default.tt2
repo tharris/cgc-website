@@ -1,52 +1,36 @@
 <!-- BEGIN boilerplate/banner -->
-<div id="wrap">
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+	<div class="container">
+	  <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+		<span class="icon-bar"></span>
+		<span class="icon-bar"></span>
+		<span class="icon-bar"></span>
+	  </a>
+	  <a class="brand" href="#">[% template.title or c.config.site_name %]</a>
+	  <div class="nav-collapse">
+		<ul class="nav">
+		  <li class="active"><a href="#">Home</a></li>
+		[% FOREACH title IN c.config.nav_bar.option %]
+		   <li><a href="/[% title %]"
+		          id="section-[% title %]"
+		          class="[% IF(c.stash.section == title); 'active'; END;%]">
+          [% c.config.sections.$title.title %]</a></li>
+        [% END %]
+          <li><a href="#about">About</a></li>
+		  <li><a href="#contact">Contact</a></li>
+		</ul>
+	  </div><!--/.nav-collapse -->
+	  <span class="status-bar"></span>
+	    <form action="" class="navbar-form pull-right">
+			<input class="input-small" type="text" placeholder="Username"/>
+			<input class="input-small" type="password" placeholder="Password" />
+			<button class="btn" type="submit">Sign in</button>
+		</form>
 
-      [% message_id = c.config.system_message.id %]
-      [% IF message_id AND !c.user_session.close_system_message.$message_id %]
-        <div id="top-system-message" class="system-message">
-          [% c.config.system_message.message %]
-          <span class="system-message-close" onClick="WB.systemMessage('hide', '[% message_id %]')">
-            <span class=" ui-icon ui-icon-close"></span>
-          </span>
-        </div>
-        <div class="system-message" ></div>
-      [% END %]
-
-[% PROCESS page_info %]
-      [% save = 'reports' %]
-      [% IF object.name.data.class.match('paper'); save = 'my_library'; END; %]
-[% wbid = object.name.data.id.remove('[:/ &\.\[\]]') %]
-[% label = label.remove('[\'"]') %]
-<div id="header" data-page='{"ref": "[% url %]", "wbid": "[% wbid %]", "name": "[% label | uri %]", "id" : "[% object.name.data.id | uri %]", "class" : "[% object.name.data.class FILTER lower %]", "type" : "[% c.stash.section | uri %]", "is_obj": "[% is_obj %]", "save": "[% save %]" }'>
-
-  [% # PROCESS "boilerplate/search_bar.tt2" %]
-
-  <div id="title">
-       <h1><a href="/" title="[% c.config.site_name %]">[% template.title or c.config.site_name %]</a></h1>
-     <p>  
-          [% c.config.site_byline %]
-      </p>
+	</div>
   </div>
-
-
-
-<div id="nav-bar">
-    <ul class="nav-bar">
-    [% FOREACH title IN c.config.nav_bar.option %]
-      <li><a href="/[% title %]" id="section-[% title %]" class="[% IF(c.stash.section == title); 'selected'; END;%]">
-          <span class="ui-icon ui-icon-triangle-1-s"></span>
-          [% c.config.sections.$title.title %]</a>
-      </li>
-    [% END %]
-  <span class="status-bar"></span>
-    </ul>
-  </div>
- 
-  [% PROCESS timer %]
 </div>
-
-<!-- END boilerplate/banner -->
-   
+<!-- END boilerplate/banner -->   
     
-
-    <div id="content">
+    <div class="container" id="content">

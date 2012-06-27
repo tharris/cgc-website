@@ -30,7 +30,6 @@ time, mark, audio, video {
     margin: 0;
     padding: 0;
     border: 0;
-    font-size: 100%;
     vertical-align: baseline;
 }
 /* HTML5 display-role reset for older browsers */
@@ -615,23 +614,6 @@ h6 { font-size:0.8em;    /* 12px; subfield names */
 /* IE hack: Force tables and input forms to inherit our default size */
 input, select, th, td { font-size:1em; }
 
-/* This wrap is needed to keep the footer at the bottom in all browsers */
-#wrap {
-  margin: 0;
-  padding: 0 0 0 0em;
-  background:white;
-  min-height: 100%;
-  height: auto !important;
-  width:100%;
-  position: relative;
-  min-width: 780px;
-}
-
-#content {
-  background:white;
-  padding:0 1em;
-  margin:0;
-}
 
 /* Global Links */
 a:link {
@@ -1279,7 +1261,6 @@ fieldset {
 
 div#footer{
     color:#CCC;
-    background:black;
     margin:0;
     overflow:auto;
     position:absolute;

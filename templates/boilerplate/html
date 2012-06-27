@@ -3,7 +3,7 @@
   <head>    
     <meta charset="UTF-8">
 
-    <title>WormBase
+    <title>[% c.config.site_name %]
       [%- IF object -%]:  [%- object.name.data.class -%] Summary: [%- object.name.data.label -%]
       [% ELSE %]    
          : [% template.title or c.config.site_byline %]      
@@ -11,24 +11,45 @@
     </title>
 
     <link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/smoothness/jquery-ui.css" rel="stylesheet" />
+	<link type="text/css" href="/css/bootstrap.css" rel="stylesheet" />
+	<link type="text/css" href="/css/bootstrap-responsive.css" rel="stylesheet" />
     <link type="text/css" href="/css/main.css" rel="stylesheet" />
+    
+    <style>
+    body {
+        padding-top: 60px;
+    }
+    </style>
   </head>
 
   <body>  
-    [%- content -%]    
+    [%- content -%]
 
 
 
-    <script type="text/javascript" src="https://www.google.com/jsapi?key=[% c.config.google_api_key %]"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi?key=[% c.config.google_api_key %]"></script>    
+    <script src="/js/bootstrap/jquery.js"></script>
     <script>
-      google.load("jquery", "1.6.2");
       google.load("jqueryui", "1.8.16");
     </script>
     <script>
       var se = document.createElement('script');
-      se.src = "/js/wormbase.js";
+      se.src = "/js/main.js";
       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(se, s);
       [% INCLUDE google_analytics %]
     </script>
+    <script src="/js/bootstrap/bootstrap-transition.js"></script>
+    <script src="/js/bootstrap/bootstrap-alert.js"></script>
+    <script src="/js/bootstrap/bootstrap-modal.js"></script>
+    <script src="/js/bootstrap/bootstrap-dropdown.js"></script>
+    <script src="/js/bootstrap/bootstrap-scrollspy.js"></script>
+    <script src="/js/bootstrap/bootstrap-tab.js"></script>
+    <script src="/js/bootstrap/bootstrap-tooltip.js"></script>
+    <script src="/js/bootstrap/bootstrap-popover.js"></script>
+    <script src="/js/bootstrap/bootstrap-button.js"></script>
+    <script src="/js/bootstrap/bootstrap-collapse.js"></script>
+    <script src="/js/bootstrap/bootstrap-carousel.js"></script>
+    <script src="/js/bootstrap/bootstrap-typeahead.js"></script>
+
   </body>
 </html>
