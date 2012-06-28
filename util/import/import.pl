@@ -298,7 +298,7 @@ sub load_import_file {
 
 sub populate_schema {
     my ($import, $dbconf) = @_;
-    my @connect_info = map { $dbconf->{'Model::Schema'}->{connect_info} }
+    my @connect_info = map { $dbconf->{'CGC::Schema'}->{connect_info} }
         qw/dsn user password/;
     DEBUG('Connecting to database');
     my $schema = CGC::Schema->connect(@connect_info);
