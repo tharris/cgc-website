@@ -44,7 +44,8 @@ __PACKAGE__->log(
 
 __PACKAGE__->config->{'Plugin::Session'} = {
     expires           => 3600,
-    dbi_dbh           => 'CGC::Schema',
+    dbi_dbh           => 'CGC',
+#    dbi_dbh           => 'cgc',
     dbi_table         => 'sessions',
     dbi_id_field      => 'session_id',
     dbi_data_field    => 'session_data',
