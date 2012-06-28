@@ -5,7 +5,6 @@ use namespace::autoclean;
 use Hash::Merge;
 use Catalyst qw/
 	  ConfigLoader
-	  Cache
 	  Static::Simple
 	  Unicode
 	  ErrorCatcher
@@ -142,38 +141,10 @@ __PACKAGE__->config( 'Plugin::ConfigLoader' => {
 } ) or die "$!";
 
 
-##################################################
-#
-#   Dynamically establish the cache backend
-#
-##################################################
-
-# First, if we are a development site, we still want
-# to test the caching mechanism, we just don't want 
-# it to persist.
-my $expires_in = ($installation_type eq 'production')
-    ? '4 weeks'
-    : '1 minute';
-
-__PACKAGE__->config->{'Plugin::Cache'}{backend} = {
-    class          => 'CHI',
-    driver         => 'File',
-    root_dir       => "$ENV{APP_ROOT}/cache",
-    store          => 'File',
-    depth          => 3,
-    max_key_length => 64,
-};
-
-
 __PACKAGE__->setup;
 
 
 
-##################################################
-#
-#   Set headers for squid
-#
-################################################## 
 
 # There's a problem with c.uri_for when running behind a reverse proxy.
 # We need to reset the base URL.
@@ -211,49 +182,6 @@ sub is_ajax {
 }
 
 
-
-########################################
-#
-#  Helper methods for interacting with the cache.
-#
-########################################
-sub check_cache {
-    my ($self,$params) = @_;
-
-    # Don't bother checking the cache in certain circumstances.
-    # return if ($c->check_any_user_role(qw/admin curator/));
-
-    return unless (ref($params) eq "HASH");  # TH: we should fix all calls so check is unnecessary.
-    my $cache_name  = $params->{cache_name};
-    my $uuid        = $params->{uuid};
-  
-    my $cache       = $self->cache;
-    my $cached_data = $cache->get($uuid);
-    
-    if ($cached_data) {
-	$self->log->debug("CACHE: $uuid: ALREADY CACHED; retrieving");
-    } else {
-	$self->log->debug("CACHE: $uuid: NOT PRESENT; generating content.");
-    }
-
-    return $cached_data;
-}
-
- 
-# Provided with a pre-generated cache_id and data, store it in one of our caches.
-sub set_cache {
-    my ($self,$params) = @_;
-
-    # Don't bother setting the cache under certain circumstances
-    return if ($self->check_any_user_role(qw/admin curator/));
-    return if ($self->config->{installation_type} eq 'development'); 
-
-    my $uuid       = $params->{uuid};
-    my $data       = $params->{data};
-
-    $self->cache->set($uuid,$data) or $self->log->warn("Couldn't cache data: $!");
-    return;
-}
 
 
 #######################################################
@@ -390,19 +318,6 @@ sub _get_widget_fields {
     return @fields;
 }
 
-# Returns boolean check to see if this widget should be precached.
-# Small performance tweak to prevent couchdb lookups when not warranted.
-sub _widget_is_precached {
-    my ($self,$class,$widget) = @_;
-    my $section = 
-	$self->config->{sections}{species}{$class}
-    || $self->config->{sections}{resources}{$class};
-    
-    # this is here to prevent a widget section from getting added to config
-    unless(defined $section->{widgets}{$widget}){ return (); }
-    return 1 if defined $section->{widgets}{$widget}{precache};
-    return 0;
-}
 
     
 

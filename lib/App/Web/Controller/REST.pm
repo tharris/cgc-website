@@ -791,43 +791,6 @@ sub pages_GET {
 #
 ######################################################
 
-=head2 available_widgets(), available_widgets_GET()
-
-For a given CLASS and OBJECT, return a list of all available WIDGETS
-
-eg http://localhost/rest/available_widgets/gene/WBGene00006763
-
-=cut
-
-sub available_widgets : Path('/rest/available_widgets') :Args(2) :ActionClass('REST') {}
-
-sub available_widgets_GET {
-    my ($self,$c,$class,$name) = @_;
-
-    # Does the data for this widget already exist in the cache?
-    my ($data,$cache_server) = $c->check_cache({cache_name => 'couchdb', uuid => 'available_widgets'});
-    
-    my @widgets = @{$c->config->{pages}->{$class}->{widget_order}};
-    
-    foreach my $widget (@widgets) {
-	my $uri = $c->uri_for('/widget',$class,$name,$widget);
-	push @$data, { widgetname => $widget,
-		       widgeturl  => "$uri"
-	};
-	$c->cache->set('couchdb','available_widgets',$data);
-    }
-    
-    # Retain the widget order
-    $self->status_ok( $c, entity => {
-	data => $data,
-	description => "All widgets available for $class:$name",
-		      }
-	);
-}
-
-
-
-
 # Request a widget by REST. Gathers all component fields
 # into a single data structure, passing it to a unified
 # widget template.
@@ -1045,163 +1008,6 @@ sub widget_userguide_GET {
 
 
 
-# This is the original widget() method that cached data structures
-# instead of rendered HTML. Retain for reference.
-# It needs to be updated to use the new check_cache and set_cache interface.
-
-sub widget_data_cache :Path('/rest/widget_data_cache') :Args(3) :ActionClass('REST') {}
-
-# This version polls for and caches data structures in the filecache.
-sub widget_data_cache_GET {
-    my ($self,$c,$class,$name,$widget) = @_; 
-   
-    my $headers = $c->req->headers;
-    $c->log->debug("widget GET header ".$headers->content_type);
-
-    # Have we pre-cached the HTML for this widget? If so, deliver it.
-    # We will test for DATA caches below (eg: things previously requested
-    # but not specifically cached)
-    # Cache key something like "$class_$widget_$name"
-    # my ($cache_id,$cached_data,$cache_source) = $c->check_cache('filecache','rest','widget',$class,$name,$widget);
-    my ($cached_data,$cache_source);
-    
-    my $uuid = join('_',$class,$widget,$name);
-    # We'll only check the cache if we are a production environment.
-    if ($c->config->{installation_type} eq 'production') {
-	($cached_data,$cache_source) = $c->check_cache({cache_name => 'filecache',uuid => $uuid });
-    }
-
-    # The precache via couchdb contains rendered HTML.
-    if ($cache_source eq 'precache') {
-	my $response   = $c->response;
-	$response->body($cached_data);
-	return;
-    }
-    
-    # It seems silly to fetch an object if we are going to be pulling
-    # fields from the cache but I still need for various page formatting duties.
-    unless ($c->stash->{object}) {
-        # AD: this condition is an illusion -- the stash will never have an object
-        #     unless we were forwarded here by another action. since this is a
-        #     RESTful action, that likely isn't the case.
-	# TH: Yes, you're absolutely correct. Conditional from pre-REST implementation?
-      # Fetch our external model
-      my $api = $c->model('AppAPI');
-      
-      # Fetch the object from our driver     
-      $c->log->debug("AppAPI model is $api " . ref($api));
-      $c->log->debug("The requested class is " . ucfirst($class));
-      $c->log->debug("The request is " . $name);
-      
-      # Fetch a App::API::Object::* object
-      if ($name eq '*' || $name eq 'all') {
-          $c->stash->{object} = $api->instantiate_empty({class => ucfirst($class)});
-      } else {
-          $c->stash->{object} = $api->fetch({class => ucfirst($class),
-                            name  => $name,
-                            }) or die "$!";
-      }
-      $c->log->debug("Tried to instantiate: $class");
-    }
-
-    my $object = $c->stash->{object};
-    # Is this a request for the references widget?
-    # Return it (of course, this will ONLY be HTML).
-    if ($widget eq "references") {
-      $c->stash->{class}    = $class;
-      $c->stash->{query}    = $name;
-      $c->stash->{noboiler} = 1;
-      
-      # Looking up the template is slow; hard-coded here.
-      $c->stash->{template} = "shared/widgets/references.tt2";
-      $c->forward('App::Web::View::TT');
-      return;
-    
-    # If you have a tool that you want to display inline as a widget, be certain to add it here.
-    # Otherwise, it will try to load a template under class/action.tt2...
-    } elsif ($widget eq "nucleotide_aligner" || $widget eq "protein_aligner" || $widget eq 'tree') {
-      return $c->res->redirect("/tools/$widget/run?inline=1;name=$name;class=$class") if ($widget eq 'tree');
-      return $c->res->redirect("/tools/" . $widget . "/run?inline=1&sequence=$name");
-    }
-    
-    
-    # The cache ONLY includes the field data for the widget, nothing else.
-    # This is because most backend caches cannot store globs.
-    if ($cached_data) {
-	$c->stash->{fields} = $cached_data;
-	$c->stash->{cache} = $cache_source if ($cache_source);
-    } else {
-	
-	# No result? Generate and cache the widget.       
-	# Load the stash with the field contents for this widget.
-	# The widget itself is loaded by REST; fields are not.
-	my @fields = $c->_get_widget_fields($class,$widget);
-	
-	my $fatal_non_compliance = 0;
-	foreach my $field (@fields) {
-	    unless ($field) { next;}
-	    $c->log->debug($field);
-	    my $data = $object->$field; # $object->can($field) for a check
-	    if ($c->config->{installation_type} eq 'development' and
-		my ($fixed_data, @problems) = $object->_check_data($data, $class)) {
-		$data = $fixed_data;
-		$c->log->fatal("${class}::$field returns non-compliant data: ");
-		$c->log->fatal("\t$_") foreach @problems;
-		
-		$fatal_non_compliance = $c->config->{fatal_non_compliance};
-	    }
-	    
-	    # Conditionally load up the stash (for now) for HTML requests.
-	    # Alternatively, we could return JSON and have the client format it.
-	    $c->stash->{fields}->{$field} = $data; 
-	}
-	
-      if ($fatal_non_compliance) {
-          die "Non-compliant data. See log for fatal error.\n"
-      }
-
-      # Cache the field data for this widget.
-      # I added an eval cause this was breaking for some data. WE SHOULD FIX DATA RETURNED IN AN UNUSUAL STRUCTURE - AC
-      eval {$c->set_cache('filecache',$uuid,$c->stash->{fields});}
-    }
-
-    $c->stash->{class} = $class;
-    
-    # Save the name of the widget.
-    $c->stash->{widget} = $widget;
-
-    # No boiler since this is an XHR request.
-    $c->stash->{noboiler} = 1;
-
-    # Set the template
-    $c->stash->{template}="shared/generic/rest_widget.tt2";
-    $c->stash->{child_template} = $c->_select_template($widget,$class,'widget');    
-
-    # Forward to the view for rendering HTML.
-    my $format = $headers->header('Content-Type') || $c->req->params->{'content-type'};
-    $c->detach('App::Web::View::TT') unless ($format) ;
- 
-    # TODO: AGAIN THIS IS THE REFERENCE OBJECT
-    # PERHAPS I SHOULD INCLUDE FIELDS?
-    # Include the full uri to the *requested* object.
-    # IE the page on App where this should go.
-    my $uri = $c->uri_for("/page",$class,$name);
-    $self->status_ok($c, entity => {
-	class   => $class,
-	name    => $name,
-	uri     => "$uri",
-	fields  => $c->stash->{fields},
-		     }
-	);
-    $format ||= 'text/html';
-    my $filename = $class."_".$name."_".$widget.".".$c->config->{api}->{content_type}->{$format};
-    $c->log->debug("$filename download in the format: $format");
-    $c->response->header('Content-Type' => $format);
-    $c->response->header('Content-Disposition' => 'attachment; filename='.$filename);  
-}
-
-
-
 
 # For "static" pages
 # that do not need to handle objects. They have a different linking structure
@@ -1333,28 +1139,6 @@ sub widget_static_POST {
 }
 
 
-# for the generic summary page widgets
-sub widget_class_index :Path('/rest/widget/index') :Args(3) :ActionClass('REST') {}
-
-sub widget_class_index_GET {
-    my ($self,$c,$species,$class, $widget) = @_; 
-    
-    $c->stash->{widget} = $widget;
-    $c->stash->{species} = $species;
-    $c->stash->{class} = $class;
-
-    # No boiler since this is an XHR request.
-    $c->stash->{noboiler} = 1;
-
-    if($widget=~m/browse|basic_search|summary/){
-      $c->stash->{template}="shared/widgets/$widget.tt2";
-    }elsif($class=~m/all/){
-      $c->stash->{template} = "species/$species/$widget.tt2";
-    }else{
-      $c->stash->{template} = "species/$species/$class/$widget.tt2";
-    }
-    $c->detach('App::Web::View::TT'); 
-}
 
 
 sub widget_home :Path('/rest/widget/home') :Args(1) :ActionClass('REST') {}
@@ -1570,26 +1354,6 @@ sub widget_admin_GET {
     return;
 }
 
-
-
-
-
-
-
-######################################################
-#
-#   SPECIES WIDGETS (as opposed to /species)
-#
-######################################################
-#sub widget_species :Path('/rest/widget/species_summary') :Args(2) :ActionClass('REST') {}
-#
-#sub widget_species_GET {
-#    my ($self,$c,$species,$widget) = @_; 
-#    $c->log->debug("getting species widget");#
-#
-#    $c->stash->{template} = "species/$species/$widget.tt2";
-#    $c->stash->{noboiler} = 1;
-#}
 
 
 
