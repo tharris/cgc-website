@@ -1,21 +1,36 @@
+use utf8;
 package CGC::Schema::Result::Laboratory;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+CGC::Schema::Result::Laboratory
+
+=cut
 
 use strict;
 use warnings;
 
 use Moose;
 use MooseX::NonMoose;
-use namespace::autoclean;
+use MooseX::MarkAsMethods autoclean => 1;
 extends 'DBIx::Class::Core';
+
+=head1 COMPONENTS LOADED
+
+=over 4
+
+=item * L<DBIx::Class::InflateColumn::DateTime>
+
+=back
+
+=cut
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 NAME
-
-CGC::Schema::Result::Laboratory
+=head1 TABLE: C<laboratory>
 
 =cut
 
@@ -33,8 +48,7 @@ __PACKAGE__->table("laboratory");
 =head2 head
 
   data_type: 'varchar'
-  default_value: (empty string)
-  is_nullable: 0
+  is_nullable: 1
   size: 255
 
 =head2 address1
@@ -96,7 +110,7 @@ __PACKAGE__->add_columns(
     is_nullable => 0,
   },
   "head",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
+  { data_type => "varchar", is_nullable => 1, size => 255 },
   "address1",
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "address2",
@@ -119,8 +133,18 @@ __PACKAGE__->add_columns(
   "city",
   { data_type => "varchar", is_nullable => 1, size => 255 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
-__PACKAGE__->add_unique_constraint("laboratory_head_institution_unique", ["head", "institution"]);
 
 =head1 RELATIONS
 
@@ -155,8 +179,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-11-18 16:37:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8YVJKgF1SkzqM8xdZC+LrA
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-28 17:36:50
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:a1cEYDw+xE16PWYhIsL6Ww
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

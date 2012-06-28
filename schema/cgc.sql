@@ -221,6 +221,169 @@ CREATE TABLE `strain` (
 
 
 
+# Dump of table comments
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `comments`;
+
+CREATE TABLE `comments` (
+  `comment_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `page_id` int(11) DEFAULT NULL,
+  `timestamp` int(11) DEFAULT NULL,
+  `parent_id` int(11) DEFAULT NULL,
+  `content` text,
+  PRIMARY KEY (`comment_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Dump of table history
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `history`;
+
+CREATE TABLE `history` (
+  `session_id` char(72) NOT NULL DEFAULT '',
+  `page_id` int(11) NOT NULL DEFAULT '0',
+  `timestamp` int(11) DEFAULT NULL,
+  `visit_count` int(11) DEFAULT NULL,
+  PRIMARY KEY (`session_id`,`page_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+# Dump of table user_email
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `user_email`;
+
+CREATE TABLE `user_email` (
+  `user_id` int(11) NOT NULL DEFAULT '0',
+  `email` char(255) NOT NULL DEFAULT '',
+  `validated` tinyint(1) DEFAULT NULL,
+  `primary_email` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`user_id`,`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+
+# Dump of table user_oauth
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `user_oauth`;
+
+CREATE TABLE `user_oauth` (
+  `oauth_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `provider` char(255) DEFAULT NULL,
+  `access_token` char(255) DEFAULT NULL,
+  `access_token_secret` char(255) DEFAULT NULL,
+  `username` char(255) DEFAULT NULL,
+  PRIMARY KEY (`oauth_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Dump of table user_openid
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `user_openid`;
+
+CREATE TABLE `user_openid` (
+  `auth_id` int(11) NOT NULL AUTO_INCREMENT,
+  `openid_url` char(255) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `provider` char(255) DEFAULT NULL,
+  `oauth_access_token` char(255) DEFAULT NULL,
+  `oauth_access_token_secret` char(255) DEFAULT NULL,
+  `screen_name` char(255) DEFAULT NULL,
+  `auth_type` char(20) DEFAULT NULL,
+  PRIMARY KEY (`auth_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+# Dump of table user_password_reset
+# ------------------------------------------------------------
+DROP TABLE IF EXISTS `user_password_reset`;
+
+CREATE TABLE `user_password_reset` (
+  `user_id` int(11) NOT NULL DEFAULT '0',
+  `token` char(50) DEFAULT NULL,
+  `expires` int(11) DEFAULT NULL,
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+# Dump of table user_roles
+# ------------------------------------------------------------
+DROP TABLE IF EXISTS `user_roles`;
+
+CREATE TABLE `user_roles` (
+  `role_id` int(11) NOT NULL,
+  `role` char(255) DEFAULT NULL,
+  PRIMARY KEY (`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+# Dump of table user_sessions
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `user_sessions`;
+
+CREATE TABLE `user_sessions` (
+  `session_id` char(72) NOT NULL,
+  `session_data` text,
+  `expires` int(10) DEFAULT NULL,
+  PRIMARY KEY (`session_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Dump of table user_starred
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `user_starred`;
+
+CREATE TABLE `user_starred` (
+  `session_id` char(72) NOT NULL DEFAULT '',
+  `page_id` int(11) NOT NULL DEFAULT '0',
+  `save_to` char(50) DEFAULT NULL,
+  `timestamp` int(11) DEFAULT NULL,
+  PRIMARY KEY (`session_id`,`page_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+# Dump of table user_users
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `user_users`;
+
+CREATE TABLE `user_users` (
+  `user_id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` char(255) DEFAULT NULL,
+  `password` char(255) DEFAULT NULL,
+  `gtalk_key` text,
+  `active` int(11) DEFAULT NULL,
+  `wbid` char(255) DEFAULT NULL,
+  `wb_link_confirm` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+# Dump of table user_users_to_roles
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `user_users_to_roles`;
+
+CREATE TABLE `user_users_to_roles` (
+  `user_id` int(11) NOT NULL DEFAULT '0',
+  `role_id` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`user_id`,`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

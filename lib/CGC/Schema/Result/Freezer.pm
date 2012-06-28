@@ -1,21 +1,36 @@
+use utf8;
 package CGC::Schema::Result::Freezer;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+CGC::Schema::Result::Freezer
+
+=cut
 
 use strict;
 use warnings;
 
 use Moose;
 use MooseX::NonMoose;
-use namespace::autoclean;
+use MooseX::MarkAsMethods autoclean => 1;
 extends 'DBIx::Class::Core';
+
+=head1 COMPONENTS LOADED
+
+=over 4
+
+=item * L<DBIx::Class::InflateColumn::DateTime>
+
+=back
+
+=cut
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 NAME
-
-CGC::Schema::Result::Freezer
+=head1 TABLE: C<freezer>
 
 =cut
 
@@ -43,6 +58,8 @@ __PACKAGE__->table("freezer");
   is_nullable: 1
   size: 10
 
+Not sure yet how to represent location
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -58,6 +75,17 @@ __PACKAGE__->add_columns(
   "location",
   { data_type => "char", is_nullable => 1, size => 10 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
@@ -93,8 +121,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-11-17 18:48:26
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:qjiwHvuTAQazlaT6TsYddA
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-28 17:36:50
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:7TWkgGIpXDt3qg/VNDdWWw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
