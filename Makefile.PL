@@ -50,8 +50,8 @@ requires 'Config::General';                                      #
 #requires 'Config::Tiny';                                         #
 #requires 'Crypt::SaltedHash';                                    # => '0.06';
 #requires 'Crypt::SSLeay'; 			                 # For openid support
-requires 'CHI';                                                  # Cache
-requires 'CHI::Driver::File';                                    # Cache (on disk)
+#####requires 'CHI';                                                  # Cache
+#####requires 'CHI::Driver::File';                                    # Cache (on disk)
 #requires 'Class::MOP';                                           # => '1.12';
 #requires 'Data::Dump';                                           #
 #requires 'Data::OptList';                                        #
