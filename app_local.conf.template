@@ -1,48 +1,32 @@
-############################################################
-#
-#  App Local Configuration
-#
-#  This file contains deployment-specific configuration.
-#  Values set here will over-ride those set in app.conf
-#
-############################################################
-
-# What type of installation are we? Affects things
-# like debug levels and caching.
-installation_type = development
-
-# Should we force requests to use SSL?
-enable_ssl = 1
-
-# REQUIRED FOR PRODUCTION: Base URL
-#base = http://beta.wormbase.org/
-
 ######################################################
 #
 #   Debugging 
 #
 ######################################################
 
-debug                = 0
-fatal_non_compliance = 0
-timer                = 0
-
-<stacktrace>
-    enable      1
-</stacktrace>
-
-<Plugin::ErrorCatcher>
-    enable      1
-</Plugin::ErrorCatcher>
-
-<Plugin::ErrorCatcher::Email>
-    to      oicr@wormbase.org   
-    from    oicr@wormbase.org 
-    use_tags 1
-  #  subject Error Report from: %h; %F, line %l
-</Plugin::ErrorCatcher::Email>
+# debug: enable system-wide debugging; expects boolean
+debug = 1
+# debug_view: style of the view debugging. Off by default
+#    unless "debug" is set above and debug_view set to 
+#    one of
+#     comment - send debugging statements as HTML comments
+#     browser - send debugging statements in formatted divs
+#     log     - send to the error log file
+debug_view =
 
 
+######################################################
+#
+#   User Interface
+#
+######################################################
+
+#  Widget timing information.
+#  Enable display of timing, back end server, 
+#  and cache information. You must also be an
+#  administrator. Uncommenting disables BOTH 
+#  the collection and display of this information.
+timer = 0
 
 
 ########################################################
@@ -52,77 +36,35 @@ timer                = 0
 ########################################################
 
 # Issue tracking and reporting
-issue_email = you@youremail.org
+issue_email = youremail@gmail.com
 
 # Registering a new account
-register_email = you@youremail.org
+register_email = youremail@gmail.com
+
+<Plugin::ErrorCatcher::Email>
+    to      youremail@gmail.com
+    from    youremail@gmail.com
+    use_tags 1
+  #  subject Error Report from: %h; %F, line %l
+</Plugin::ErrorCatcher::Email>
 
 
-########################################################
-#
-#  Cache
-#
-########################################################
+<Model::Schema>
+  schema_class = CGC::Schema
+  <connect_info>  
+        dsn      = dbi:mysql:cgc:hostname=localhost
+        user     = yourusername
+        password = yourpassword
+   </connect_info>
+</Model::Schema>
+  
+<stacktrace>
+    enable      1
+</stacktrace>
 
-# cache_content: Should this webapp try to cache content?
-# Uncomment to turn off caching
-# cache_content = false
-
-# Cache root (pregenerated HTML)
-# cache_root = /usr/local/wormbase/databases/%s/cache
-
-# By default, we cache to couchdb on localhost
-# Production and staging override to cache to web6
-# Master Couch
-# host = 127.0.0.1
-
-#<Model::CouchDB>
-#         host = 206.108.125.165
-#         port = 5984
-#</Model::CouchDB>
+<Plugin::ErrorCatcher>
+    enable      1
+</Plugin::ErrorCatcher>
 
 
-########################################################
-#
-#  Database Locations and Authorization
-#
-#  By default, we use remote data sources for
-#  convenience but expect this to be overriden
-#  by the wormbase_local.conf.
-#
-########################################################
 
-# wormbase_user exists only on wb-web6 (206.108.125.165)
-#<Model::Schema>
-#  schema_class = CGC::Schema
-#  <connect_info>  
-#        dsn =  dbi:mysql:wormbase_user:hostname=localhost
-#        user = wormbase
-#        password =
-#   </connect_info>
-#</Model::Schema>
-
-<Model::ExternalModel>
-  class = App::ExternalModel
-  <args>
-    conf_dir    = __path_to(conf)__/
-    
-    # Temporary directory in filesystem space    
-    # tmp_base    = __path_to(root)__/tmp/
-    # tmp_base      = /tmp/wormbase/
-    # In production, this is an nfs mount
-    tmp_base      = /usr/local/wormbase/shared/tmp/
- 
-    <mysql>
-      delay = 600
-      reconnect = 3
-#      host  = 206.108.125.165
-      host  = localhost
-      user  = wormbase
-      pass  = 
-      <data_sources>
-          clustal  = 1
-      </data_sources>
-    </mysql>
-  </args>
-</Model::ExternalModel>
