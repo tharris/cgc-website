@@ -5,7 +5,6 @@ use namespace::autoclean;
 use Hash::Merge;
 use Catalyst qw/
     ConfigLoader
-    Cache
     Static::Simple
     Unicode
     ErrorCatcher
@@ -45,7 +44,7 @@ __PACKAGE__->log(
 
 __PACKAGE__->config->{'Plugin::Session'} = {
     expires           => 3600,
-    dbi_dbh           => 'Schema',
+    dbi_dbh           => 'CGC::Schema',
     dbi_table         => 'sessions',
     dbi_id_field      => 'session_id',
     dbi_data_field    => 'session_data',
@@ -109,7 +108,7 @@ __PACKAGE__->config->{authentication} = {
             },
             store => {
                 class         => 'DBIx::Class',
-                user_model    => 'Schema::User',
+                user_model    => 'Schema::UserUser',
                 role_relation => 'roles',
                 role_field    => 'role',
                 # use_userdata_from_session => 0,
@@ -218,13 +217,13 @@ sub merge_session_to_user {
     Hash::Merge::set_clone_behavior(0);
 
     my $sid  = $c->get_session_id;
-    my $s_db = $c->model('Schema::Session')
+    my $s_db = $c->model('Schema::UserSession')
         ->find({ session_id => "session:$sid" });
     my $uid = $c->user->user_id;
 
     my @user_saved = $s_db->user_saved;
 
-    my $user_items = $c->model('Schema::Starred')
+    my $user_items = $c->model('Schema::UserStarred')
         ->search_rs({ session_id => "user:$uid" });
 
     foreach my $saved_item (@user_saved) {

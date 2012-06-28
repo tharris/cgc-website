@@ -9,7 +9,7 @@ __PACKAGE__->config(
     connect_info => {
         dsn => 'dbi:mysql:cgc',
         user => 'root',
-        password => 'root',
+        password => '3l3g@nz',
         quote_names => q{1},
     }
 );
