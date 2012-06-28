@@ -131,8 +131,8 @@ __PACKAGE__->config(
 );
 
 # Configure the application based on the type of installation.
-# Application-wide configuration is located in wormbase.conf
-# which can be over-ridden by wormbase_local.conf.
+# Application-wide configuration is located in app.conf
+# which can be over-ridden by app_local.conf.
 __PACKAGE__->config(
     'Plugin::ConfigLoader' => {
         file   => 'app.conf',

@@ -1,4 +1,4 @@
-<p>Thank you for registering at WormBase!
+<p>Thank you for registering at the CGC!
 </p>
 <p>
 You supplied the following registration information:
@@ -7,6 +7,7 @@ You supplied the following registration information:
 &nbsp;&nbsp;&nbsp;&nbsp;E-mail:   [% info.email %]<br>
 <p>
 <p>
+
 [% IF info.wbid %]
 You will also be linked to the following WormBase identity:
 </p>
@@ -15,12 +16,13 @@ You will also be linked to the following WormBase identity:
 <p>
 <p>
 [% END %]
-To activate your account and validate this email (<b>[% info.email %]</b>), please click on the following link:<br>
+
+To activate your account and validate this address (<b>[% info.email %]</b>), please click on the following link:<br>
   <a href="[% digest %]">[% digest %]</a><br>
 </p> 
 <p>
 Thank you,<br /><br />
 
-The WormBase Consortium<br />
-help@wormbase.org
+The Caenorhabditis Genetics Center<br />
+cgc@umn.edu
 </p> 

@@ -5,12 +5,9 @@
       window.location = "/";
    [% ELSIF prompt_wbid %]
       opener.location.href="[% c.uri_for('/auth/wbid') %]?redirect=[% redirect %]";
-   [% ELSIF logout || ! operator %]
+   [% ELSIF logout %]
       opener.location.reload(1);
    [% ELSE %]
-      var answer= confirm("Would you like to continue the process of becoming an operator?") ; 
-      if(answer) { opener.location.href ="[% c.uri_for(c.controller('auth').action_for('operator')) %]"; }
-      else { opener.location.reload(1);}
   [% END %] 
   window.close();
 [% END %]  
@@ -41,6 +38,9 @@ WB.hideTextOnFocus(".password");
     </div>
   </form>
 
+[%# CGC: No Support of OAUTH/OpenID logins to begin; we 
+    need more info from users to send them strains anyway.
+
   <div class="social">
     <span style="position:absolute;top:30px;">...or sign in with</span>
     <div style="float:right;padding-right:1em;">
@@ -53,5 +53,6 @@ WB.hideTextOnFocus(".password");
       </button>
     </div>
   </div>
+%] 
 </div>
  

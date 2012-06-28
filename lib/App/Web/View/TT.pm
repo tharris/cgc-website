@@ -33,11 +33,11 @@ __PACKAGE__->config({
 				     },
 #		     TIMER        => 1,
 		     DEBUG        => 1,
-		     CONSTANTS    => {
-			 database_version => sub {
-			     App::Web->model('ExternalModel')->version
-			 }
-		     },
+#		     CONSTANTS    => {
+#			 database_version => sub {
+#			     App::Web->model('ExternalModel')->version
+#			 }
+#		     },
 		    });
 
 

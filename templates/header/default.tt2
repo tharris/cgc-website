@@ -22,12 +22,12 @@
 		</ul>
 	  </div><!--/.nav-collapse -->
 	  <span class="status-bar"></span>
+		<span class="pull-right">Not registered? <a href="">Sign up!</a></span>
 	    <form action="" class="navbar-form pull-right">
 			<input class="input-small" type="text" placeholder="Username"/>
 			<input class="input-small" type="password" placeholder="Password" />
 			<button class="btn" type="submit">Sign in</button>
 		</form>
-
 	</div>
   </div>
 </div>

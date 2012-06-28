@@ -418,6 +418,8 @@ sub download_GET {
     $c->response->body($c->req->param("sequence"));
 }
 
+=head1 CGC: NOT LINKING WBIDs TO ACCOUNTS
+
 sub rest_link_wbid :Path('/rest/link_wbid') :Args(0) :ActionClass('REST') {}
 sub rest_link_wbid_POST {
     my ( $self, $c) = @_;
@@ -447,103 +449,134 @@ sub rest_link_wbid_POST {
     $c->stash->{noboiler} = 1;
     $c->forward('App::Web::View::TT');
 }
- 
+
+=cut
+
+
+# CGC: Already refactored.
+# Register a new user
+# This rest action is a target of the /register.
 sub rest_register :Path('/rest/register') :Args(0) :ActionClass('REST') {}
 
 sub rest_register_POST {
-    my ( $self, $c) = @_;
-    my $email = $c->req->params->{email};
-    my $wbemail = $c->req->params->{wbemail};
+    my ($self,$c) = @_;
+    my $email    = $c->req->params->{email};
     my $username = $c->req->params->{username};
     my $password = $c->req->params->{password};
-    my $wbid = $c->req->params->{wbid};
-    if(($email || $wbemail) && $username && $password){
-      my $csh = Crypt::SaltedHash->new() or die "Couldn't instantiate CSH: $!";
-      $csh->add($password);
-      my $hash_password= $csh->generate();
 
-      my @emails = $c->model('Schema::Email')->search({email=>$email, validated=>1});
-      foreach (@emails) {
-          $c->res->body(0);
-          return 0;         
-      }
+    # Not currently using wbid/wbemail.
+    my $wbid     = $c->req->params->{wbid};
+    my $wbemail  = $c->req->params->{wbemail};
+    if( ($email || $wbemail) && $username && $password){
+	my $csh = Crypt::SaltedHash->new() or die "Couldn't instantiate CSH: $!";
+	$csh->add($password);
+	my $hash_password= $csh->generate();
+	
+	my @emails = $c->model('CGC::UserEmail')->search({email=>$email, validated=>1});
+	foreach (@emails) {
+	    $c->res->body(0);
+	    return 0;         
+	}
+	
+	my @users = $c->model('CGC::UserUser')->search({wbid=>$wbid, wb_link_confirm=>1});
+	foreach (@users){
+	    if ($_->password && $_->active){
+		$c->res->body(0);
+		return 0;
+	    }
+	}  
+	
+	my $user = $c->model('CGC::UserUser')->find_or_create({username        => $username, 
+							       password        => $hash_password,
+							       active          => 0,
+							       wbid            => $wbid,
+							       wb_link_confirm => 0});
+	my $user_id = $user->user_id;
+	
+	@emails = split(/,/, $email);
+	foreach my $e (@emails){
+	    $e =~ s/\s//g;
+	    $c->model('CGC::UserEmail')->find_or_create({email=>$e, user_id=>$user_id}) ;
+	    $self->rest_register_email($c, $e, $username, $user_id);
+	}
+	
+	# Register wbemails.
+#	my @wbemails = split(/,/, $wbemail);
+#	foreach my $wbe (@wbemails){
+#	    $wbe =~ s/\s//g;
+#	    $c->model('CGC::UserEmail')->find_or_create({email=>$wbe, user_id=>$user_id}) ;
+#	    $self->rest_register_email($c, $wbe, $username, $user_id, $wbid);
+#	}	
+#	push(@emails, @wbemails);
 
-      my @users = $c->model('Schema::User')->search({wbid=>$wbid, wb_link_confirm=>1});
-      foreach (@users){
-        if($_->password && $_->active){
-            $c->res->body(0);
-            return 0;
-          }
-      }  
-
-      my $user=$c->model('Schema::User')->find_or_create({username=>$username, password=>$hash_password,active=>0,wbid=>$wbid,wb_link_confirm=>0}) ;
-      my $user_id = $user->user_id;
-
-      @emails = split(/,/, $email);
-      foreach my $e (@emails){
-        $e =~ s/\s//g;
-        $c->model('Schema::Email')->find_or_create({email=>$e, user_id=>$user_id}) ;
-        $self->rest_register_email($c, $e, $username, $user_id);
-      }
-
-      my @wbemails = split(/,/, $wbemail);
-      foreach my $wbe (@wbemails){
-        $wbe =~ s/\s//g;
-        $c->model('Schema::Email')->find_or_create({email=>$wbe, user_id=>$user_id}) ;
-        $self->rest_register_email($c, $wbe, $username, $user_id, $wbid);
-      }
-      
-      push(@emails, @wbemails);
-      $c->stash->{template} = "shared/generic/message.tt2"; 
-      $c->stash->{message} = "<h2>Thank you!</h2> <p>Thank you for registering at <a href='" . $c->uri_for("/") . "'>wormbase.org</a>. An email has been sent to " . join(', ', map {"<a href='mailto:$_'>$_</a>"} @emails) . " to confirm your registration</p>" ; 
-      $c->stash->{redirect} = $c->req->params->{redirect};
-      $c->forward('App::Web::View::TT');
-
+	$c->stash->{template} = "shared/generic/message.tt2"; 
+	$c->stash->{message} = "<h2>You're almost done!</h2> <p>An email has been sent to " 
+	    . join(', ', map {"<a href='mailto:$_'>$_</a>"} @emails) 
+	    . ".</p><p>In order to use this account at <a href='" 
+	    . $c->uri_for("/")->path
+	    . "'>The CGC</a> you will need to activate it by following the activation link in your email.</p>" ; 
+#       $c->stash->{redirect} = $c->req->params->{redirect};
+	$c->forward('App::Web::View::TT');
     }
-
-
-
 }
 
 
+
+# CGC: Already refactored; could still purge wbid
 sub rest_register_email {
-  my ($self,$c,$email,$username,$user_id, $wbid) = @_;
-
-
-  $c->stash->{info}->{username}=$username;
-  $c->stash->{info}->{email}=$email;
-
-  $c->stash->{noboiler}=1;
-  
-  my $csh = Crypt::SaltedHash->new() or die "Couldn't instantiate CSH: $!";
-  $csh->add($email."_".$username);
-  my $digest = $csh->generate();
-  $digest =~ s/^{SSHA}//;
-  $digest =~ s/\+/\%2B/g;
-  my $url = $c->uri_for('/confirm')."?u=".$user_id."&code=".$digest;
-
-  if($wbid){
-    $c->stash->{info}->{wbid}=$wbid;
-    my $csh2 = Crypt::SaltedHash->new() or die "Couldn't instantiate CSH: $!";
-    $csh2->add($email."_".$wbid);
-    my $wb_hash = $csh2->generate();
-    $wb_hash =~ s/^{SSHA}//;
-    $wb_hash =~ s/\+/\%2B/g;
-    $url = $url . "&wb=" . $wb_hash;
-  }
-
-  $c->stash->{digest}=$url;
-  
-  $c->log->debug(" send out email to $email");
-  $c->stash->{email} = {
-      to       => $email,
-      from     => $c->config->{register_email},
-      subject  => "App Account Activation", 
-      template => "auth/register_email.tt2",
-  };
-  
-  $c->forward( $c->view('Email::Template') );
+    my ($self,$c,$email,$username,$user_id,$wbid) = @_;
+    
+    $c->stash->{info}->{username} = $username;
+    $c->stash->{info}->{email}    = $email;
+    
+    $c->stash->{noboiler} = 1;
+    
+    my $csh = Crypt::SaltedHash->new() or die "Couldn't instantiate CSH: $!";
+    $csh->add($email."_".$username);
+    my $digest = $csh->generate();
+    $digest =~ s/^{SSHA}//;
+    $digest =~ s/\+/\%2B/g;
+    my $url = $c->uri_for('/confirm') . "?u=" . $user_id . "&code=" . $digest;
+    
+#    if ($wbid){
+#	$c->stash->{info}->{wbid}=$wbid;
+#	my $csh2 = Crypt::SaltedHash->new() or die "Couldn't instantiate CSH: $!";
+#	$csh2->add($email . "_" . $wbid);
+#	my $wb_hash = $csh2->generate();
+#	$wb_hash =~ s/^{SSHA}//;
+#	$wb_hash =~ s/\+/\%2B/g;
+#	$url     = $url . "&wb=" . $wb_hash;
+#    }
+    
+    $c->stash->{digest} = $url;
+    
+    $c->log->debug(" send out email to $email");
+    $c->stash->{email} = {
+	to       => $email,
+	from     => $c->config->{register_email},
+	subject  => "CGC Account Activation", 
+	template => "auth/register_email.tt2",
+    };
+    
+    $c->forward( $c->view('Email::Template') );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 sub feed :Path('/rest/feed') :Args :ActionClass('REST') {}
