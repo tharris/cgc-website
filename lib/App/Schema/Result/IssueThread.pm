@@ -1,4 +1,4 @@
-package WormBase::Schema::Result::IssueThread;
+package App::Schema::Result::IssueThread;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE

@@ -1,4 +1,4 @@
-package WormBase::Schema::Result::Widgets;
+package App::Schema::Result::Widgets;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE

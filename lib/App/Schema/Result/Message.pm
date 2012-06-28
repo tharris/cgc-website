@@ -1,4 +1,4 @@
-package WormBase::Schema::Result::Message;
+package App::Schema::Result::Message;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE

@@ -1,4 +1,4 @@
-package WormBase::Schema::Result::Session;
+package App::Schema::Result::Session;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE

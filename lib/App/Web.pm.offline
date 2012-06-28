@@ -21,7 +21,7 @@ use Catalyst qw/
 extends 'Catalyst';
 our $VERSION = '0.01';
 
-use Catalyst::Log::Log4perl; 
+use Log::Log4perl::Catalyst; 
 
 ##################################################
 #
@@ -35,7 +35,7 @@ my $installation_type = $ENV{APP_INSTALLATION_TYPE} || 'staging';
 
 # Different logers.
 __PACKAGE__->log(
-    Catalyst::Log::Log4perl->new(__PACKAGE__->path_to( 'conf', 'log4perl', "$installation_type.conf")->stringify)
+    Log::Log4perl::Catalyst->new(__PACKAGE__->path_to( 'conf', 'log4perl', "$installation_type.conf")->stringify)
     );
 
 # Configue sessions

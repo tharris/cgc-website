@@ -10,11 +10,11 @@ Catalyst::ScriptRunner->run('App::Web', 'Create');
 
 =head1 NAME
 
-app_web_create.pl - Create a new Catalyst Component
+app_create.pl - Create a new Catalyst Component
 
 =head1 SYNOPSIS
 
-app_web_create.pl [options] model|view|controller name [helper] [options]
+app_create.pl [options] model|view|controller name [helper] [options]
 
  Options:
    --force        don't create a .new file where a file to be created exists
@@ -22,14 +22,14 @@ app_web_create.pl [options] model|view|controller name [helper] [options]
    --help         display this help and exits
 
  Examples:
-   app_web_create.pl controller My::Controller
-   app_web_create.pl -mechanize controller My::Controller
-   app_web_create.pl view My::View
-   app_web_create.pl view HTML TT
-   app_web_create.pl model My::Model
-   app_web_create.pl model SomeDB DBIC::Schema MyApp::Schema create=dynamic\
+   app_create.pl controller My::Controller
+   app_create.pl -mechanize controller My::Controller
+   app_create.pl view My::View
+   app_create.pl view HTML TT
+   app_create.pl model My::Model
+   app_create.pl model SomeDB DBIC::Schema MyApp::Schema create=dynamic\
    dbi:SQLite:/tmp/my.db
-   app_web_create.pl model AnotherDB DBIC::Schema MyApp::Schema create=static\
+   app_create.pl model AnotherDB DBIC::Schema MyApp::Schema create=static\
    [Loader opts like db_schema, naming] dbi:Pg:dbname=foo root 4321
    [connect_info opts like quote_char, name_sep]
 

@@ -1,4 +1,4 @@
-package WormBase::Schema::Result::OpenID;
+package App::Schema::Result::OpenID;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE

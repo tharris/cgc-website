@@ -6,7 +6,6 @@
 
 
   [% path = c.uri_for('/me') %]
-  [% title = "My WormBase"  %]
 
 
   [% widgets = [] %]

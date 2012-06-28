@@ -1,4 +1,4 @@
-package WormBase::Schema::Result::Role;
+package App::Schema::Result::Role;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE

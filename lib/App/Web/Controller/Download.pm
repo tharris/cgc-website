@@ -3,7 +3,7 @@ package App::Web::Controller::Download;
 use strict;
 use warnings;
 use parent 'App::Web::Controller';
- 
+
 # Sets the actions in this controller to be registered with no prefix
 # so they function identically to actions created in App.pm
 __PACKAGE__->config->{namespace} = '';
@@ -25,9 +25,9 @@ Download actions for the App web application.
 An index page of available downloads.
 
 =cut
- 
-sub index :Path Args(0) {
-    my ($self,$c) = @_;
+
+sub index : Path Args(0) {
+    my ($self, $c) = @_;
 #    $c->stash->{template} = 'index.tt2';  # This should be unecessary.  make sure it is.
 #    my $page = $c->model('Schema::Page')->find({url=>"/"});
 #    my @widgets = $page->static_widgets if $page;
@@ -35,9 +35,10 @@ sub index :Path Args(0) {
     $c->stash->{template} = 'index.tt2';
 }
 
-sub all_strains :Path ('/all_strains') :Args(0) {
-    my ($self,$c) = @_;
-    $c->detach('all_species'),['all']);   # TH: what does all mean in this context?
+sub all_strains : Path('/all_strains') : Args(0) {
+    my ($self, $c) = @_;
+    $c->detach('all_species', ['all'])
+        ;    # TH: what does all mean in this context?
 }
 
 =head1 AUTHOR

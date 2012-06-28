@@ -1,4 +1,4 @@
-package WormBase::Schema::Result::UserIssue;
+package App::Schema::Result::UserIssue;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
