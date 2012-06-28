@@ -71,6 +71,7 @@ requires 'Log::Log4perl';                                        #
 #requires 'Module::Install';                                      #
 requires 'Moose'                                 => '1.21';      #
 requires 'MooseX::AbstractFactory';                              #
+requires 'MooseX::MarkAsMethods';
 #requires 'MooseX::NonMoose';                                     # => '0.17';
 #requires 'MooseX::MethodAttributes::Inheritable';                # => '0.24';
 requires 'MooseX::Role::WithOverloading';                        # => '0.05';
