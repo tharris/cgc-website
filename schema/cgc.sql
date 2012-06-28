@@ -220,6 +220,20 @@ CREATE TABLE `strain` (
 
 
 
+# Dump of table pages
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS pages;
+
+CREATE TABLE pages (
+    `page_id` int(11) NOT NULL AUTO_INCREMENT,
+    `url` char(255),
+    `title` char(255),
+    `is_obj` BOOLEAN,
+     PRIMARY KEY (`page_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 
 # Dump of table comments
 # ------------------------------------------------------------

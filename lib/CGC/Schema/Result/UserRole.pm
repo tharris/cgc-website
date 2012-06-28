@@ -75,6 +75,9 @@ __PACKAGE__->set_primary_key("role_id");
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:oelCNR/wDUrGVojSCzWQtQ
 
 
+__PACKAGE__->has_many(users_to_roles=>'CGC::Schema::Result::UserUsersToRole', 'role_id');
+__PACKAGE__->many_to_many(users => 'user_users_to_roles', 'user', ,{ where => { active => 1 }}); 
+
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;
 1;

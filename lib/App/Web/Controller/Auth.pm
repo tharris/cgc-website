@@ -116,15 +116,18 @@ sub register :Path("/register")  :Args(0){
 #     $c->stash->{'continue'}=$c->req->params->{continue};
 }
 
+# CGC: Refactored
+# Confirm a new user account (via a link sent by email)
 sub confirm :Path("/confirm")  :Args(0){
     my ( $self, $c ) = @_;
-    my $user=$c->model('Schema::User')->find($c->req->params->{u});
-    my $wb = $c->req->params->{wb};
+    my $user = $c->model('CGC::UserUser')->find($c->req->params->{u});
+#    my $wb   = $c->req->params->{wb};
     
     $c->stash->{template} = "shared/generic/message.tt2"; 
     
     my $message;
-    if(($user && !$user->active) || ($user && $wb && !$user->wb_link_confirm) || ( $user && ($user->valid_emails < $user->email_address))) { 
+#    if(($user && !$user->active) || ($user && $wb && !$user->wb_link_confirm) || ( $user && ($user->valid_emails < $user->email_address))) { 
+    if(($user && !$user->active) || ( $user && ($user->valid_emails < $user->email_address))) { 
 	my @emails = $user->email_address;
 	my $seen_email;
 	foreach my $email (@emails) {
@@ -139,13 +142,13 @@ sub confirm :Path("/confirm")  :Args(0){
 		$seen_email = 1;
 	    }
 	    
-	    if ($wb) {
-		if(Crypt::SaltedHash->validate("{SSHA}".$wb, $email->email."_".$user->wbid)){
-		    $user->wb_link_confirm(1);
-		    $message = $message . "Your account is now linked to " . $user->wbid; 
-		    $seen_email = 1;
-		}
-	    }
+#	    if ($wb) {
+#		if(Crypt::SaltedHash->validate("{SSHA}".$wb, $email->email."_".$user->wbid)){
+#		    $user->wb_link_confirm(1);
+#		    $message = $message . "Your account is now linked to " . $user->wbid; 
+#		    $seen_email = 1;
+#		}
+#	    }
 	    last if $seen_email;
 	}
 	$user->update();
@@ -154,6 +157,8 @@ sub confirm :Path("/confirm")  :Args(0){
     $c->stash->{message} = $message || "This link is not valid or has already expired.";
     $c->forward('App::Web::View::TT');
 }
+
+
 
 =pod
     sub openid :Path("/openid") {

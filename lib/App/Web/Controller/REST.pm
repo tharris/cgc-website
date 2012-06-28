@@ -249,7 +249,7 @@ sub get_user_info_GET{
 
   my $message;
   my $status_ok = 1;
-  my @users = $c->model('Schema::User')->search({wbid=>$name, wb_link_confirm=>1});
+  my @users = $c->model('CGC::UserUser')->search({wbid=>$name, wb_link_confirm=>1});
   if(@users){
     $status_ok = 0;
     $message = "This account has already been linked";
@@ -478,13 +478,13 @@ sub rest_register_POST {
 	    return 0;         
 	}
 	
-	my @users = $c->model('CGC::UserUser')->search({wbid=>$wbid, wb_link_confirm=>1});
-	foreach (@users){
-	    if ($_->password && $_->active){
-		$c->res->body(0);
-		return 0;
-	    }
-	}  
+#	my @users = $c->model('CGC::UserUser')->search({wbid=>$wbid, wb_link_confirm=>1});
+#	foreach (@users){
+#	    if ($_->password && $_->active){
+#		$c->res->body(0);
+#		return 0;
+#	    }
+#	}  
 	
 	my $user = $c->model('CGC::UserUser')->find_or_create({username        => $username, 
 							       password        => $hash_password,

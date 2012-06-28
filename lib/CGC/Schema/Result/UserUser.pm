@@ -112,6 +112,16 @@ __PACKAGE__->set_primary_key("user_id");
 # Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-28 17:36:50
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:WdcaxW1zvQ1lMvfZZlEQPQ
 
+__PACKAGE__->has_many(users_to_roles=>'CGC::Schema::Result::UserUsersToRole', 'user_id');
+#__PACKAGE__->has_many(open_ids=>'CGC::Schema::Result::UserOpenID', 'user_id');
+__PACKAGE__->has_one(primary_email=>'CGC::Schema::Result::UserEmail', 'user_id', ,{ where => { validated => 1, primary_email => 1 } });
+__PACKAGE__->has_many(valid_emails=>'CGC::Schema::Result::UserEmail', 'user_id', ,{ where => { validated => 1 } });
+__PACKAGE__->has_many(email_address=>'CGC::Schema::Result::UserEmail', 'user_id');
+__PACKAGE__->many_to_many(roles => 'user_users_to_roles', 'user_role');
+
+#__PACKAGE__->has_many(issues_reported=>'CGC::Schema::Result::Issue', 'reporter_id');
+#__PACKAGE__->has_many(issues_responsible=>'CGC::Schema::Result::Issue', 'responsible_id');
+__PACKAGE__->has_many(comments=>'CGC::Schema::Result::Comment', 'user_id');
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;
