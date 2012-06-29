@@ -3,8 +3,6 @@
    [% IF error_notice %]
       alert("Login not successful!");
       window.location = "/";
-   [% ELSIF prompt_wbid %]
-      opener.location.href="[% c.uri_for('/auth/wbid') %]?redirect=[% redirect %]";
    [% ELSIF logout %]
       opener.location.reload(1);
    [% ELSE %]
@@ -38,21 +36,5 @@ WB.hideTextOnFocus(".password");
     </div>
   </form>
 
-[%# CGC: No Support of OAUTH/OpenID logins to begin; we 
-    need more info from users to send them strains anyway.
-
-  <div class="social">
-    <span style="position:absolute;top:30px;">...or sign in with</span>
-    <div style="float:right;padding-right:1em;">
-      <button class="social_buttons sb_google sb_24" onClick="WB.openid.signin('google');">
-          <span>Google</span>
-      </button>
-      <br style="clear:both" />
-      <button class="social_buttons sb_facebook sb_24" onClick="WB.openid.signin('facebook');">
-          <span>Facebook</span>
-      </button>
-    </div>
-  </div>
-%] 
 </div>
  

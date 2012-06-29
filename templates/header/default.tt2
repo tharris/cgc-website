@@ -17,17 +17,37 @@
 		          class="[% IF(c.stash.section == title); 'active'; END;%]">
           [% c.config.sections.$title.title %]</a></li>
         [% END %]
-          <li><a href="#about">About</a></li>
+                  <li><a href="#about">About</a></li>
 		  <li><a href="#contact">Contact</a></li>
+
 		</ul>
 	  </div><!--/.nav-collapse -->
+
+          [% ref = c.req.referer.split('/').last %]
+          [% IF c.user_exists %]
+	       <div class="nav-collapse">
+		<ul class="nav">
+                   
+                    <li> <a href="[% c.uri_for('/me') %]" id="section-me" class="[% IF(ref=='me'); 'selected'; END;%]">Welcome [% c.user.username %]<span href="/me" id="bench-status"></span></a></li><li><a id="logout" href="/logout">Logout</a></li>
+		    </ul>
+                </div>
+          [% ELSE %]
+<!--
+              <li id="login-box"><a id="login">Login</a>
+                  <ul class="dropdown ui-corner-all">
+                    [%# PROCESS auth/login.tt2 %]
+                  </ul>
+              </li>
+-->
+
 	  <span class="status-bar"></span>
-		<span class="pull-right">Not registered? <a href="">Sign up!</a></span>
-	    <form action="" class="navbar-form pull-right">
-			<input class="input-small" type="text" placeholder="Username"/>
-			<input class="input-small" type="password" placeholder="Password" />
+		<span class="pull-right">Not registered? <a href="/register">Sign up!</a></span>
+	    <form method="post" action="/auth/login" class="navbar-form pull-right">
+			<input class="input-small" name="email" type="email" placeholder="Email"/>
+			<input class="input-small" name="password" type="password" placeholder="Password" />
 			<button class="btn" type="submit">Sign in</button>
 		</form>
+          [% END %]
 	</div>
   </div>
 </div>

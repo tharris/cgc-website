@@ -84,17 +84,6 @@ __PACKAGE__->table("app_users");
   is_nullable: 1
   size: 255
 
-=head2 wbid
-
-  data_type: 'char'
-  is_nullable: 1
-  size: 255
-
-=head2 wb_link_confirm
-
-  data_type: 'tinyint'
-  is_nullable: 1
-
 =head2 email
 
   data_type: 'char'
@@ -103,11 +92,6 @@ __PACKAGE__->table("app_users");
   size: 255
 
 =head2 validated
-
-  data_type: 'tinyint'
-  is_nullable: 1
-
-=head2 primary_email
 
   data_type: 'tinyint'
   is_nullable: 1
@@ -131,15 +115,9 @@ __PACKAGE__->add_columns(
   { data_type => "char", is_nullable => 1, size => 255 },
   "last_name",
   { data_type => "char", is_nullable => 1, size => 255 },
-  "wbid",
-  { data_type => "char", is_nullable => 1, size => 255 },
-  "wb_link_confirm",
-  { data_type => "tinyint", is_nullable => 1 },
   "email",
   { data_type => "char", default_value => "", is_nullable => 0, size => 255 },
   "validated",
-  { data_type => "tinyint", is_nullable => 1 },
-  "primary_email",
   { data_type => "tinyint", is_nullable => 1 },
 );
 
@@ -156,8 +134,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("user_id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-29 16:29:40
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:zAakd9i0tmh4uVFYzX4Dcg
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-29 17:50:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Ev4PBLY1129V5Q1lQratcg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

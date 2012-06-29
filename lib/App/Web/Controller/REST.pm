@@ -37,37 +37,6 @@ Catalyst Controller.
 
 =cut
  
-sub livechat :Path('/rest/livechat') :Args(0) :ActionClass('REST') {} 
-sub livechat_GET {
-    my ( $self, $c) = @_;
-    $c->user_session->{'livechat'}=1;
-    $c->stash->{template} = "auth/livechat.tt2";
-    my $role= $c->model('Schema::Role')->find({role=>"operator"});
-     
-    foreach my $op ( shuffle $role->users){
-      next unless($op->gtalk_key );
-      my $badge = Badge::GoogleTalk->new( key => $op->gtalk_key);
-      my $online_status = $badge->is_online();
-      my $status = $badge->get_status();
-      my $away_status = $badge->is_away();
-      if($online_status && $status ne 'Busy' && !$away_status) {
-      $c->log->debug("get gtalk badge for ",$op->username);
-      $c->stash->{badge_html}  = $badge->get_badge();
-      $c->stash->{operator}  = $op;
-      $c->log->debug($c->stash->{badge_html});
-      last;
-      }
-    }
-    $c->stash->{noboiler}=1;
-    $c->forward('App::Web::View::TT');
-}
-sub livechat_POST {
-    my ( $self, $c) = @_;
-    $c->user_session->{'livechat'}=0;
-    $c->user_session->{'livechat'}=1 if($c->req->param('open'));
-    $c->log->debug('livechat open? '.$c->user_session->{'livechat'});
-}
-
 sub print :Path('/rest/print') :Args(0) :ActionClass('REST') {}
 sub print_POST {
     my ( $self, $c) = @_;
@@ -119,7 +88,7 @@ sub workbench_GET {
             $saved->update(); 
       } else{
             $c->stash->{notify} = "$name has been added to your $loc"; 
-            $c->model('Schema::Starred')->find_or_create({session_id=>$session->id,page_id=>$page->page_id, save_to=>$save_to, timestamp=>time()}) ;
+            $c->model('CGC::AppStarred')->find_or_create({session_id=>$session->id,page_id=>$page->page_id, save_to=>$save_to, timestamp=>time()}) ;
       }
     }
     $c->stash->{noboiler} = 1;
@@ -230,9 +199,9 @@ sub get_session {
     my ($self,$c) = @_;
     unless($c->user_exists){
       my $sid = $c->get_session_id;
-      return $c->model('Schema::Session')->find({session_id=>"session:$sid"});
+      return $c->model('CGC::AppSession')->find({session_id=>"session:$sid"});
     }else{
-      return $c->model('Schema::Session')->find({session_id=>"user:" . $c->user->user_id});
+      return $c->model('CGC::AppSession')->find({session_id=>"user:" . $c->user->user_id});
     }
 }
 
@@ -240,37 +209,37 @@ sub get_session {
 sub get_user_info :Path('/auth/info') :Args(1) :ActionClass('REST'){}
 
 sub get_user_info_GET{
-  my ( $self, $c, $name) = @_;
+    my ( $self, $c, $name) = @_;
+    
+    my $api = $c->model('AppAPI');
+    my $object = $api->fetch({class => 'Person',
+			      name  => $name,
+			     }) or die "$!";
 
-  my $api = $c->model('AppAPI');
-  my $object = $api->fetch({class => 'Person',
-                    name  => $name,
-                    }) or die "$!";
-
-  my $message;
-  my $status_ok = 1;
-  my @users = $c->model('CGC::UserUser')->search({wbid=>$name, wb_link_confirm=>1});
-  if(@users){
-    $status_ok = 0;
-    $message = "This account has already been linked";
-  }elsif($object && $object->email->{data}){
-    my $emails = join (', ', map {"<a href='mailto:$_'>$_</a>"} @{$object->email->{data}});
-    $message = "An email will be sent to " . $emails . " to confirm your identity";
-  }else{
-    $status_ok = 0;
-    $message = "This account cannot be linked at this time";
-  }
-  $self->status_ok(
-      $c,
-      entity =>  {
-          wbid => $name,
-          fullname => $object->name->{data}->{label},
-          email => $object->email->{data},
-          message => $message,
-          status_ok => $status_ok,
-      },
-  );
-
+    my $message;
+    my $status_ok = 1;
+    my @users = $c->model('CGC::AppUser')->search({wbid=>$name, wb_link_confirm=>1});
+    if(@users){
+	$status_ok = 0;
+	$message = "This account has already been linked";
+    }elsif($object && $object->email->{data}){
+	my $emails = join (', ', map {"<a href='mailto:$_'>$_</a>"} @{$object->email->{data}});
+	$message = "An email will be sent to " . $emails . " to confirm your identity";
+    }else{
+	$status_ok = 0;
+	$message = "This account cannot be linked at this time";
+    }
+    $self->status_ok(
+	$c,
+	entity =>  {
+	    wbid => $name,
+	    fullname => $object->name->{data}->{label},
+	    email => $object->email->{data},
+	    message => $message,
+	    status_ok => $status_ok,
+	},
+	);
+    
 }
 
 sub system_message :Path('/rest/system_message') :Args(1) :ActionClass('REST') {}
@@ -287,38 +256,38 @@ sub history_GET {
     my $clear = $c->req->params->{clear};
     $c->log->debug("history");
     my $session = $self->get_session($c);
-
+    
     $c->stash->{noboiler} = 1;
     $c->stash->{template} = "shared/fields/user_history.tt2"; 
-
+    
     if($clear){ 
-      $c->log->debug("clearing");
-      $session->user_history->delete();
-      $session->update();
-      $c->stash->{history} = "";
-      $c->forward('App::Web::View::TT');
-      $self->status_ok($c,entity => {});
+	$c->log->debug("clearing");
+	$session->user_history->delete();
+	$session->update();
+	$c->stash->{history} = "";
+	$c->forward('App::Web::View::TT');
+	$self->status_ok($c,entity => {});
     }
-
+    
     my @hist = $session->user_history if $session;
     my $size = @hist;
     my $count = $c->req->params->{count} || $size;
     if($count > $size) { $count = $size; }
-
+    
     @hist = sort { $b->get_column('timestamp') <=> $a->get_column('timestamp')} @hist;
-
+    
     my @histories;
     map {
-      if($_->visit_count > 0){
-        my $time = $_->get_column('timestamp');
-        push @histories, {  time_lapse => concise(ago(time()-$time, 1)),
-                            visits => $_->visit_count,
-                            page => $_->page,
-                          };
-      }
+	if($_->visit_count > 0){
+	    my $time = $_->get_column('timestamp');
+	    push @histories, {  time_lapse => concise(ago(time()-$time, 1)),
+				visits => $_->visit_count,
+				page => $_->page,
+	    };
+	}
     } @hist[0..$count-1];
     $c->stash->{history} = \@histories;
-$c->response->headers->expires(time);
+    $c->response->headers->expires(time);
     $c->forward('App::Web::View::TT');
     $self->status_ok($c,entity => {});
 }
@@ -331,7 +300,7 @@ sub history_POST {
     my $path = $c->request->body_parameters->{'ref'};
     my $name = URI::Escape::uri_unescape($c->request->body_parameters->{'name'});
     my $is_obj = $c->request->body_parameters->{'is_obj'};
-
+    
     my $page = $c->model('Schema::Page')->find_or_create({url=>$path,title=>$name,is_obj=>$is_obj});
     $c->log->debug("logging:" . $page->page_id . " is_obj: " . $is_obj);
     my $hist = $c->model('Schema::History')->find_or_create({session_id=>$session->id,page_id=>$page->page_id});
@@ -340,68 +309,20 @@ sub history_POST {
     $hist->update;
 }
 
- 
+
 sub update_role :Path('/rest/update/role') :Args :ActionClass('REST') {}
 
 sub update_role_POST {
     my ($self,$c,$id,$value,$checked) = @_;
-      
+    
     if($c->check_user_roles('admin')){
-      my $user=$c->model('Schema::User')->find({user_id=>$id}) if($id);
-      my $role=$c->model('Schema::Role')->find({role=>$value}) if($value);
-      
-      my $users_to_roles=$c->model('Schema::UserRole')->find_or_create(user_id=>$id,role_id=>$role->role_id);
-      $users_to_roles->delete()  unless($checked eq 'true');
-      $users_to_roles->update();
+	my $user=$c->model('CGC::AppUser')->find({user_id=>$id}) if($id);
+	my $role=$c->model('CGC::AppRole')->find({role=>$value}) if($value);
+	
+	my $users_to_roles=$c->model('CGC::AppUsersToRole')->find_or_create(user_id=>$id,role_id=>$role->role_id);
+	$users_to_roles->delete()  unless($checked eq 'true');
+	$users_to_roles->update();
     }
-}
-
-sub evidence :Path('/rest/evidence') :Args :ActionClass('REST') {}
-
-sub evidence_GET {
-    my ($self,$c,$class,$name,$tag,$index,$right) = @_;
-
-    my $headers = $c->req->headers;
-    $c->log->debug($headers->header('Content-Type'));
-    $c->log->debug($headers);
-   
-    unless ($c->stash->{object}) {
-    # Fetch our external model
-    my $api = $c->model('AppAPI');
- 
-    # Fetch the object from our driver   
-    $c->log->debug("AppAPI model is $api " . ref($api));
-    $c->log->debug("The requested class is " . ucfirst($class));
-    $c->log->debug("The request is " . $name);
-    
-    # Fetch a App::API::Object::* object
-    # But wait. Some methods return lists. Others scalars...
-    $c->stash->{object} =  $api->fetch({class=> ucfirst($class),
-                        name => $name}) or die "$!";
-    }
-    
-    # Did we request the widget by ajax?
-    # Supress boilerplate wrapping.
-    if ( $c->is_ajax() ) {
-    $c->stash->{noboiler} = 1;
-    }
-
-    my $object = $c->stash->{object};
-    my @node = $object->object->$tag; 
-    $right ||= 0;
-    $index ||= 0;
-    my $data = $object-> _get_evidence($node[$index]->right($right));
-    $c->stash->{evidence} = $data;
-    $c->stash->{template} = "shared/generic/evidence.tt2"; 
-    $c->forward('App::Web::View::TT');
-    my $uri = $c->uri_for("/reports",$class,$name);
-    $self->status_ok($c, entity => {
-                     class  => $class,
-             name   => $name,
-                     uri    => "$uri",
-             evidence => $data
-             }
-    );
 }
 
 
@@ -418,41 +339,6 @@ sub download_GET {
     $c->response->body($c->req->param("sequence"));
 }
 
-=head1 CGC: NOT LINKING WBIDs TO ACCOUNTS
-
-sub rest_link_wbid :Path('/rest/link_wbid') :Args(0) :ActionClass('REST') {}
-sub rest_link_wbid_POST {
-    my ( $self, $c) = @_;
-    my $wbemail = $c->req->params->{wbemail};
-    my $username = $c->req->params->{username};
-    my $user_id = $c->req->params->{user_id};
-    my $wbid = $c->req->params->{wbid};
-    my $confirm = $c->req->params->{confirm};
-
-    my @wbemails = split(/,/, $wbemail);
-    foreach my $wbe (@wbemails){
-      $c->user->wbid($wbid);
-      unless($confirm){
-        $c->model('Schema::Email')->find_or_create({email=>$wbe, user_id=>$user_id});
-        $self->rest_register_email($c, $wbe, $username, $user_id, $wbid);
-        $c->stash->{message} = "<h2>Thank you!</h2> <p>An email has been sent to " . join(', ', map {"<a href='mailto:$_'>$_</a>"} @wbemails) . " to confirm that you are $wbid</p>" ; 
-      }else{
-        $c->user->wb_link_confirm(1);
-        $c->model('Schema::Email')->find_or_create({email=>$wbe, user_id=>$user_id, validated=>1});
-        $c->stash->{message} = "<h2>Thank you!</h2> <p>Your account is now linked to <a href=\"" . $c->uri_for('/resources', 'person', $wbid) . "\">$wbid</a></p>" ; 
-      }
-      $c->user->update();
-    }
-
-    $c->stash->{template} = "shared/generic/message.tt2"; 
-    $c->stash->{redirect} = $c->req->params->{redirect};
-    $c->stash->{noboiler} = 1;
-    $c->forward('App::Web::View::TT');
-}
-
-=cut
-
-
 # CGC: Already refactored.
 # Register a new user
 # This rest action is a target of the /register.
@@ -463,52 +349,30 @@ sub rest_register_POST {
     my $email    = $c->req->params->{email};
     my $username = $c->req->params->{username};
     my $password = $c->req->params->{password};
-
-    # Not currently using wbid/wbemail.
-    my $wbid     = $c->req->params->{wbid};
-    my $wbemail  = $c->req->params->{wbemail};
-    if( ($email || $wbemail) && $username && $password){
+    
+    if ($email && $username && $password) {
 	my $csh = Crypt::SaltedHash->new() or die "Couldn't instantiate CSH: $!";
 	$csh->add($password);
-	my $hash_password= $csh->generate();
+	my $hash_password = $csh->generate();
 	
-	my @emails = $c->model('CGC::UserEmail')->search({email=>$email, validated=>1});
+	# Is this email already registered?
+	my @emails = $c->model('CGC::AppUser')->search({email=>$email, validated=>1});
+	
+	# goofy.
 	foreach (@emails) {
 	    $c->res->body(0);
 	    return 0;         
 	}
-	
-#	my @users = $c->model('CGC::UserUser')->search({wbid=>$wbid, wb_link_confirm=>1});
-#	foreach (@users){
-#	    if ($_->password && $_->active){
-#		$c->res->body(0);
-#		return 0;
-#	    }
-#	}  
-	
-	my $user = $c->model('CGC::UserUser')->find_or_create({username        => $username, 
-							       password        => $hash_password,
-							       active          => 0,
-							       wbid            => $wbid,
-							       wb_link_confirm => 0});
+       	
+	my $user = $c->model('CGC::AppUser')->find_or_create({username        => $username, 
+							      password        => $hash_password,
+							      active          => 0,
+							      email           => $email,
+							     });
 	my $user_id = $user->user_id;
-	
-	@emails = split(/,/, $email);
-	foreach my $e (@emails){
-	    $e =~ s/\s//g;
-	    $c->model('CGC::UserEmail')->find_or_create({email=>$e, user_id=>$user_id}) ;
-	    $self->rest_register_email($c, $e, $username, $user_id);
-	}
-	
-	# Register wbemails.
-#	my @wbemails = split(/,/, $wbemail);
-#	foreach my $wbe (@wbemails){
-#	    $wbe =~ s/\s//g;
-#	    $c->model('CGC::UserEmail')->find_or_create({email=>$wbe, user_id=>$user_id}) ;
-#	    $self->rest_register_email($c, $wbe, $username, $user_id, $wbid);
-#	}	
-#	push(@emails, @wbemails);
 
+	$self->rest_register_email($c, $email, $username, $user_id);
+	
 	$c->stash->{template} = "shared/generic/message.tt2"; 
 	$c->stash->{message} = "<h2>You're almost done!</h2> <p>An email has been sent to " 
 	    . join(', ', map {"<a href='mailto:$_'>$_</a>"} @emails) 
@@ -654,7 +518,7 @@ sub feed_POST {
 
         my $user = $c->user;
         unless($c->user_exists){
-          $user = $c->model('Schema::User')->create({username=>$c->req->params->{name}, active=>0});
+          $user = $c->model('CGC::AppUser')->create({username=>$c->req->params->{name}, active=>0});
           $c->model('Schema::Email')->find_or_create({email=>$c->req->params->{email}, user_id=>$user->user_id});
         }
 
@@ -712,7 +576,7 @@ sub feed_POST {
           $issue->severity($severity);
        }
        if($assigned_to) {
-          my $people=$c->model('Schema::User')->find($assigned_to);
+          my $people=$c->model('CGC::AppUser')->find($assigned_to);
           $hash->{assigned_to}={old=>$issue->responsible_id,new=>$people};
           $issue->responsible_id($assigned_to);
 #         $c->model('Schema::UserIssue')->find_or_create({user_id=>$assigned_to,issue_id=>$issue_id}) ;
@@ -744,76 +608,16 @@ sub check_user_info {
   if($c->user_exists) {
       $user=$c->user; 
       $user->username($c->req->params->{username}) if($c->req->params->{username});
-      $user->email_address($c->req->params->{email}) if($c->req->params->{email});
+      $user->email($c->req->params->{email}) if($c->req->params->{email});
   }else{
-      if($user = $c->model('Schema::User')->find({email_address=>$c->req->params->{email},active =>1})){
-        $c->res->body(0) ;return 0 ;
+      if($user = $c->model('CGC::AppUser')->find({email=>$c->req->params->{email},active =>1})){
+	  $c->res->body(0) ;return 0 ;
       }
-      $user=$c->model('Schema::User')->find_or_create({email_address=>$c->req->params->{email}}) ;
+      $user=$c->model('CGC::AppUser')->find_or_create({email=>$c->req->params->{email}}) ;
       $user->username($c->req->params->{username}),
   }
   $user->update();
   return $user;
-}
-=head2 pages() pages_GET()
-
-Return a list of all available pages and their URIs
-
-TODO: This is currently just returning a dummy object
-
-=cut
-
-sub issue_email{
-  my ($self,$c,$issue,$new,$content,$change) = @_;
-  my $subject='New Issue';
-  my $bcc;
-  $bcc = $issue->reporter->primary_email->email if ($issue->reporter && $issue->reporter->primary_email);
-
-  unless($new == 1){
-    $subject='Issue Update';
-    my @threads= $issue->threads;
-    $bcc = "$bcc, " . $issue->responsible->primary_email->email if ($issue->responsible && $issue->responsible->primary_email);
-    my %seen=();  
-    $bcc = $bcc.",". join ",", grep { ! $seen{$_} ++ } map {$_->user->primary_email->email if ($_->user && $_->user->primary_email)} @threads;
-  }
-  $subject = '[App Issues] '.$subject.' '.$issue->issue_id.': '.$issue->title;
-
-  $c->stash->{issue}=$issue;
-
-  $c->stash->{new}=$new;
-  $c->stash->{content}=$content;
-  $c->stash->{change}=$change;
-  $c->stash->{noboiler} = 1;
-  $c->log->debug(" send out email to $bcc");
-  $c->stash->{email} = {
-          to      => $c->config->{issue_email},
-          cc => $bcc,
-          from    => $c->config->{issue_email},
-          subject => $subject, 
-          template => "feed/issue_email.tt2",
-          };
-   
-  $c->forward( $c->view('Email::Template') );
-}
-
-sub pages : Path('/rest/pages') :Args(0) :ActionClass('REST') {}
-
-sub pages_GET {
-    my ($self,$c) = @_;
-    my @pages = keys %{ $c->config->{pages} };
-
-    my %data;
-    foreach my $page (@pages) {
-    my $uri = $c->uri_for('/page',$page,'WBGene00006763');
-    $data{$page} = "$uri";
-    }
-
-    $self->status_ok( $c,
-              entity => { resultset => {  data => \%data,
-                          description => 'Available (dynamic) pages at App',
-                  }
-              }
-    );
 }
 
 

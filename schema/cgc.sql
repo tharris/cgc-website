@@ -252,17 +252,24 @@ CREATE TABLE `strain` (
 
 
 
-# Dump of table pages
+# Dump of table cart
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS pages;
+DROP TABLE IF EXISTS app_cart;
 
-CREATE TABLE pages (
-    `page_id` int(11) NOT NULL AUTO_INCREMENT,
-    `url` char(255),
-    `title` char(255),
-    `is_obj` BOOLEAN,
-     PRIMARY KEY (`page_id`)
+CREATE TABLE app_cart (
+    `cart_id` int(11) NOT NULL AUTO_INCREMENT,
+    `user_id` int(11) NOT NULL AUTO_INCREMENT,
+     PRIMARY KEY (`cart_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS app_cart_contents;
+
+CREATE TABLE app_cart_contents (
+    `cart_id` int(11) NOT NULL AUTO_INCREMENT,
+    `strain_id` int(11) NOT NULL AUTO_INCREMENT,
+     PRIMARY KEY (`cart_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -287,30 +294,15 @@ CREATE TABLE `comments` (
 # Dump of table history
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `history`;
+DROP TABLE IF EXISTS `app_history`;
 
-CREATE TABLE `history` (
+CREATE TABLE `app_history` (
   `session_id` char(72) NOT NULL DEFAULT '',
   `page_id` int(11) NOT NULL DEFAULT '0',
   `timestamp` int(11) DEFAULT NULL,
   `visit_count` int(11) DEFAULT NULL,
   PRIMARY KEY (`session_id`,`page_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-# Dump of table app_email
-# ------------------------------------------------------------
-
-#DROP TABLE IF EXISTS `app_email`;
-
-#CREATE TABLE `app_email` (
-#  `user_id` int(11) NOT NULL DEFAULT '0',
-#  `email` char(255) NOT NULL DEFAULT '',
-#  `validated` tinyint(1) DEFAULT NULL,
-#  `primary_email` tinyint(1) DEFAULT NULL,
-#  PRIMARY KEY (`user_id`,`email`)
-#) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 
 
@@ -379,7 +371,7 @@ INSERT INTO `app_roles` VALUES ('1','admin'),('2','manager'),('3','developer'),(
 
 DROP TABLE IF EXISTS `app_sessions`;
 
-CREATE TABLE `user_sessions` (
+CREATE TABLE `app_sessions` (
   `session_id` char(72) NOT NULL,
   `session_data` text,
   `expires` int(10) DEFAULT NULL,
@@ -416,15 +408,12 @@ CREATE TABLE `app_users` (
   `first_name` char(255) DEFAULT NULL,
   `middle_name` char(255) DEFAULT NULL,
   `last_name` char(255) DEFAULT NULL,
-  `wbid` char(255) DEFAULT NULL,
-  `wb_link_confirm` tinyint(1) DEFAULT NULL,
   `email` char(255) NOT NULL DEFAULT '',
   `validated` tinyint(1) DEFAULT NULL,
-  `primary_email` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `app_users` VALUES ('1','tharris','{SSHA}ZZ2/yHLi1OZ0G4fUMaN/T+NA7rm7Jy57','1','','Todd','William','Harris','','','todd@wormbase.org','1','1');
+INSERT INTO `app_users` VALUES ('1','tharris','{SSHA}ZZ2/yHLi1OZ0G4fUMaN/T+NA7rm7Jy57','1','EG','Todd','William','Harris','todd@wormbase.org','1');
 
 # Dump of table app_users_to_roles
 # ------------------------------------------------------------

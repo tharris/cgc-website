@@ -7,6 +7,9 @@ extlib/
 *.tmproj
 .DS_store
 schema/cgc.mwb.*
+app_local.conf
+dbic.conf
+
 
 # Auto-generated:
 inc/Module/

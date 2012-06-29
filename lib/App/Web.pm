@@ -44,9 +44,8 @@ __PACKAGE__->log(
 
 __PACKAGE__->config->{'Plugin::Session'} = {
     expires           => 3600,
-    dbi_dbh           => 'CGC',
-#    dbi_dbh           => 'cgc',
-    dbi_table         => 'sessions',
+    dbi_dbh           => 'cgc',
+    dbi_table         => 'app_sessions',
     dbi_id_field      => 'session_id',
     dbi_data_field    => 'session_data',
     dbi_expires_field => 'expires',
@@ -65,7 +64,7 @@ __PACKAGE__->config->{authentication} = {
             },
             store => {
                 class         => 'DBIx::Class',
-                user_model    => 'Schema::User',
+                user_model    => 'CGC::AppUser',
                 role_relation => 'roles',
                 role_field    => 'role',
                 #  ignore_fields_in_find => [ 'remote_name' ],
@@ -109,7 +108,7 @@ __PACKAGE__->config->{authentication} = {
             },
             store => {
                 class         => 'DBIx::Class',
-                user_model    => 'Schema::UserUser',
+                user_model    => 'CGC::AppUser',
                 role_relation => 'roles',
                 role_field    => 'role',
                 # use_userdata_from_session => 0,
@@ -204,6 +203,8 @@ sub secure_uri_for {
     return $u;
 }
 
+=pod
+
 # overloaded from Per_User plugin to move saved items
 sub merge_session_to_user {
     my $c = shift;
@@ -218,25 +219,28 @@ sub merge_session_to_user {
     Hash::Merge::set_clone_behavior(0);
 
     my $sid  = $c->get_session_id;
-    my $s_db = $c->model('Schema::UserSession')
+    my $s_db = $c->model('CGC::AppSession')
         ->find({ session_id => "session:$sid" });
     my $uid = $c->user->user_id;
 
-    my @user_saved = $s_db->user_saved;
-
-    my $user_items = $c->model('Schema::UserStarred')
-        ->search_rs({ session_id => "user:$uid" });
-
-    foreach my $saved_item (@user_saved) {
-        unless ($user_items->find({ page_id => $saved_item->page_id })) {
-            $saved_item->session_id("user:$uid");
-        } else {
-            $saved_item->delete();
-        }
-        $saved_item->update();
+    # Instead of merging un-authenticated users,
+    # we will force them to log in before adding
+    # items to their cart.
+#    my @user_saved = $s_db->user_saved;
+#
+#    my $user_items = $c->model('CGC::AppStarred')
+#        ->search_rs({ session_id => "user:$uid" });
+#
+#    foreach my $saved_item (@user_saved) {
+#        unless ($user_items->find({ page_id => $saved_item->page_id })) {
+#            $saved_item->session_id("user:$uid");
+#        } else {
+#            $saved_item->delete();
+#        }
+#        $saved_item->update();
     }
 
-    my $user_history = $c->model('Schema::History')
+    my $user_history = $c->model('CGC::ApHistory')
         ->search_rs({ session_id => "user:$uid" });
     my @save_history = $s_db->user_history;
     foreach my $s_history (@save_history) {
@@ -267,8 +271,9 @@ sub merge_session_to_user {
 
     Hash::Merge::set_behavior($merge_behavior);
     Hash::Merge::set_clone_behavior($clone_behavior);
-
 }
+
+=cut
 
 #######################################################
 #

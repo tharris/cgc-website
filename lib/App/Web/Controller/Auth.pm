@@ -3,8 +3,8 @@ package App::Web::Controller::Auth;
 use strict;
 use warnings;
 use parent 'App::Web::Controller';
-use Net::Twitter;
-use Facebook::Graph;
+#use Net::Twitter;
+#use Facebook::Graph;
 use Crypt::SaltedHash;
 use Data::GUID;
 
@@ -26,7 +26,7 @@ sub password : Chained('/') PathPart('password')  CaptureArgs(0) {
 sub password_index : Chained('password') PathPart('index')  Args(0){
     my ( $self, $c ) = @_;
     if($c->stash->{token}  = $c->req->param("id")) {
-	my $user = $c->model('Schema::Password')->search({token=>$c->stash->{token} }, {rows=>1})->next;
+	my $user = $c->model('CGC::Password')->search({token=>$c->stash->{token} }, {rows=>1})->next;
 	if(!$user || $user->expires < time() ){
 	    if($user){
 		$user->delete();
@@ -39,19 +39,20 @@ sub password_index : Chained('password') PathPart('index')  Args(0){
     }
 }
 
+# If a user has forgotten their password, send an email to reset.
 sub password_email : Chained('password') PathPart('email')  Args(0){
     my ( $self, $c ) = @_;
     my $email = $c->req->param("email");
     $c->stash->{template} = "shared/generic/message.tt2"; 
     
-    my @users = $c->model('Schema::Email')->search({email=>$email, validated=>1});
+    my @users = $c->model('CGC::AppUser')->search({email=>$email, validated=>1});
     if(@users){
 	my $guid = Data::GUID->new;
 	$c->stash->{token} = $guid->as_string;
 	my $time = time() + $c->config->{password_reset_expires};
 	foreach (@users){
 	    next unless($_->user);
-	    my $password = $c->model('Schema::Password')->find($_->user_id);
+	    my $password = $c->model('CGC::AppPassword')->find($_->user_id);
 	    if($password){
 		if( time() < $password->expires ){
 		    $c->stash->{token} = $password->token;
@@ -61,7 +62,7 @@ sub password_email : Chained('password') PathPart('email')  Args(0){
 		    $password->update();
 		}
 	    }else{
-		$password = $c->model('Schema::Password')->create({token=>$c->stash->{token}, user_id=>$_->user_id,expires=>$time});
+		$password = $c->model('CGC::AppPassword')->create({token=>$c->stash->{token}, user_id=>$_->user_id,expires=>$time});
 	    }
 	}
 	$c->stash->{noboiler} = 1;
@@ -69,13 +70,13 @@ sub password_email : Chained('password') PathPart('email')  Args(0){
 	$c->stash->{email} = {
 	    to       => $email,
 	    from     => $c->config->{register_email},
-	    subject  => "WormBase Password", 
+	    subject  => "CGC Password", 
 	    template => "auth/password_email.tt2",
 	};
 	$c->forward( $c->view('Email::Template') );
 	$c->stash->{message} = "You should be receiving an email shortly describing how to reset your password.";
     }
-    $c->stash->{message} ||= "no WormBase account is associated with this email"; 
+    $c->stash->{message} ||= "No CGC account is associated with this email"; 
     $c->stash->{noboiler} = 0;
 }
 
@@ -87,7 +88,7 @@ sub password_reset : Chained('password') PathPart('reset')  Args(0){
     my $new_password = $c->req->body_parameters->{password};
     $c->stash->{template} = "shared/generic/message.tt2"; 
     
-    my $pass = $c->model('Schema::Password')->search({token=>$token, expires => { '>', time() } }, {rows=>1})->next;
+    my $pass = $c->model('CGC::AppPassword')->search({token=>$token, expires => { '>', time() } }, {rows=>1})->next;
     if($pass && (my $user = $pass->user)){
 	my $csh = Crypt::SaltedHash->new() or die "Couldn't instantiate CSH: $!";
 	$csh->add($new_password);
@@ -120,36 +121,18 @@ sub register :Path("/register")  :Args(0){
 # Confirm a new user account (via a link sent by email)
 sub confirm :Path("/confirm")  :Args(0){
     my ( $self, $c ) = @_;
-    my $user = $c->model('CGC::UserUser')->find($c->req->params->{u});
+    my $user = $c->model('CGC::AppUser')->find($c->req->params->{u});
 #    my $wb   = $c->req->params->{wb};
     
     $c->stash->{template} = "shared/generic/message.tt2"; 
     
     my $message;
 #    if(($user && !$user->active) || ($user && $wb && !$user->wb_link_confirm) || ( $user && ($user->valid_emails < $user->email_address))) { 
-    if(($user && !$user->active) || ( $user && ($user->valid_emails < $user->email_address))) { 
-	my @emails = $user->email_address;
-	my $seen_email;
-	foreach my $email (@emails) {
-	    if(Crypt::SaltedHash->validate("{SSHA}".$c->req->params->{code}, $email->email."_".$user->username)) {
-		unless(defined $user->primary_email){
-		    $email->primary_email(1);
-		}
-		$email->validated(1);
-		$email->update();
-		$user->active(1);
-		$message = $message . "Your account is now activated, please login! "; 
-		$seen_email = 1;
-	    }
-	    
-#	    if ($wb) {
-#		if(Crypt::SaltedHash->validate("{SSHA}".$wb, $email->email."_".$user->wbid)){
-#		    $user->wb_link_confirm(1);
-#		    $message = $message . "Your account is now linked to " . $user->wbid; 
-#		    $seen_email = 1;
-#		}
-#	    }
-	    last if $seen_email;
+    if (($user && !$user->active) || ( $user && !$user->valid_emails)) { 
+	if(Crypt::SaltedHash->validate("{SSHA}".$c->req->params->{code}, $user->email . "_" . $user->username)) {
+	    $user->validated(1);
+	    $user->active(1);
+	    $message = $message . "Your account is now activated, please login! "; 
 	}
 	$user->update();
     } 
@@ -192,12 +175,27 @@ sub auth_popup : Chained('auth') PathPart('popup')  Args(0){
 }
 
 sub auth_login : Chained('auth') PathPart('login')  Args(0){
-    my ( $self, $c) = @_;
-    my $email     = $c->req->body_parameters->{email};
+    my ($self, $c) = @_;
+    my $email    = $c->req->body_parameters->{email};
     my $password = $c->req->body_parameters->{password}; 
     
+    # Is the table join really necessary here?
     if ( $email && $password ) {
-        my $rs = $c->model('Schema::User')->search({active=>1, email=>$email, validated=>1, password => { '!=', undef }},
+#        my $rs = $c->model('CGC::AppUser')->search({active=>1, email=>$email, validated=>1, password => { '!=', undef }},
+#						   {   select => [ 
+#							   'me.user_id',
+#							   'password', 
+#							   'username',
+#							   ],
+#							   as => [ qw/
+#                      user_id
+#                      password
+#                      username
+#                    /], 
+#		      join=>'email'
+#						   });
+
+        my $rs = $c->model('CGC::AppUser')->search({active=>1, email=>$email, validated=>1, password => { '!=', undef }},
 						   {   select => [ 
 							   'me.user_id',
 							   'password', 
@@ -207,9 +205,8 @@ sub auth_login : Chained('auth') PathPart('login')  Args(0){
                       user_id
                       password
                       username
-                    /], 
-		      join=>'email_address'
-						   });
+                    /]});
+
 	
 	if ( $c->authenticate( { password => $password,
 				 'dbix_class' => { resultset => $rs }
@@ -222,19 +219,14 @@ sub auth_login : Chained('auth') PathPart('login')  Args(0){
 #                 $c->res->redirect($c->uri_for($c->req->path));
 	} else {
 	    $c->log->debug('Login incorrect.'.$email);
-	    $c->stash->{'error_notice'}='Login incorrect.';
+	    $c->stash->{'error_notice'} = 'Login incorrect.';
 	}
     } else {
 	# invalid form input
-	$c->stash->{'error_notice'}='Invalid username or password.';
+	$c->stash->{'error_notice'} = 'Invalid username or password.';
     }
 }
 
-sub auth_wbid :Path('/auth/wbid')  :Args(0) {
-    my ( $self, $c) = @_;
-    $c->stash->{redirect} = $c->req->params->{redirect};
-    $c->stash->{'template'}='auth/wbid.tt2';
-}
 
 sub auth_openid : Chained('auth') PathPart('openid')  Args(0){
     my ( $self, $c) = @_;
@@ -423,9 +415,9 @@ sub auth_local {
     # (or use auto_create_user: 1)
     my $authid;
     if ($auth_type eq 'openid') {
-	$authid = $c->model('Schema::OpenID')->find_or_create({ openid_url => $params->{openid_url} });
+	$authid = $c->model('CGC::AppOpenID')->find_or_create({ openid_url => $params->{openid_url} });
     } elsif ($auth_type eq 'oauth') {
-	$authid = $c->model('Schema::OpenID')->find_or_create({ oauth_access_token        => $params->{oauth_access_token},
+	$authid = $c->model('CGC::AppOpenID')->find_or_create({ oauth_access_token        => $params->{oauth_access_token},
 								oauth_access_token_secret => $params->{oauth_access_token_secret}
 							      });
     }
@@ -455,12 +447,8 @@ sub auth_local {
             $username = $params->{openid_url};
         }
 	
-	# Does a user already exist for this account?  Try looking up by email.
-	# This logic won't work if:
-	# 1. Initially logging in using something like Twitter with doesn't provide email or first/last name.
-	# 2. A user is trying to associate one of these accounts
-	#    with an existing account.
-        my @users = $c->model('Schema::Email')->search({email=>$email, validated=>1});
+	# Does a user already exist for this account? Try looking up by email
+        my @users = $c->model('CGC::AppUser')->search({email=>$email, validated=>1});
         @users = map { $_->user } @users;
 	
         foreach (@users){
@@ -485,28 +473,24 @@ sub auth_local {
             $c->stash->{prompt_wbid} = 1;
             $c->stash->{redirect} = $redirect;
             $c->log->debug("creating new user $username, $email");
-            $user=$c->model('Schema::User')->create({username=>$username, active=>1}) ;
-            $c->model('Schema::Email')->find_or_create({email=>$email, validated=>1, user_id=>$user->user_id, primary_email=>1}) if $email;
+            $user=$c->model('CGC::AppUser')->create({username      => $username,
+							active        => 1, 
+							email         => $email,
+							validated     => 1,
+							primary_email => 1}) ;
         }
 	
 	# HARD-CODED!  The following people become admins automatically if they've
 	# logged in with this email or openid account.
 	if ($email =~ m{
                         todd\@wormbase\.org            |
-                        todd\@hiline\.co               |
-                        abby\@wormbase\.org            |
-                        abigail\.cabunoc\@oicr\.on\.ca |
-                        lincoln\.stein\@gmail\.com     | 
+                        toddwharris\@gmail\.com         |
                         me\@todd\.co                   |
-                        xshi\@wormbase\.org
+                        shiranpasternak\@gmail\.com    |
 	    }x) {
-	    my $role=$c->model('Schema::Role')->find({role=>"admin"}) ;
-	    $c->model('Schema::UserRole')->find_or_create({user_id=>$user->id,role_id=>$role->id});
-	} elsif ($email && $email =~ /\@wormbase\.org/) {
-	    # assigning curator role to wormbase.org domain user
-	    my $role=$c->model('Schema::Role')->find({role=>"curator"}) ;
-	    $c->model('Schema::UserRole')->find_or_create({user_id=>$user->id,role_id=>$role->id});
-        }
+	    my $role=$c->model('CGC::AppRole')->find({role=>"admin"}) ;
+	    $c->model('CGC::AppUsersToRole')->find_or_create({user_id=>$user->id,role_id=>$role->id});
+	}
 	
 	# Update the authid entry
 	if ($authid) {
@@ -546,9 +530,9 @@ sub logout :Path("/logout") :Args(0){
     my ($self, $c) = @_;
     # Clear the user's state
     $c->logout;
-    $c->stash->{noboiler} = 1;  
+#    $c->stash->{noboiler} = 1;  
     
-    $c->stash->{'template'}='auth/login.tt2';
+    $c->stash->{'template'} = 'auth/logout.tt2';
 #     $c->response->redirect($c->uri_for('/'));
     $self->reload($c,1) ;
 #     $c->session_expire_key( __user => 0 );
@@ -563,11 +547,11 @@ sub profile :Path("/profile") :Args(0) {
     # This PROBABLY belongs in the model.
     # Fetch accounts that this user has linked to and key them by provider.
     # could do this with a group by constraint, too.
-    my @accounts = $c->model('Schema::OpenID')->search({user_id => $c->user->id});
+    my @accounts = $c->model('CGC::AppOpenID')->search({user_id => $c->user->id});
     foreach my $account (@accounts) {
 	$c->stash->{linked_accounts}->{$account->provider} = $account;
     }
-    
+
     # Twitter information
     if ($self->is_linked_to_twitter($c)) {
 	
@@ -581,24 +565,26 @@ sub profile :Path("/profile") :Args(0) {
     # my $mendeley = $c->model('Mendeley')->private_api;
     # $c->stash->{mendeley} = $mendeley;
     
+
+    
     $c->stash->{template} = 'auth/profile.tt2';
 } 
 
 
 sub profile_update :Path("/profile_update")  :Args(0) {
     my ( $self, $c ) = @_;
-    my $email    = $c->req->params->{email_address};
+    my $email    = $c->req->params->{email};
     my $username = $c->req->params->{username};
     my $message;
     if($email){
 	my $found;
-	my @emails = $c->model('Schema::Email')->search({email=>$email, validated=>1});
+	my @emails = $c->model('CGC::AppUser')->search({email=>$email, validated=>1});
 	foreach (@emails) {
 	    $message="The email address <a href='mailto:$email'>$email</a> has already been registered.";     
 	    $found = 1;
 	}
 	unless($found){
-	    $c->model('Schema::Email')->find_or_create({email=>$email, user_id=>$c->user->user_id});
+	    $c->model('CGC::AppUser')->find_or_create({email=>$email, user_id=>$c->user->user_id});
 	    $c->controller('REST')->rest_register_email($c, $email, $c->user->username, $c->user->user_id);
 	    $message="An email has been sent to <a href='mailto:$email'>$email</a>. ";
 	}
@@ -614,48 +600,6 @@ sub profile_update :Path("/profile_update")  :Args(0) {
     $c->stash->{redirect} = $c->uri_for("me")->path;
     $c->forward('App::Web::View::TT');
 } 
-
-
-
-
-
-
-# Has the current user linked their account to Twitter?
-sub is_linked_to_twitter {
-    my ($self,$c) = @_;
-    my $twitter = $c->model('Schema::OpenID')->find({user_id => $c->user->id,
-						     provider => 'twitter' });
-    
-    # Authenticate.
-    if ($twitter) {
-	my $nt = $self->connect_to_twitter($c);
-	
-#$nt->access_token($twitter->oauth_access_token);
-#$nt->access_token_secret($twitter->oauth_access_token_secret);
-	$nt->access_token($twitter->access_token);
-	$nt->access_token_secret($twitter->access_token_secret);
-	
-	if ( $nt->authorized ) {
-	    # Get the avatar URL.     
-	    my $data = $nt->show_user($twitter->screen_name);
-	    $c->stash->{twitter_avatar_url} = $data->{profile_image_url};
-	    $c->stash->{twitter_screen_name} = $twitter->screen_name;    # Here or just in view?
-	} else { 
-	    # Privs have been revoked. Remove entry from open_id;
-	    $twitter->delete;
-	}
-	
-    }
-}
-
-
-# Has the current user linked their account to Facebook?
-# If so, do we still have an active token?
-sub is_linked_to_facebook {
-    
-}
-
-
 
 
 =pod

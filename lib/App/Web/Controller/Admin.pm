@@ -36,14 +36,14 @@ sub registered_users :Path("registered_users") {
     $c->stash->{'template'}='admin/registered_users.tt2';
     my @array;
     if($c->check_user_roles('admin')){
-#       my $iter=$c->model('Schema::User') ;
+#       my $iter=$c->model('CGC::AppUser') ;
 #       while( my $user= $iter->next){
 # 	  my $hash = { username   => $user->username,
 # 		       email      => $user->valid_emails,
 # 		       id         => $user->user_id,
 # 	  };
 
-      my @users = $c->model('Schema::User')->search();
+      my @users = $c->model('CGC::AppUser')->search();
       map { 
         my @roles = $_->roles;
         foreach my $role (@roles){

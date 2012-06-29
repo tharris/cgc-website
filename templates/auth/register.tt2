@@ -22,20 +22,6 @@
     <input id="create-account" type="submit" style="position:absolute;bottom:1em;left:1em;font-weight:bold;width:7em;" class="ui-corner-large-all" value="sign up ›"/>  
 </div>
 
-[%# NO openid/oauth logins for now
-<div style="float:left;border-left:1px solid #CDCDCD;font-weight:normal;font-size:10pt;padding:1em 0 1em 1em;margin-top:0.5em;">
-  <div class="social">
-    <span>...or sign in with</span>
-      <button class="social_buttons sb_google sb_24" onClick="openid.signin('google');return false;">
-          <span>Google</span>
-      </button>
-      <button class="social_buttons sb_facebook sb_24" onClick="openid.signin('facebook');return false;">
-          <span>Facebook</span>
-      </button>
-  </div>
-</div>
-%]
-
 
 <div id="default-login" style="overflow:none">
   <input id="create-account" type="submit" style="visibility:hidden;font-weight:bold;width:7em;" class="ui-corner-large-all" value="sign up ›"/> 
@@ -94,19 +80,6 @@ WB.hideTextOnFocus("#password");
       <span> Already a member? <b><a id="login" onClick='$jq(this).parent().parent().parent().parent().parent().load("[% c.uri_for("/login") %]").addClass("login-form").removeClass("registration-form"); return false;'  href="[% c.uri_for('/login') %]">login</a></b></span>
   </div>
   <br />
-
-
-  [%# No oauth/openid accounts now 
-  <div style="font-weight:normal;font-size:10pt;clear:both;padding:2em;">
-      <span>...or sign in with</span>
-      <button class="social_buttons sb_google sb_24" onClick="openid.signin('google');">
-          <span>Google</span>
-      </button>
-      <button class="social_buttons sb_facebook sb_24" onClick="openid.signin('facebook');">
-          <span>Facebook</span>
-      </button>
-  </div>
-  %]
 
 </form>
 
