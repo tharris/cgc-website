@@ -55,6 +55,7 @@ requires 'Config::General';                                      #
 #requires 'Class::MOP';                                           # => '1.12';
 #requires 'Data::Dump';                                           #
 #requires 'Data::OptList';                                        #
+requires 'Data::GUID';
 requires 'DBI';                                                  #
 requires 'DBD::mysql';                                           #
 #requires 'DB_File::Lock';                                        #
