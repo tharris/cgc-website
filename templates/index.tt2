@@ -1,3 +1,10 @@
+<div class="hero-unit span6 offset2" style="text-align:center">
+<div class="row">
 <p>Welcome to the brand spankin' new CGC site.</p>
-<div class="btn btn-large">Place an Order</div>
-<div class="btn btn-large">Pay an Invoice</div>
+<p>
+<a href="/strain" class="btn btn-large">View Strains</a>
+<a href="/" class="btn btn-large">Place an Order</a>
+<a href="/" class="btn btn-large">Pay an Invoice</a>
+</p>
+</div>
+</div>

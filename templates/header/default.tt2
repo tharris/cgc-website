@@ -1,4 +1,9 @@
 <!-- BEGIN boilerplate/banner -->
+<style type="text/css">
+	.navbar-form input {
+		margin-top:auto;
+	}
+</style>
 <div class="navbar navbar-fixed-top">
   <div class="navbar-inner">
 	<div class="container">
@@ -41,11 +46,12 @@
 -->
 
 	  <span class="status-bar"></span>
-		<span class="pull-right">Not registered? <a href="/register">Sign up!</a></span>
 	    <form method="post" action="/auth/login" class="navbar-form pull-right">
 			<input class="input-small" name="email" type="email" placeholder="Email"/>
 			<input class="input-small" name="password" type="password" placeholder="Password" />
 			<button class="btn" type="submit">Sign in</button>
+			<button class="btn btn-inverse" type="submit" value="register">Sign up</button>
+
 		</form>
           [% END %]
 	</div>
