@@ -1,12 +1,12 @@
 use utf8;
-package CGC::Schema::Result::UserRole;
+package CGC::Schema::Result::AppRole;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-CGC::Schema::Result::UserRole
+CGC::Schema::Result::AppRole
 
 =cut
 
@@ -30,11 +30,11 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<user_roles>
+=head1 TABLE: C<app_roles>
 
 =cut
 
-__PACKAGE__->table("user_roles");
+__PACKAGE__->table("app_roles");
 
 =head1 ACCESSORS
 
@@ -71,12 +71,9 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("role_id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-28 17:36:50
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:oelCNR/wDUrGVojSCzWQtQ
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-29 16:29:40
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JIEDPnlICvnOuvDBH6Xvsw
 
-
-__PACKAGE__->has_many(users_to_roles=>'CGC::Schema::Result::UserUsersToRole', 'role_id');
-__PACKAGE__->many_to_many(users => 'user_users_to_roles', 'user', ,{ where => { active => 1 }}); 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;

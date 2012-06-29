@@ -71,6 +71,11 @@ __PACKAGE__->table("freezer_sample");
   datetime_undef_if_invalid: 1
   is_nullable: 1
 
+=head2 frozen_by
+
+  data_type: 'integer'
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -103,6 +108,8 @@ __PACKAGE__->add_columns(
     datetime_undef_if_invalid => 1,
     is_nullable => 1,
   },
+  "frozen_by",
+  { data_type => "integer", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -160,8 +167,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-28 17:36:50
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:I1oWXcx9cTIt3tR6efncNQ
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-29 16:29:40
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:NK3AubxcFEJH8WXQqKZiNA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

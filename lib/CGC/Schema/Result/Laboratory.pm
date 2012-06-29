@@ -51,6 +51,36 @@ __PACKAGE__->table("laboratory");
   is_nullable: 1
   size: 255
 
+=head2 lab_head_first_name
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 255
+
+=head2 lab_head_middle_name
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 255
+
+=head2 lab_head_last_name
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 255
+
+=head2 laboratory_designation
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 5
+
+=head2 strain_designation
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 5
+
 =head2 address1
 
   data_type: 'varchar'
@@ -99,6 +129,18 @@ __PACKAGE__->table("laboratory");
   is_nullable: 1
   size: 255
 
+=head2 website
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 255
+
+=head2 date_assigned
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 255
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -111,6 +153,16 @@ __PACKAGE__->add_columns(
   },
   "head",
   { data_type => "varchar", is_nullable => 1, size => 255 },
+  "lab_head_first_name",
+  { data_type => "varchar", is_nullable => 1, size => 255 },
+  "lab_head_middle_name",
+  { data_type => "varchar", is_nullable => 1, size => 255 },
+  "lab_head_last_name",
+  { data_type => "varchar", is_nullable => 1, size => 255 },
+  "laboratory_designation",
+  { data_type => "varchar", is_nullable => 1, size => 5 },
+  "strain_designation",
+  { data_type => "varchar", is_nullable => 1, size => 5 },
   "address1",
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "address2",
@@ -131,6 +183,10 @@ __PACKAGE__->add_columns(
   "institution",
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "city",
+  { data_type => "varchar", is_nullable => 1, size => 255 },
+  "website",
+  { data_type => "varchar", is_nullable => 1, size => 255 },
+  "date_assigned",
   { data_type => "varchar", is_nullable => 1, size => 255 },
 );
 
@@ -179,8 +235,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-28 17:36:50
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:a1cEYDw+xE16PWYhIsL6Ww
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-29 16:29:40
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8t6KATulZQUgdylzlI8ThA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -1,12 +1,12 @@
 use utf8;
-package CGC::Schema::Result::UserUser;
+package CGC::Schema::Result::AppUser;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-CGC::Schema::Result::UserUser
+CGC::Schema::Result::AppUser
 
 =cut
 
@@ -30,11 +30,11 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<user_users>
+=head1 TABLE: C<app_users>
 
 =cut
 
-__PACKAGE__->table("user_users");
+__PACKAGE__->table("app_users");
 
 =head1 ACCESSORS
 
@@ -56,15 +56,33 @@ __PACKAGE__->table("user_users");
   is_nullable: 1
   size: 255
 
-=head2 gtalk_key
-
-  data_type: 'text'
-  is_nullable: 1
-
 =head2 active
 
   data_type: 'integer'
   is_nullable: 1
+
+=head2 laboratory_id
+
+  data_type: 'integer'
+  is_nullable: 1
+
+=head2 first_name
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 255
+
+=head2 middle_name
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 255
+
+=head2 last_name
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 255
 
 =head2 wbid
 
@@ -73,6 +91,23 @@ __PACKAGE__->table("user_users");
   size: 255
 
 =head2 wb_link_confirm
+
+  data_type: 'tinyint'
+  is_nullable: 1
+
+=head2 email
+
+  data_type: 'char'
+  default_value: (empty string)
+  is_nullable: 0
+  size: 255
+
+=head2 validated
+
+  data_type: 'tinyint'
+  is_nullable: 1
+
+=head2 primary_email
 
   data_type: 'tinyint'
   is_nullable: 1
@@ -86,13 +121,25 @@ __PACKAGE__->add_columns(
   { data_type => "char", is_nullable => 1, size => 255 },
   "password",
   { data_type => "char", is_nullable => 1, size => 255 },
-  "gtalk_key",
-  { data_type => "text", is_nullable => 1 },
   "active",
   { data_type => "integer", is_nullable => 1 },
+  "laboratory_id",
+  { data_type => "integer", is_nullable => 1 },
+  "first_name",
+  { data_type => "char", is_nullable => 1, size => 255 },
+  "middle_name",
+  { data_type => "char", is_nullable => 1, size => 255 },
+  "last_name",
+  { data_type => "char", is_nullable => 1, size => 255 },
   "wbid",
   { data_type => "char", is_nullable => 1, size => 255 },
   "wb_link_confirm",
+  { data_type => "tinyint", is_nullable => 1 },
+  "email",
+  { data_type => "char", default_value => "", is_nullable => 0, size => 255 },
+  "validated",
+  { data_type => "tinyint", is_nullable => 1 },
+  "primary_email",
   { data_type => "tinyint", is_nullable => 1 },
 );
 
@@ -109,19 +156,9 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("user_id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-28 17:36:50
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:WdcaxW1zvQ1lMvfZZlEQPQ
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-29 16:29:40
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:zAakd9i0tmh4uVFYzX4Dcg
 
-__PACKAGE__->has_many(users_to_roles=>'CGC::Schema::Result::UserUsersToRole', 'user_id');
-#__PACKAGE__->has_many(open_ids=>'CGC::Schema::Result::UserOpenID', 'user_id');
-__PACKAGE__->has_one(primary_email=>'CGC::Schema::Result::UserEmail', 'user_id', ,{ where => { validated => 1, primary_email => 1 } });
-__PACKAGE__->has_many(valid_emails=>'CGC::Schema::Result::UserEmail', 'user_id', ,{ where => { validated => 1 } });
-__PACKAGE__->has_many(email_address=>'CGC::Schema::Result::UserEmail', 'user_id');
-__PACKAGE__->many_to_many(roles => 'user_users_to_roles', 'user_role');
-
-#__PACKAGE__->has_many(issues_reported=>'CGC::Schema::Result::Issue', 'reporter_id');
-#__PACKAGE__->has_many(issues_responsible=>'CGC::Schema::Result::Issue', 'responsible_id');
-__PACKAGE__->has_many(comments=>'CGC::Schema::Result::Comment', 'user_id');
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;

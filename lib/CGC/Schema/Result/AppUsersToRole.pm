@@ -1,12 +1,12 @@
 use utf8;
-package CGC::Schema::Result::UserUsersToRole;
+package CGC::Schema::Result::AppUsersToRole;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-CGC::Schema::Result::UserUsersToRole
+CGC::Schema::Result::AppUsersToRole
 
 =cut
 
@@ -30,11 +30,11 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<user_users_to_roles>
+=head1 TABLE: C<app_users_to_roles>
 
 =cut
 
-__PACKAGE__->table("user_users_to_roles");
+__PACKAGE__->table("app_users_to_roles");
 
 =head1 ACCESSORS
 
@@ -74,8 +74,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("user_id", "role_id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-28 17:36:50
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:vQfddM3QN5HzA3CVubHSbA
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-29 16:29:40
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UgQ6VvHqH7/Ik/EZX+1BWQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

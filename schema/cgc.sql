@@ -46,6 +46,7 @@ CREATE TABLE `freezer_sample` (
   `strain_id` int(11) unsigned DEFAULT NULL,
   `vials` tinyint(11) unsigned DEFAULT NULL,
   `freeze_date` datetime DEFAULT NULL,
+  `frozen_by` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `freezer_sample_freezer_fk` (`freezer_id`),
   KEY `freezer_sample_strain_fk` (`strain_id`),
@@ -68,6 +69,29 @@ CREATE TABLE `genotype` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+DROP TABLE IF EXISTS `gene`;
+
+CREATE TABLE `gene` (
+  `id`          int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `wormbase_id` int(15) unsigned,
+  `name` varchar(30) DEFAULT NULL,
+  `locus_name` varchar(30) DEFAULT NULL,
+  `sequence_name` varchar(30) DEFAULT NULL,
+  `chromosome`  varchar(20) DEFAULT NULL,  
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `variation`;
+
+CREATE TABLE `variation` (
+  `id`          int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `wormbase_id` int(15) unsigned,
+  `name` varchar(30) DEFAULT NULL,
+  `chromosome`  varchar(20) DEFAULT NULL,  
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 
 # Dump of table lab_order
 # ------------------------------------------------------------
@@ -77,6 +101,7 @@ DROP TABLE IF EXISTS `lab_order`;
 CREATE TABLE `lab_order` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `laboratory_id` int(11) unsigned DEFAULT NULL,
+  `user_id` int(11) unsigned DEFAULT NULL,
   `strain_id` int(11) unsigned DEFAULT NULL,
   `order_date` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -94,6 +119,11 @@ DROP TABLE IF EXISTS `laboratory`;
 CREATE TABLE `laboratory` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `head` varchar(255) DEFAULT NULL,
+  `lab_head_first_name` varchar(255) DEFAULT NULL,
+  `lab_head_middle_name` varchar(255) DEFAULT NULL,  
+  `lab_head_last_name` varchar(255) DEFAULT NULL,
+  `laboratory_designation` varchar(5) DEFAULT NULL,
+  `strain_designation` varchar(5) DEFAULT NULL,
   `address1` varchar(255) DEFAULT NULL,
   `address2` varchar(255) DEFAULT NULL,
   `state` char(2) DEFAULT NULL,
@@ -102,6 +132,8 @@ CREATE TABLE `laboratory` (
   `commercial` tinyint(1) DEFAULT NULL,
   `institution` varchar(255) DEFAULT NULL,
   `city` varchar(255) DEFAULT NULL,
+  `website` varchar(255) DEFAULT NULL,
+  `date_assigned` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -266,28 +298,28 @@ CREATE TABLE `history` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-# Dump of table user_email
+# Dump of table app_email
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `user_email`;
+#DROP TABLE IF EXISTS `app_email`;
 
-CREATE TABLE `user_email` (
-  `user_id` int(11) NOT NULL DEFAULT '0',
-  `email` char(255) NOT NULL DEFAULT '',
-  `validated` tinyint(1) DEFAULT NULL,
-  `primary_email` tinyint(1) DEFAULT NULL,
-  PRIMARY KEY (`user_id`,`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
+#CREATE TABLE `app_email` (
+#  `user_id` int(11) NOT NULL DEFAULT '0',
+#  `email` char(255) NOT NULL DEFAULT '',
+#  `validated` tinyint(1) DEFAULT NULL,
+#  `primary_email` tinyint(1) DEFAULT NULL,
+#  PRIMARY KEY (`user_id`,`email`)
+#) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-# Dump of table user_oauth
+
+
+# Dump of table app_oauth
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `user_oauth`;
+DROP TABLE IF EXISTS `app_oauth`;
 
-CREATE TABLE `user_oauth` (
+CREATE TABLE `app_oauth` (
   `oauth_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
   `provider` char(255) DEFAULT NULL,
@@ -299,12 +331,12 @@ CREATE TABLE `user_oauth` (
 
 
 
-# Dump of table user_openid
+# Dump of table app_openid
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `user_openid`;
+DROP TABLE IF EXISTS `app_openid`;
 
-CREATE TABLE `user_openid` (
+CREATE TABLE `app_openid` (
   `auth_id` int(11) NOT NULL AUTO_INCREMENT,
   `openid_url` char(255) DEFAULT NULL,
   `user_id` int(11) DEFAULT NULL,
@@ -317,11 +349,11 @@ CREATE TABLE `user_openid` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-# Dump of table user_password_reset
+# Dump of table app_password_reset
 # ------------------------------------------------------------
-DROP TABLE IF EXISTS `user_password_reset`;
+DROP TABLE IF EXISTS `app_password_reset`;
 
-CREATE TABLE `user_password_reset` (
+CREATE TABLE `app_password_reset` (
   `user_id` int(11) NOT NULL DEFAULT '0',
   `token` char(50) DEFAULT NULL,
   `expires` int(11) DEFAULT NULL,
@@ -329,21 +361,23 @@ CREATE TABLE `user_password_reset` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-# Dump of table user_roles
+# Dump of table app_roles
 # ------------------------------------------------------------
-DROP TABLE IF EXISTS `user_roles`;
+DROP TABLE IF EXISTS `app_roles`;
 
-CREATE TABLE `user_roles` (
+CREATE TABLE `app_roles` (
   `role_id` int(11) NOT NULL,
   `role` char(255) DEFAULT NULL,
   PRIMARY KEY (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-# Dump of table user_sessions
+INSERT INTO `app_roles` VALUES ('1','admin'),('2','manager'),('3','developer'),('4','user');
+
+# Dump of table app_sessions
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `user_sessions`;
+DROP TABLE IF EXISTS `app_sessions`;
 
 CREATE TABLE `user_sessions` (
   `session_id` char(72) NOT NULL,
@@ -354,12 +388,12 @@ CREATE TABLE `user_sessions` (
 
 
 
-# Dump of table user_starred
+# Dump of table app_starred
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `user_starred`;
+DROP TABLE IF EXISTS `app_starred`;
 
-CREATE TABLE `user_starred` (
+CREATE TABLE `app_starred` (
   `session_id` char(72) NOT NULL DEFAULT '',
   `page_id` int(11) NOT NULL DEFAULT '0',
   `save_to` char(50) DEFAULT NULL,
@@ -371,32 +405,39 @@ CREATE TABLE `user_starred` (
 # Dump of table user_users
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `user_users`;
+DROP TABLE IF EXISTS `app_users`;
 
-CREATE TABLE `user_users` (
-  `user_id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `app_users` (
+  `user_id`  int(11) NOT NULL AUTO_INCREMENT,
   `username` char(255) DEFAULT NULL,
   `password` char(255) DEFAULT NULL,
-  `gtalk_key` text,
-  `active` int(11) DEFAULT NULL,
+  `active`   int(11) DEFAULT NULL,
+  `laboratory_id` int(11) DEFAULT NULL,
+  `first_name` char(255) DEFAULT NULL,
+  `middle_name` char(255) DEFAULT NULL,
+  `last_name` char(255) DEFAULT NULL,
   `wbid` char(255) DEFAULT NULL,
   `wb_link_confirm` tinyint(1) DEFAULT NULL,
+  `email` char(255) NOT NULL DEFAULT '',
+  `validated` tinyint(1) DEFAULT NULL,
+  `primary_email` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+INSERT INTO `app_users` VALUES ('1','tharris','{SSHA}ZZ2/yHLi1OZ0G4fUMaN/T+NA7rm7Jy57','1','','Todd','William','Harris','','','todd@wormbase.org','1','1');
 
-# Dump of table user_users_to_roles
+# Dump of table app_users_to_roles
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `user_users_to_roles`;
+DROP TABLE IF EXISTS `app_users_to_roles`;
 
-CREATE TABLE `user_users_to_roles` (
+CREATE TABLE `app_users_to_roles` (
   `user_id` int(11) NOT NULL DEFAULT '0',
   `role_id` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`user_id`,`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+INSERT INTO `app_users_to_roles` VALUES ('1','1');
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

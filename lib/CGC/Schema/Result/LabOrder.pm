@@ -52,6 +52,12 @@ __PACKAGE__->table("lab_order");
   extra: {unsigned => 1}
   is_nullable: 1
 
+=head2 user_id
+
+  data_type: 'integer'
+  extra: {unsigned => 1}
+  is_nullable: 1
+
 =head2 strain_id
 
   data_type: 'integer'
@@ -76,6 +82,8 @@ __PACKAGE__->add_columns(
     is_nullable => 0,
   },
   "laboratory_id",
+  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
+  "user_id",
   { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
   "strain_id",
   { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
@@ -132,8 +140,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-28 17:36:50
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OLrbcNqksqNOUHxvl0m1Dw
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-29 16:29:40
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Liuolgldj+Dn9Safxxb5/w
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
