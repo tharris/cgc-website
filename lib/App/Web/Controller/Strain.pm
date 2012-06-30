@@ -8,7 +8,6 @@ __PACKAGE__->config(
 	default => 'application/json',
 	map => {
 		'text/html' => [ qw/View TT/ ],
-		'application/json' => 'JSON',
 	}
 );
 
@@ -29,13 +28,25 @@ sub strain : Path('/strain') : ActionClass('REST') { }
 sub strain_GET {
 	my ($self, $c, $stash_key) = @_;
 	
+	my $strain
+		= $c->model('CGC::Strain')->single({ name => $stash_key });
 	$c->stash->{template} = 'strain/index.tt2';
-	$self->status_ok(
-		$c,
-		entity => {
-			foo => $stash_key
+	my $entity;
+	if (defined($strain)) {
+		$entity = {
+			name       => $strain->name,
+			species    => $strain->species->name,
+			outcrossed => $strain->outcrossed,
+			mutagen    => $strain->mutagen->name,
+			genotype   => $strain->genotype->name,
+			received   => $strain->received
+				? $strain->received->strftime('%Y/%m/%d') : undef,
+			# lab_order  => $strain->lab_order,
+			made_by    => $strain->made_by,
+			history    => [] # TODO: Track history
 		}
-	);
+	}
+	$self->status_ok($c, entity => $entity);
 }
 
 sub list : Local : ActionClass('REST') { }

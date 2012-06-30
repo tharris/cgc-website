@@ -1,10 +1,28 @@
+[% DEFAULT strain = rest %]
 <h2>Strain</h2>
 <p>Search for a strain. Start typing something, we'll try to find the strain for ya.</p>
 <div class="well">
     <input id="search-strain" type="text" class="span3"/>
 </div>
 
+[% IF strain %]
+<div class="span6">
+	<table id="strain-view" class="table table-striped">
+	<tbody>
+	[% FOREACH key IN [ 'name', 'species', 'genotype', 'mutagen',
+		'outcrossed', 'received', 'made_by' ] %]
+		<tr>
+			<th>[% key FILTER ucfirst %]</th>
+			<td>[% strain.$key %]</td>
+		</tr>
+	[% END %]
+	</tbody>
+	</table>
+</div>
+[% END %]
+
 <script src="/js/bootstrap/jquery.js"></script>
+<script src="/js/jquery.hashchange.js"></script>
 <script src="/js/bootstrap/bootstrap-typeahead.js"></script>
 <script>
 	$(function () {
@@ -17,5 +35,34 @@
 				});
 			}
 		});
+		
+		$('#search-strain').on('change',
+			function (data) {
+				window.location.href = '/strain/' + data.target.value
+				// If we want to get fancy and avoid page loads....
+				// window.location.hash = data.target.value;
+			}
+		);
+
+		/*
+		$(window).hashchange(function () {
+			// var strainName = location.hash.replace(/^#/,'');
+			$.ajax({
+				url: '/strain/' + strainName,
+				dataType: 'json',
+				success: function (json) {
+					console.log(json);
+					var tableRow = function (key) {
+						var row = $('<tr></tr>');
+						row.append($('<th></th>').html(key))
+							.append($('<td></td>').html(json[key]));
+						return row;
+					};
+					$('#strain-view').empty();
+					$('#strain-view').add(tableRow("name"));
+				}
+			});
+		});
+		*/
 	});
 </script>
