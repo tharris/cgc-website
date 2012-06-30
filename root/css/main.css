@@ -14,31 +14,10 @@
    License: none (public domain)
 */
 
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    vertical-align: baseline;
-}
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure, 
 footer, header, hgroup, menu, nav, section {
     display: block;
-}
-body {
-    line-height: 1.2;
 }
 ol, ul {
     list-style: none;
@@ -134,32 +113,6 @@ div#create-prompt {
   position:relative;
   height:1em;
 }
-
-#create-account{
-/*   clear:both; */
-  clear:left;
-  padding:0.4em 0.8em;
-  font-size:0.9em;
-  color:white;
-  margin:0.5em 0.5em 0 0 ;
-  float:left;
-  width:5em;
-  display:block;
-  cursor:pointer;
-  border:none;
-  background: #406F9C;
-  background: #406F9C -moz-linear-gradient(90deg, #406F9C, #8CA4BA);
-  background: #406F9C -webkit-gradient(linear, 0% 0%, 0% 100%, from(#8CA4BA), to(#406F9C));
-  filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr=#8CA4BA,endColorStr=#406F9C);
-}
-
-#create-account:hover{
-  background: #8CA4BA;
-  background: #8CA4BA -moz-linear-gradient(90deg, #406F9C, #A3BCD4);
-  background: #8CA4BA -webkit-gradient(linear, 0% 0%, 0% 100%, from(#A3BCD4), to(#406F9C));
-  filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr=#A3BCD4,endColorStr=#406F9C);
-}
-
 
 /* Seach bar and results page */
 #results {
@@ -592,14 +545,6 @@ overflow: visible;
 
 /* = DOCUMENT ========================== */
 
-body, html {
-    padding: 0px;
-    margin: 0px;
-    font-family: Helvetica, sans-serif;
-    /*font-size:75%; */    /* Set the default font size from browser medium (16px) to 12px */
-    height:100%;
-}
-
 h1,h2,h3,h4,h5,h6 { color:black; margin:0; font-weight:bold;}
 
 h1 { font-size:1.8em;   }  /* 24px   ; site title */
@@ -613,7 +558,6 @@ h6 { font-size:0.8em;    /* 12px; subfield names */
 
 /* IE hack: Force tables and input forms to inherit our default size */
 input, select, th, td { font-size:1em; }
-
 
 /*********************************
    
