@@ -28,28 +28,32 @@
 
 
     <script type="text/javascript" src="https://www.google.com/jsapi?key=[% c.config.google_api_key %]"></script>    
-    <script src="/js/bootstrap/jquery.js"></script>
     <script>
-      google.load("jqueryui", "1.8.16");
+    	var Scripts = [
+    		"/js/bootstrap/jquery.js",
+    		"/js/main.js",
+			"/js/bootstrap/bootstrap-transition.js",
+			"/js/bootstrap/bootstrap-alert.js",
+			"/js/bootstrap/bootstrap-modal.js",
+			"/js/bootstrap/bootstrap-dropdown.js",
+			"/js/bootstrap/bootstrap-scrollspy.js",
+			"/js/bootstrap/bootstrap-tab.js",
+			"/js/bootstrap/bootstrap-tooltip.js",
+			"/js/bootstrap/bootstrap-popover.js",
+			"/js/bootstrap/bootstrap-button.js",
+			"/js/bootstrap/bootstrap-collapse.js",
+			"/js/bootstrap/bootstrap-typeahead.js",
+			"/js/bootstrap/bootstrap-carousel.js"
+    	];
+		var s = document.getElementsByTagName('script')[0];
+    	for (var i = 0; i < Scripts.length; i++) {
+			var se = document.createElement('script');
+			se.src = Scripts[i];
+			s.parentNode.insertBefore(se, s);
+		}
+		google.load("jqueryui", "1.8.16");
+		[% INCLUDE google_analytics %]
     </script>
-    <script>
-      var se = document.createElement('script');
-      se.src = "/js/main.js";
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(se, s);
-      [% INCLUDE google_analytics %]
-    </script>
-    <script src="/js/bootstrap/bootstrap-transition.js"></script>
-    <script src="/js/bootstrap/bootstrap-alert.js"></script>
-    <script src="/js/bootstrap/bootstrap-modal.js"></script>
-    <script src="/js/bootstrap/bootstrap-dropdown.js"></script>
-    <script src="/js/bootstrap/bootstrap-scrollspy.js"></script>
-    <script src="/js/bootstrap/bootstrap-tab.js"></script>
-    <script src="/js/bootstrap/bootstrap-tooltip.js"></script>
-    <script src="/js/bootstrap/bootstrap-popover.js"></script>
-    <script src="/js/bootstrap/bootstrap-button.js"></script>
-    <script src="/js/bootstrap/bootstrap-collapse.js"></script>
-    <script src="/js/bootstrap/bootstrap-carousel.js"></script>
-    <script src="/js/bootstrap/bootstrap-typeahead.js"></script>
 
   </body>
 </html>
