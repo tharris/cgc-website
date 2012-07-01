@@ -1,40 +1,38 @@
 <script> 
 [% IF reload || error_notice  %] 
-   [% IF error_notice %]
-      alert("Login not successful!");
-      window.location = "/";
-   [% ELSIF logout %]
-      opener.location.reload(1);
-   [% ELSE %]
-  [% END %] 
   window.close();
 [% END %]  
 
-WB.hideTextOnFocus(".email");
-WB.hideTextOnFocus(".password");
+//WB.hideTextOnFocus(".email");
+//WB.hideTextOnFocus(".password");
 </script>
 
 
-  
-<!-- Login form -->
-<div id="login-form">
-  <form method="post" align="left" action="[% c.secure_uri_for("/auth/login") %]" style="float:left;">
+[% WRAPPER modal title="Please Sign In" %]
 
-    <div class="login-holder">
-        <span id="fade" class="holder">email</span>
-        <input class="email" type="email" name="email" size="22"/>
-    </div>
-    <div class="login-holder">
-        <span id="fade" class="holder">password</span>
-        <input class="password" type="password" name="password" size="22"/>
-    </div>
-    <div class="login-holder" style="margin: -0.2em 0 0.5em; padding:0 1em;">
-      <input type="submit" onClick='var form = $jq("#login-form"); return validate_fields(form.find("input.email"), null, form.find("input.password")  );' value="Login" id="login"/>
-      <div id="fade" style="padding:0 1em;float:right;margin-top:-3px;"><input type="checkbox" id="remember" name="remember" size="10">Remember me</input><br />
-                      <a href="[% c.uri_for('/register') %]" onClick='$jq(this).parent().parent().parent().parent().parent().load("[% c.uri_for("/register") %]?inline=1").addClass("registration-form").removeClass("login-form"); return false;' style="padding:0;margin:0;">create an account</a>
-      </div>
-    </div>
-  </form>
+  [% WRAPPER modal_body %]
 
-</div>
- 
+           <!-- Login form -->
+           <div id="login-form">
+               <div class="login-holder" style="margin: -0.2em 0 0.5em; padding:0 1em;">
+                   <form method="post" action="[% c.secure_uri_for("/auth/login") %]">
+                       <div class="login-holder">
+                            <span id="fade">email</span><br />
+                            <input class="email" type="email" name="email" size="30" />
+                       </div>
+                       <div class="login-holder">
+                           <span id="fade">password</span><br />
+                           <input class="password" type="password" name="password" size="30"  />
+                       </div>
+
+
+               </div>
+           </div>
+
+      [% END %]
+
+     [% WRAPPER modal_footer %]
+               <button class="btn btn-primary" type="submit" onClick='var form = $jq("#login-form"); return validate_fields(form.find("input.email"), null, form.find("input.password")  );'>Sign in</button>	       
+               </form>
+     [% END %]
+[% END %]

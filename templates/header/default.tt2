@@ -29,11 +29,16 @@
 	  </div><!--/.nav-collapse -->
 
           [% ref = c.req.referer.split('/').last %]
+
+
+	  <span class="status-bar"></span>
           [% IF c.user_exists %]
-	       <div class="nav-collapse">
+	       <div class="nav-collapse pull-right">
 		<ul class="nav">
                    
-                    <li> <a href="[% c.uri_for('/me') %]" id="section-me" class="[% IF(ref=='me'); 'selected'; END;%]">Welcome [% c.user.username %]<span href="/me" id="bench-status"></span></a></li><li><a id="logout" href="/logout">Logout</a></li>
+                    <li> <a href="[% c.uri_for('/me') %]" id="section-me" class="[% IF(ref=='me'); 'selected'; END;%]">Welcome, [% c.user.username %]!<span href="/me" id="bench-status"></span></a></li>
+<li><a class="btn btn-inverse" data-toggle="modal" data-target="#modal" href="/logout">Logout</a></li>
+
 		    </ul>
                 </div>
           [% ELSE %]
@@ -45,18 +50,29 @@
               </li>
 -->
 
-	  <span class="status-bar"></span>
 	    <form method="post" action="/auth/login" class="navbar-form pull-right">
+	    <!--
 			<input class="input-small" name="email" type="email" placeholder="Email"/>
 			<input class="input-small" name="password" type="password" placeholder="Password" />
 			<button class="btn" type="submit">Sign in</button>
-			<button class="btn btn-inverse" type="submit" value="register">Sign up</button>
+			-->
 
+   		        <a class="btn btn-primary-inverse" data-toggle="modal" data-target="#modal" href="[% c.secure_uri_for("/login") %]">Sign In</a>
+    		        <a class="btn btn-inverse" data-toggle="modal" data-target="#modal" href="[% c.secure_uri_for("/register") %]">Sign up</a>
 		</form>
           [% END %]
 	</div>
   </div>
 </div>
 <!-- END boilerplate/banner -->   
-    
+
+</div>
+
+
+
     <div class="container" id="content">
+
+
+
+        
+

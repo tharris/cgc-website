@@ -370,15 +370,11 @@ sub rest_register_POST {
 							      email           => $email,
 							     });
 	my $user_id = $user->user_id;
-
+	
 	$self->rest_register_email($c, $email, $username, $user_id);
 	
-	$c->stash->{template} = "shared/generic/message.tt2"; 
-	$c->stash->{message} = "<h2>You're almost done!</h2> <p>An email has been sent to " 
-	    . join(', ', map {"<a href='mailto:$_'>$_</a>"} @emails) 
-	    . ".</p><p>In order to use this account at <a href='" 
-	    . $c->uri_for("/")->path
-	    . "'>The CGC</a> you will need to activate it by following the activation link in your email.</p>" ; 
+	$c->stash->{template} = "auth/registration_complete.tt2"; 
+	$c->stash->{email}    = $email;
 #       $c->stash->{redirect} = $c->req->params->{redirect};
 	$c->forward('App::Web::View::TT');
     }
@@ -386,9 +382,9 @@ sub rest_register_POST {
 
 
 
-# CGC: Already refactored; could still purge wbid
+# CGC: Already refactored
 sub rest_register_email {
-    my ($self,$c,$email,$username,$user_id,$wbid) = @_;
+    my ($self,$c,$email,$username,$user_id) = @_;
     
     $c->stash->{info}->{username} = $username;
     $c->stash->{info}->{email}    = $email;
@@ -1174,6 +1170,45 @@ $c->response->headers->expires(time);
 
 
 
+
+######################################################
+#
+#   CGC API
+#
+######################################################
+
+sub search :Path('/rest/search') :Args(2) :ActionClass('REST') {}
+
+sub search_GET {
+    my ($self,$c,$class,$query) = @_;
+    
+    if ($class eq 'laboratory') {
+	$class ='CGC::Laboratory';
+    } 
+    
+#    my @results = $c->model($class)->search({laboratory_designation => $query });
+    my @results = $c->model($class)->search({id => $query });
+    $c->log->info(@results . ": $class");
+    my @data;
+    foreach (@results) {
+	$c->log->info($_->head);
+	push @data,{ id => $_->id,
+		     lab => $_->laboratory_designation,
+		     pi  => $_->lab_head_first_name . ' ' . $_->lab_head_last_name,
+		     institution => $_->institution };
+	
+    }
+    $self->status_ok( $c, entity => { data => \@data } );
+    return;
+}    
+
+
+
+
+
+
+
+
 ######################################################
 #
 #   ADMIN WIDGETS 
@@ -1245,6 +1280,22 @@ sub available_fields_GET {
 				      description => "All fields that comprise the $widget for $class:$name",
 		      }
 	);
+}
+
+
+
+sub logout :Path("/rest/logout") :Args(0) :ActionClass('REST') {}
+
+sub logout_GET {
+    my ($self, $c) = @_;
+    # Clear the user's state
+    $c->logout;
+#    $c->stash->{noboiler} = 1;  
+    
+    $c->stash->{'template'} = 'auth/logout.tt2';
+#     $c->response->redirect($c->uri_for('/'));
+#    $self->reload($c,1) ;
+#     $c->session_expire_key( __user => 0 );
 }
 
 

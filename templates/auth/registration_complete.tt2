@@ -1,0 +1,13 @@
+[% WRAPPER modal title="Registration complete, activation required..." %]
+
+  [% WRAPPER modal_body %]
+          <h4>Check your email ([% email %])!</h4>
+          <p>Activate your account by following the link in your email.</p>
+  [% END %]
+
+     [% WRAPPER modal_footer %]
+     	Return to the <a href="[% c.uri_for("/") %]">CGC home page</a>.
+  [% END %]
+[% END %]
+
+

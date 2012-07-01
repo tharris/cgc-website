@@ -124,7 +124,7 @@ __PACKAGE__->config->{authentication} = {
 __PACKAGE__->config(
     static => {
         dirs         => [qw/css js img tmp /],
-        include_path => [ "$ENV{APP_ROOT}/tmp", __PACKAGE__->config->{root}, ]
+        include_path => [ "$ENV{APP_ROOT}/tmp", __PACKAGE__->config->{root}, "$ENV{APP_ROOT}/external/bootstrap/assets"]
         #   logging  => 1,
     }
 );

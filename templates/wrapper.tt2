@@ -13,13 +13,7 @@
      content;
    ELSE;
      debug("Applying HTML page layout wrappers to $template.name\n");
-
-     IF is_classic;
-          content WRAPPER boilerplate/html;
-     ELSE;
-          content WRAPPER boilerplate/html + layout/default.tt2;
-     END;
-
+     content WRAPPER boilerplate/html + layout/default.tt2;
    END;
 -%]
 

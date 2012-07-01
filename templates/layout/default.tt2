@@ -16,6 +16,9 @@
         </script>
       [% END %]
 
+[%# This is our modal dialog box target %]
+ <div id="modal" class="modal hide fade" style="position: relative; top: auto; left: auto; margin: 0 auto; z-index: 100000; max-width: 100%;"></div>
+
 
            [% content %]
 <!--      <div id="spacer"></div>

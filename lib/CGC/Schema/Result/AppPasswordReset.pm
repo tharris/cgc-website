@@ -6,11 +6,11 @@ package CGC::Schema::Result::AppPasswordReset;
 
 =head1 NAME
 
-CGC::Schema::Result::AppPasswordReset
+    CGC::Schema::Result::AppPasswordReset
 
 =cut
 
-use strict;
+    use strict;
 use warnings;
 
 use Moose;
@@ -40,31 +40,31 @@ __PACKAGE__->table("app_password_reset");
 
 =head2 user_id
 
-  data_type: 'integer'
-  default_value: 0
-  is_nullable: 0
+    data_type: 'integer'
+    default_value: 0
+    is_nullable: 0
 
 =head2 token
 
-  data_type: 'char'
-  is_nullable: 1
-  size: 50
+    data_type: 'char'
+    is_nullable: 1
+    size: 50
 
 =head2 expires
 
-  data_type: 'integer'
-  is_nullable: 1
+    data_type: 'integer'
+    is_nullable: 1
 
 =cut
 
 __PACKAGE__->add_columns(
   "user_id",
-  { data_type => "integer", default_value => 0, is_nullable => 0 },
+    { data_type => "integer", default_value => 0, is_nullable => 0 },
   "token",
-  { data_type => "char", is_nullable => 1, size => 50 },
+    { data_type => "char", is_nullable => 1, size => 50 },
   "expires",
-  { data_type => "integer", is_nullable => 1 },
-);
+    { data_type => "integer", is_nullable => 1 },
+    );
 
 =head1 PRIMARY KEY
 

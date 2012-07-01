@@ -1,0 +1,13 @@
+[% WRAPPER modal title="Account Confirmed!" %]
+
+  [% WRAPPER modal_body %]
+	     <p>Your email address has been confirmed and your account created.  Please <a href=[% c.uri_for("/login") %]">sign in</a>!
+  [% END %]
+
+     [% WRAPPER modal_footer %]
+         <a class="btn btn-primary" id="login" onClick='$jq("#modal").load("[% c.secure_uri_for("/login") %]"); return false;'  href="[% c.secure_uri_for('/login') %]">sign in</a>
+
+  [% END %]
+[% END %]
+
+

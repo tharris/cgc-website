@@ -1,3 +1,13 @@
-<h1>You have been logged out of the CGC website. We're sad to see you go.</h1>
+[% WRAPPER modal title="Sign out complete" %]
 
-Perhaps you'd like to <a href="/login">log in again</a>?
+  [% WRAPPER modal_body %]
+     <p>You have been logged out of the CGC website. We're sad to see you go.</p>
+  [% END %]
+
+     [% WRAPPER modal_footer %]
+         <a class="btn btn-primary" id="login" onClick='$jq("#modal").load("[% c.secure_uri_for("/login") %]"); return false;'  href="[% c.secure_uri_for('/login') %]">sign in</a> or <a href="/">Return to the CGC Home</a>.
+
+  [% END %]
+[% END %]
+
+

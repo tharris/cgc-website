@@ -1,28 +1,30 @@
+[% IF c.stash.status == 'account-confirmed' %]
+   [%# If we're confirming an account, we won't be inside a modal. Let's make sure we are %]
+   
+    <div id="modal" class="modal show fade" style="position: relative; top: auto; left: auto; margin: 0 auto; z-index: 100000; max-width: 100%;"></div>
 
-<div style="margin:2em;">
-  <div class="ui-corner-all" style="padding:2em; border:1px solid #CCC; background:#EEE;">
-    [% UNLESS (c.user_exists || redirect) %]
-      <div class="ui-corner-all" style="width:15em;border: 1px solid #CCC; background: white;float:right; padding-top:1em;">
-        <span style="font-weight:bold; padding:1em;">Login to the CGC</span>
-        [% PROCESS auth/login.tt2 %]
-      </div>
-    [% END %]
+[% END %]
 
-    [% message %]
+   <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal">&times;</button>
+   </div>
 
-    <div style="clear:both"></div>
+   <div class="modal-body">
+            [% message %]
   </div>
 
-  <p><span id="fade">
-    [% IF redirect %]
-      You will be automatically redirected to <a href="[% redirect %]">[% redirect %]</a>. Or <a href="[% redirect %]">click here</a>.
-      <script>
+   <div class="modal-footer">
+
+     [% IF redirect %]
+      <p><span id="fade">   
+        You will be automatically redirected to <a href="[% redirect %]">[% redirect %]</a>. Or <a href="[% redirect %]">click here</a>.
+        <script>
         setTimeout('location.replace("[% redirect %]");',3000);
       </script>
-    [% ELSE %]
-      go to <a href='[% c.uri_for("/")%]'>WormBase home</a>
-    [% END %]
-  </span></p>
-    <div style="clear:both"></div>
-</div>
-    <div style="clear:both"></div>
+      </span></p>
+      [% ELSE %]
+     	Return to the <a href="[% c.uri_for("/") %]">CGC home page</a>.
+      [% END %]
+   </div>       
+
+

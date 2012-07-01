@@ -1,0 +1,15 @@
+[% WRAPPER modal title="Login Failed!" %]
+
+  [% WRAPPER modal_body %]
+	      <div class="alert">
+                  <strong>Log in failed!</strong> Your email/password combination was incorrect.		        
+              </div>
+  [% END %]
+
+     [% WRAPPER modal_footer %]
+               <a class="btn btn-warning" type="submit" onClick='$jq("#modal").load("[% c.secure_uri_for("/password") %]"); return false;'  href="[% c.secure_uri_for('/password') %]">Reset Password</a>	      
+
+  [% END %]
+[% END %]
+
+

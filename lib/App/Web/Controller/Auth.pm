@@ -13,37 +13,21 @@ __PACKAGE__->config->{namespace} = '';
  
 sub login :Path("/login")  :Args(0){
     my ( $self, $c ) = @_;
-    $c->stash->{noboiler} = 1;
-    $c->stash->{'template'} = 'auth/login.tt2';
-    $c->stash->{'continue'} = $c->req->params->{continue};
+    $c->stash->{template} = 'auth/login.tt2';
+#        $c->stash->{'continue'} = $c->req->params->{continue};
 }
 
+# 1. Provide a form so users can submit their email address.
 sub password : Chained('/') PathPart('password')  CaptureArgs(0) {
     my ( $self, $c) = @_;
-    $c->stash->{template} = 'auth/password.tt2';
+    $c->stash->{template} = 'auth/password_reset_request.tt2';
 }
 
-sub password_index : Chained('password') PathPart('index')  Args(0){
-    my ( $self, $c ) = @_;
-    if($c->stash->{token}  = $c->req->param("id")) {
-	my $user = $c->model('CGC::Password')->search({token=>$c->stash->{token} }, {rows=>1})->next;
-	if(!$user || $user->expires < time() ){
-	    if($user){
-		$user->delete();
-		$user->update();
-	    }
-	    
-	    $c->stash->{template} = "shared/generic/message.tt2"; 
-	    $c->stash->{message} = "the link has expired";
-	}
-    }
-}
-
-# If a user has forgotten their password, send an email to reset.
+# 2. Process the initial request and send out an email. Return a simple response.
 sub password_email : Chained('password') PathPart('email')  Args(0){
     my ( $self, $c ) = @_;
     my $email = $c->req->param("email");
-    $c->stash->{template} = "shared/generic/message.tt2"; 
+    $c->stash->{template} = "auth/password_reset_request.tt2";
     
     my @users = $c->model('CGC::AppUser')->search({email=>$email, validated=>1});
     if(@users){
@@ -70,15 +54,34 @@ sub password_email : Chained('password') PathPart('email')  Args(0){
 	$c->stash->{email} = {
 	    to       => $email,
 	    from     => $c->config->{register_email},
-	    subject  => "CGC Password", 
+	    subject  => "CGC Password Request", 
 	    template => "auth/password_email.tt2",
 	};
 	$c->forward( $c->view('Email::Template') );
-	$c->stash->{message} = "You should be receiving an email shortly describing how to reset your password.";
     }
-    $c->stash->{message} ||= "No CGC account is associated with this email"; 
     $c->stash->{noboiler} = 0;
+    $c->stash->{status} = 'request_sent';
+    $c->stash->{error} = "No CGC account is associated with this email" unless $c->stash->{email};
 }
+
+
+sub password_index : Chained('password') PathPart('index')  Args(0){
+    my ( $self, $c ) = @_;
+    if($c->stash->{token}  = $c->req->param("id")) {
+	my $user = $c->model('CGC::Password')->search({token=>$c->stash->{token} }, {rows=>1})->next;
+	if(!$user || $user->expires < time() ){
+	    if($user){
+		$user->delete();
+		$user->update();
+	    }
+	    
+	    $c->stash->{template} = "shared/generic/message.tt2"; 
+	    $c->stash->{message} = "the link has expired";
+	}
+    }
+}
+
+
 
 
 
@@ -97,6 +100,7 @@ sub password_reset : Chained('password') PathPart('reset')  Args(0){
 	$pass->delete;
 	$user->update();
 	$pass->update();
+	$c->stash->{request} = 'password-reset';
 	$c->stash->{message} = "Your password has been reset. Please login'";
     }
     $c->stash->{message} ||= "The link to reset your password has expired. Please try again.";
@@ -105,9 +109,9 @@ sub password_reset : Chained('password') PathPart('reset')  Args(0){
 
 sub register :Path("/register")  :Args(0){
     my ( $self, $c ) = @_;
-    if ($c->req->params->{inline}){
-	$c->stash->{noboiler} = 1;
-    } elsif (defined $c->req->body_parameters) {
+#    if ($c->req->params->{inline}){
+#	$c->stash->{noboiler} = 1;
+    if (defined $c->req->body_parameters) {
 	$c->stash->{email}     = $c->req->body_parameters->{email};
 	$c->stash->{full_name} = $c->req->body_parameters->{name};
 	$c->stash->{password}  = $c->req->body_parameters->{password}; 
@@ -124,20 +128,19 @@ sub confirm :Path("/confirm")  :Args(0){
     my $user = $c->model('CGC::AppUser')->find($c->req->params->{u});
 #    my $wb   = $c->req->params->{wb};
     
-    $c->stash->{template} = "shared/generic/message.tt2"; 
+    $c->stash->{template} = "auth/account_confirmed.tt2"; 
     
     my $message;
-#    if(($user && !$user->active) || ($user && $wb && !$user->wb_link_confirm) || ( $user && ($user->valid_emails < $user->email_address))) { 
     if (($user && !$user->active) || ( $user && !$user->valid_emails)) { 
 	if(Crypt::SaltedHash->validate("{SSHA}".$c->req->params->{code}, $user->email . "_" . $user->username)) {
 	    $user->validated(1);
 	    $user->active(1);
-	    $message = $message . "Your account is now activated, please login! "; 
+	    $c->stash->{message} = "Your account is now activated, please login! ";		
 	}
 	$user->update();
     } 
     
-    $c->stash->{message} = $message || "This link is not valid or has already expired.";
+    $c->stash->{expired} = $message ? '' :  "This link is not valid or has already expired.";
     $c->forward('App::Web::View::TT');
 }
 
@@ -219,11 +222,10 @@ sub auth_login : Chained('auth') PathPart('login')  Args(0){
 #                 $c->res->redirect($c->uri_for($c->req->path));
 	} else {
 	    $c->log->debug('Login incorrect.'.$email);
-	    $c->stash->{'error_notice'} = 'Login incorrect.';
+	    $c->stash->{template} = "auth/login_failed.tt2";
 	}
     } else {
-	# invalid form input
-	$c->stash->{'error_notice'} = 'Invalid username or password.';
+	$c->stash->{template} = "auth/login_failed.tt2";
     }
 }
 
@@ -530,43 +532,16 @@ sub logout :Path("/logout") :Args(0){
     my ($self, $c) = @_;
     # Clear the user's state
     $c->logout;
-#    $c->stash->{noboiler} = 1;  
-    
     $c->stash->{'template'} = 'auth/logout.tt2';
 #     $c->response->redirect($c->uri_for('/'));
-    $self->reload($c,1) ;
+#    $self->reload($c,1) ;
 #     $c->session_expire_key( __user => 0 );
 }
 
 
-# This is the PRIVATE profile.
 sub profile :Path("/profile") :Args(0) {
     my ( $self, $c ) = @_;
-    $c->stash->{noboiler} = 1;
-    
-    # This PROBABLY belongs in the model.
-    # Fetch accounts that this user has linked to and key them by provider.
-    # could do this with a group by constraint, too.
-    my @accounts = $c->model('CGC::AppOpenID')->search({user_id => $c->user->id});
-    foreach my $account (@accounts) {
-	$c->stash->{linked_accounts}->{$account->provider} = $account;
-    }
-
-    # Twitter information
-    if ($self->is_linked_to_twitter($c)) {
-	
-    }
-    
-    # Facebook information
-    
-    # Google information
-    
-    # Mendeley
-    # my $mendeley = $c->model('Mendeley')->private_api;
-    # $c->stash->{mendeley} = $mendeley;
-    
-
-    
+    $c->stash->{noboiler} = 1;    
     $c->stash->{template} = 'auth/profile.tt2';
 } 
 

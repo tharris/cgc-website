@@ -1,21 +1,7 @@
 /*!
- * WormBase
- * http://wormbase.org/
- *
- * WormBase copyright © 1999-2011 
- * California Institute of Technology, 
- * Ontario Institute for Cancer Research,
- * Washington University at St. Louis, and 
- * The Wellcome Trust Sanger Institute.
- *
- * WormBase is supported by a grant from the 
- * National Human Genome Research Institute at the 
- * US National Institutes of Health # P41 HG02223 and the 
- * British Medical Research Council.
- *
- * author: Abigail Cabunoc 
- *         abigail.cabunoc@oicr.on.ca
- */
+ * Copyright @ 2012.
+ * Todd Harris & Shiran Pasternak
+*/
 
 +function(window, document, undefined){ 
   var location = window.location,
@@ -65,8 +51,10 @@
 //      }
 //      effects();
     }
-    
-    
+ 
+
+
+   
     function histUpdate(history_on){
       var uhc = $jq("#user_history-content");
       
@@ -120,13 +108,31 @@
             });
           }
         });
-    }
-    
+    }	  
+// CGC
+    $jq("a[data-toggle=modal]").click(function (e) {
+	var lv_target = $jq(this).attr('data-target');
+	var href      = $jq(this).attr('href');
+	$jq(lv_target).show();
+        ajaxGet($jq("#modal"),href);
+    });
+     
+//      $jq("#modal").on('hide',function() {
+//	  window.location.href = "/";
+//      })
+
+//CGC
+$jq(function (){ 
+   $jq("#popover").popover();  
+});  
+
+
     function pageInit(){
       var personSearch = $jq("#person-search"),
           colDropdown = $jq("#column-dropdown");
       
       operator();
+    
 
       $jq("#print").click(function() {
         var layout = location.hash.replace('#',''),
@@ -192,6 +198,12 @@
             });
           }
         });
+
+
+
+
+
+
 
       $jq("#nav-min").click(function() {
         var nav = $jq(".navigation-min").add("#navigation"),
@@ -545,43 +557,6 @@
           if(callback){ callback(); }
         }
       });
-    }
-    
-      function operator(){
-        var opTimer,
-            opLoaded = false;
-        $jq('#operator-box').click(function(){ 
-          var opBox = $jq(this);
-          if(!(opLoaded)){
-            ajaxGet($jq("#operator-box"), "/rest/livechat", 0);
-            opLoaded = true;
-          }
-          (opBox.hasClass("minimize")) ? opBox.animate({width:"9em"}).children().show() : opBox.animate({width:"1.5em"}).children().hide();
-          opBox.toggleClass("minimize");
-        });
-        
-        $jq('.operator').click(function() { 
-          if($jq(this).attr("rel")) {
-            $jq.post("/rest/livechat?open=1",function() {
-              location.href="/tools/operator";
-            });
-          }else {
-            var opBox = $jq("#operator-box");
-            ajaxGet(opBox, "/rest/livechat", 0);
-            opLoaded = true;
-            if(opBox.hasClass("minimize"))
-                opBox.removeClass("minimize").animate({width:"9em"}).children().show();
-            opTimer = setTimeout(function() {
-              opBox.addClass("minimize").animate({width:"1.5em"}).children().hide();
-            }, 4e3)
-          }
-        }); 
-        
-        $jq("#issue-box").click(function(){
-          var isBox = $jq(this);
-          isBox.toggleClass("minimize").children().toggle();
-          isBox.animate({width: (isBox.hasClass("minimize")) ? "1em" : "14em"})
-        });
     }
     
   function hideTextOnFocus(selector){
@@ -1322,8 +1297,8 @@ var Scrolling = (function(){
   }
 
   
-  function validate_fields(email,username, password, confirm_password, wbemail){
-      if( (email.val() =="") && (!wbemail || wbemail.val() == "")){
+  function validate_fields(email,username, password, confirm_password){
+      if (email.val() ==""){
                 email.focus().addClass("ui-state-error");return false;
       } else if( email.val() && (validate_email(email.val(),"Not a valid email address!")==false)) {
                 email.focus().addClass("ui-state-error");return false;
@@ -1971,6 +1946,12 @@ function setupCytoscape(data, types){
       reloadWidget: reloadWidget
     }
   })();
+
+
+
+
+
+
 
 
 
