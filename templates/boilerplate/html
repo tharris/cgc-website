@@ -31,7 +31,7 @@
     <script>
     	var Scripts = [
     		"/js/bootstrap/jquery.js",
-    		"/js/main.js",
+    		"/js/jquery/jquery-ui.js",
 			"/js/bootstrap/bootstrap-transition.js",
 			"/js/bootstrap/bootstrap-alert.js",
 			"/js/bootstrap/bootstrap-modal.js",
@@ -43,15 +43,16 @@
 			"/js/bootstrap/bootstrap-button.js",
 			"/js/bootstrap/bootstrap-collapse.js",
 			"/js/bootstrap/bootstrap-typeahead.js",
-			"/js/bootstrap/bootstrap-carousel.js"
+			"/js/bootstrap/bootstrap-carousel.js",
+    		"/js/main.js"
     	];
 		var s = document.getElementsByTagName('script')[0];
     	for (var i = 0; i < Scripts.length; i++) {
 			var se = document.createElement('script');
 			se.src = Scripts[i];
 			s.parentNode.insertBefore(se, s);
+			s = se;
 		}
-		google.load("jqueryui", "1.8.16");
 		[% INCLUDE google_analytics %]
     </script>
 
