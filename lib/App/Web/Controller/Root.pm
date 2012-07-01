@@ -132,57 +132,6 @@ sub issue_rss {
 }
  
 
- 
-sub me :Path("/me") Args(0) {
-    my ( $self, $c ) = @_;
-    $c->stash->{'section'} = 'me';
-    $c->stash->{'class'} = "me";
-    $c->stash->{template} = "me.tt2";
-} 
-
-
-
-#######################################################
-#
-#     SEARCHES
-#
-#######################################################
-
-# Every class will have a basic and advanced search
-# at /class/search/basic
-# Alternatively, this should be /search/basic/class
-# and be implemented only once.
-sub register_basic_search {
-    my ($self,$c,$page) = @_;
-    # Basic search
-    my $basic_search_code = sub {
-	my ($self,$c) = @_;
-	
-	# Instantiate the Model - we need it for dynamically selecting examples.
-	my $class = $c->model(ucfirst($page));
-	
-	$c->stash->{template} = "search/basic.tt2";
-	$c->stash->{page}     = $page;   # maybe key should be class instead?
-	$c->forward('App::Web::View::TT');
-    };
-    
-    my $basic_search_action = $self->create_action(
-	name       => "basic_search",
-	reverse    => "$page/basic_search",
-	attributes => {
-#							 Chained  => ["/$page/get_params"],
-	    Path => ["/$page/basic_search"],
-#							 Args     => [0],
-	},
-	namespace => $page,
-	code      => \&$basic_search_code,
-	class     => 'App::Web::Controller::' . ucfirst($page),
-	);
-    $c->dispatcher->register( $c, $basic_search_action ) or warn "Couldn't register basic search action for $page: $!";	
-}
-
-
-
 =head2 end
     
     Attempt to render a view, if needed.

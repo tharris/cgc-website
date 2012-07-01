@@ -73,7 +73,8 @@ __PACKAGE__->set_primary_key("role_id");
 
 # Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-29 16:29:40
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JIEDPnlICvnOuvDBH6Xvsw
-
+__PACKAGE__->has_many(users_to_roles=>'CGC::Schema::Result::AppUsersToRole', 'role_id');
+__PACKAGE__->many_to_many(users     => 'users_to_roles', 'user', ,{ where => { active => 1 }}); 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;

@@ -69,6 +69,9 @@ CREATE TABLE `genotype` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+# Dump of table gene
+# ------------------------------------------------------------
+
 DROP TABLE IF EXISTS `gene`;
 
 CREATE TABLE `gene` (
@@ -80,6 +83,9 @@ CREATE TABLE `gene` (
   `chromosome`  varchar(20) DEFAULT NULL,  
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
 
 DROP TABLE IF EXISTS `variation`;
 
@@ -363,8 +369,7 @@ CREATE TABLE `app_roles` (
   PRIMARY KEY (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
-INSERT INTO `app_roles` VALUES ('1','admin'),('2','manager'),('3','developer'),('4','user');
+INSERT INTO `app_roles` VALUES ('1','admin'),('2','manager'),('3','employee'),('4','user');
 
 # Dump of table app_sessions
 # ------------------------------------------------------------
@@ -394,7 +399,7 @@ CREATE TABLE `app_starred` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-# Dump of table user_users
+# Dump of table app_users
 # ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `app_users`;

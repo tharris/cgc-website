@@ -217,7 +217,8 @@ sub auth_login : Chained('auth') PathPart('login')  Args(0){
 	    
 	    $c->log->debug('Username login was successful. '. $c->user->get("username") . $c->user->get("password"));
 	    #                 $self->reload($c);
-	    
+	    # Maybe have a login_successful.tt2 modal template with timed redirect?
+
 	    $c->res->redirect($c->uri_for('/')->path);
 #                 $c->res->redirect($c->uri_for($c->req->path));
 	} else {
@@ -490,7 +491,7 @@ sub auth_local {
                         me\@todd\.co                   |
                         shiranpasternak\@gmail\.com    |
 	    }x) {
-	    my $role=$c->model('CGC::AppRole')->find({role=>"admin"}) ;
+	    my $role=$c->model('CGC::AppRole')->find({role => 'admin'}) ;
 	    $c->model('CGC::AppUsersToRole')->find_or_create({user_id=>$user->id,role_id=>$role->id});
 	}
 	

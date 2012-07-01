@@ -4,12 +4,12 @@ use Ace;
 use strict;
 
 
-my $db = Ace->connect(-host => 'localhost',-port=>'2005');
-my @genes = $db->fetch(Gene => '*');
+my $db       = Ace->connect(-host => 'localhost',-port=>'2005');
+my $iterator = $db->fetch_many(Gene => '*');
 
 my $version = $db->version;
 open OUT,">$version-wormbase_genes.txt";
-foreach my $gene (@genes) {
+foreach my $gene ($i->next) {
     my $name = $gene->Public_name;
     my $chrom = get_chromosome($gene);
     print OUT join("\t",$gene,$name,$chrom),"\n";

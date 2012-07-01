@@ -1,0 +1,46 @@
+Role-based Authorization
+
+The role-based authorization built into the app lets us easily
+provide different views based on the status of the user. Here's
+how it works.
+
+Available Roles:
+
+* admin 
+  App developers. Have full privileges plus dashboard panels
+  for debugging and performance tuning.
+
+* manager 
+  A senior user, such as a principal investigator. Managers 
+  have access to reporting and statistics.
+
+* employee
+  A semi-privileged member of the business or lab. Employees can
+  enter and edit data.
+
+* users 
+  End users. Can create an account for themself and place order.
+
+
+Where are roles defined?
+
+* schema/cgc.sql
+
+
+How are the ancestral admin users specified?
+
+* During database creation in schema/cgc.sql
+* Dynamically based on specific email addresses in App::Web::Controller::Auth.
+
+
+How do I make use of roles in templates to conditionally display content?
+
+    [% IF c.check_user_role('admin') %]
+         You're awesome, admin! Have an awesome day, m'kay?
+    [% END %]
+
+
+What else?
+Checkout Catalyst::Plugin::Authorization::Role for additional cool stuff. 
+For example, we may want to restrict by role access to specific actions.
+   

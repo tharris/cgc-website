@@ -1,3 +1,9 @@
+<script>
+$jq(function (){ 
+  $jq(#modal).modal.('show');
+})
+</script>
+
 [% WRAPPER modal title="Account Confirmed!" %]
 
   [% WRAPPER modal_body %]

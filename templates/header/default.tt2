@@ -36,19 +36,14 @@
 	       <div class="nav-collapse pull-right">
 		<ul class="nav">
                    
-                    <li> <a href="[% c.uri_for('/me') %]" id="section-me" class="[% IF(ref=='me'); 'selected'; END;%]">Welcome, [% c.user.username %]!<span href="/me" id="bench-status"></span></a></li>
-<li><a class="btn btn-inverse" data-toggle="modal" data-target="#modal" href="/logout">Logout</a></li>
+                    <li> <a href="[% c.req.base %]user/[% c.user.user_id %]/profile" id="section-user" class="[% IF(ref=='me'); 'selected'; END;%]">Welcome, [% c.user.username %]!<span href="/me" id="bench-status"></span>
+                         </a>
+                         </li>
+                    <li><a class="btn btn-inverse" data-toggle="modal" data-target="#modal" href="/logout">Logout</a></li>
 
 		    </ul>
                 </div>
           [% ELSE %]
-<!--
-              <li id="login-box"><a id="login">Login</a>
-                  <ul class="dropdown ui-corner-all">
-                    [%# PROCESS auth/login.tt2 %]
-                  </ul>
-              </li>
--->
 
 	    <form method="post" action="/auth/login" class="navbar-form pull-right">
 	    <!--
@@ -71,8 +66,5 @@
 
 
     <div class="container" id="content">
-
-
-
         
 

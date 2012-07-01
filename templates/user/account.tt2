@@ -4,24 +4,7 @@
 </script>
 [% END %]
   
-  [% IF c.check_user_roles('admin') %]
-    [% widgets.push({ id    = 'registered_users',
-         	      title = 'Registered Users',
-                      href  =  c.uri_for('/rest','widget','admin','registered_users'),
-                      type  = "me"
-                    });
-	widgets.push({ id    = 'system_status',
-         	      title = 'System Status',
-                      href  =  c.uri_for('/rest','widget','admin','system_status'),
-                      type  = "me"
-                    });
-    %]
-  [% END %]
  
-  [%# PROCESS "shared/sidebar_structure.tt2" widgets=widgets layout="1-0-5"%]
-
-
-
    <div class="container-fluid">
 
       <div class="row-fluid">
@@ -39,23 +22,23 @@
               [% END %]
 
               [% IF c.check_user_roles('admin') %]
-                    <li class="nav-header"><i class="icon-user"></i> Orders</li>
-                    <li><a href="#"><i class="icon-inbox">Pending Orders</a></li>
-                    <li><a href="#"><i class="icon-inbox">Recently Shipped</a></li>
+                    <li class="nav-header">Orders</li>
+                    <li><a href="#"><i class="icon-inbox"></i>Pending Orders</a></li>
+                    <li><a href="#"><i class="icon-inbox"></i>Recently Shipped</a></li>
 	      [% END %]
 
               [% IF c.check_user_roles('admin') %]
-                    <li class="nav-header"><i class="icon-user"></i> Users</li>
-                    <li><a href="#"><i class="icon-user"> Registered users</a></li>
+                    <li class="nav-header">Users</li>
+                    <li><a href="#"><i class="icon-user"></i> Registered users</a></li>
               [% END %]
 
               [% IF c.check_user_roles('admin') %]
-                    <li class="nav-header"></i> Reports</li>
-                    <li><a href="#"><i class="icon-eye-open"> Most popular strains</a></li>
-                    <li><a href="#"><i class="icon-eye-open"> Most active labs</a></li>
-                    <li><a href="#"><i class="icon-eye-open"> Most active users</a></li>
-                    <li><a href="#"><i class="icon-eye-open"> Year-to-date statistics</a></li>
-                    <li><a href="#"><i class="icon-eye-open"> All-time statistics</a></li>
+                    <li class="nav-header"> Reports</li>
+                    <li><a href="#"><i class="icon-eye-open"></i> Most popular strains</a></li>
+                    <li><a href="#"><i class="icon-eye-open"></i> Most active labs</a></li>
+                    <li><a href="#"><i class="icon-eye-open"></i> Most active users</a></li>
+                    <li><a href="#"><i class="icon-eye-open"></i> Year-to-date statistics</a></li>
+                    <li><a href="#"><i class="icon-eye-open"></i> All-time statistics</a></li>
               [% END %]
             </ul>
 

@@ -109,11 +109,13 @@
           }
         });
     }	  
+
+
 // CGC
     $jq("a[data-toggle=modal]").click(function (e) {
-	var lv_target = $jq(this).attr('data-target');
+	var target = $jq(this).attr('data-target');
 	var href      = $jq(this).attr('href');
-	$jq(lv_target).show();
+	$jq(target).show();
         ajaxGet($jq("#modal"),href);
     });
      
@@ -121,7 +123,10 @@
 //	  window.location.href = "/";
 //      })
 
-//CGC
+      $jq('.dropdown-toggle').dropdown()
+
+
+//CGC - not currently in use
 $jq(function (){ 
    $jq("#popover").popover();  
 });  

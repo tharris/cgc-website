@@ -1,6 +1,0 @@
-This directory contains sql commands for creating and interacting with back end
-MySQL databases that drive the CGC website.
-
-Typical usage:
-
-mysql -u USER -pPASSWORD < file.sql

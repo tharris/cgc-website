@@ -1,0 +1,20 @@
+[% IF c.stash.notify %]
+<script>
+  displayNotification("[% c.stash.notify %]");
+</script>
+[% END %]
+
+
+
+
+[% IF c.user_exists %]
+   <h2>[% c.user.username %] </h2>
+<p>
+This is the public user profile. Should display lab information. Maybe number of strains ordered?
+</p>
+   
+[% ELSE %]
+       <div class="alert">
+           <strong>Whoops!</strong> We couldn't find that user.     
+       </div>
+[% END %]
