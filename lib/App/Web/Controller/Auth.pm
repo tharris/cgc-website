@@ -112,10 +112,10 @@ sub register :Path("/register")  :Args(0){
 #    if ($c->req->params->{inline}){
 #	$c->stash->{noboiler} = 1;
     if (defined $c->req->body_parameters) {
-	$c->stash->{email}     = $c->req->body_parameters->{email};
-	$c->stash->{full_name} = $c->req->body_parameters->{name};
-	$c->stash->{password}  = $c->req->body_parameters->{password}; 
-	$c->stash->{redirect}  = $c->req->body_parameters->{redirect}; 
+		$c->stash->{email}     = $c->req->body_parameters->{email};
+		$c->stash->{full_name} = $c->req->body_parameters->{name};
+		$c->stash->{password}  = $c->req->body_parameters->{password}; 
+		$c->stash->{redirect}  = $c->req->body_parameters->{redirect}; 
     }
     $c->stash->{template} = 'auth/register.tt2';
 #     $c->stash->{'continue'}=$c->req->params->{continue};

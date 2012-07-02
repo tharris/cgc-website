@@ -16,13 +16,17 @@
 
 	// Initialization
 	$(function () {
-		$('body').on('click', '[data-uri]', function (e) {
+		$('body').on('click.subdoc.data-api', '[data-uri]', function (e) {
 			var $this = $(this);
-			var target = $this.data('target');
-			var uri    = $this.data('uri');
+			var href;
+			var $target = $($this.data('target') ||
+				(href = $this.attr('href')) &&
+				 	href.replace(/.*(?=#[^\s]+$)/, '')); //strip for ie7	
+			var uri = $this.data('uri');
 			$.ajax(uri, {
+				data: { inline: true },			
 				success: function (data) {
-					$(target).html(data);
+					$target.html(data);
 				}
 			});
 		});

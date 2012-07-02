@@ -35,8 +35,12 @@ sub fields {
     return @fields;
 }
 
-
-
-
+# Provide ?inline system-wide
+sub auto :Private {
+	my ($self, $c) = @_;
+	# if ($c->req->params->{inline}) {
+	#     $c->stash->{noboiler} = 1;
+	# }
+}
 
 1;
