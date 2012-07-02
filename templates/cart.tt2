@@ -12,12 +12,9 @@
 	[% END %]
 </table>
 <a class="btn" href="#">Empty cart</a>
-<a class="btn btn-primary" href="#">Checkout</a>
+<a class="btn btn-primary" href="#"
+	data-uri="/register"
+	data-target="#checkout">Checkout</a>
 </div>
 
-<script src="/js/bootstrap/jquery.js"></script>
-<script src="/js/bootstrap/bootstrap-tooltip.js"></script>
-<script src="/js/bootstrap/bootstrap-popover.js"></script>
-<script>
-	$('a[rel="popover"]').popover({delay: { show: 500 }});
-</script>
+<div id="checkout"></div>

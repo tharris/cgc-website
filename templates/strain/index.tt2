@@ -46,11 +46,6 @@
 </div>
 [% END %]
 
-[% # FIXME: These JS should already have been loaded and injected (in the
-   # footer), but get errors without loading them here. %]
-<script src="/js/bootstrap/jquery.js"></script>
-<script src="/js/bootstrap/bootstrap-typeahead.js"></script>
-
 <script>
     $(function () {
         $.ajax({
