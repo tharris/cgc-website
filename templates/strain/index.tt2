@@ -1,27 +1,47 @@
 [% DEFAULT strain = rest %]
 <div class="span6">
-<h2>Strain</h2>
-<p>Search and view strains.</p>
-<div class="well">
-    <input id="search-strain" type="text" class="span3"/>
-	<span class="help-inline"><small>Example: <b>CA257</b>, <b>RGD1</b>, <b>N2</b></small></span>
-	<span class="help-block">Start typing a strain name</span>
+	<h2>Strain</h2>
+	<p>Search and view strains.</p>
+	<div class="well">
+		<input id="search-strain" type="text" class="span3"
+			[% IF strain %] value="[% strain.name %]"
+			[% ELSE %] placeholder="Start typing a strain name..."
+			[% END %]
+		/>
+		<span class="help-inline" style="margin-bottom: 9px"><small>Example: <b>CA257</b>, <b>RGD1</b>, <b>N2</b></small></span>
+	</div>
 </div>
 
 [% IF strain %]
+<div class="well span6">
 	<table id="strain-view" class="table table-striped">
+	<thead><h3>Strain Information</h3></thead>
 	<tbody>
 	[% FOREACH key IN [ 'name', 'species', 'genotype', 'mutagen',
 		'outcrossed', 'received', 'made_by' ] %]
 		<tr>
-			<th>[% key FILTER ucfirst %]</th>
+			<th>[% key.replace('_', ' ') FILTER ucfirst %]</th>
 			<td>[% strain.$key %]</td>
 		</tr>
 	[% END %]
 	</tbody>
 	</table>
-[% END %]
+	<p><a class="btn" data-toggle="modal" href="#orderForm">Order strain "<b>[% strain.name %]</b>"</a></p>
 </div>
+<div class="modal hide fade" id="orderForm">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">×</button>
+		<h3>Order strain [% strain.name %]</h3>
+	</div>
+	<div class="modal-body">
+		<p>You are about to order the strain</p>
+	</div>
+	<div class="modal-footer">
+		<a href="#" class="btn" data-dismiss="modal">Cancel</a>
+		<a href="#" class="btn btn-primary">Add to Cart</a>
+	</div>
+</div>
+[% END %]
 
 [% # FIXME: These JS should already have been loaded and injected (in the
    # footer), but get errors without loading them here. %]
