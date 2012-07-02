@@ -18,12 +18,12 @@ __PACKAGE__->config(
     'default'          => 'text/x-yaml',
     'stash_key'        => 'rest',
     'map'              => {
-	'text/x-yaml'      => 'YAML',
-	'text/html'        => 'YAML::HTML',
-	'text/xml'         => 'XML::Simple',
-	'application/json' => 'JSON',
+		'text/x-yaml'      => 'YAML',
+		'text/html'        => [ 'View', 'TT' ],
+		'text/xml'         => 'XML::Simple',
+		'application/json' => 'JSON',
     }
-    );
+);
 
 =head1 NAME
 
@@ -1334,7 +1334,28 @@ sub field_GET {
     );
 }
 
+sub cart :Path('/cart') :Args(1) :ActionClass('REST') {}
 
+sub cart_GET {
+	my ($self, $c, $cart_id) = @_;
+	my %carts = (
+		601 => {
+			strains => [ 'CA257', 'N2', 'RGD1' ],
+		},
+		602 => {
+			strains => [ 'CR1', 'GF63', 'JJ1237' ],
+		}
+	);
+	$c->stash->{template} = 'cart.tt2';
+	my $cart = $carts{$cart_id};
+	if (!defined $cart) {
+		$c->forward('404.tt2');
+	}
+	$self->status_ok($c, entity => $cart);
+}
+
+sub cart_POST {
+}
 
 
 
