@@ -98,7 +98,7 @@ Related object: L<CGC::Schema::Result::Gene>
 __PACKAGE__->belongs_to(
   "gene",
   "CGC::Schema::Result::Gene",
-  { gene_id => "gene_id" },
+  { id => "gene_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
@@ -113,13 +113,13 @@ Related object: L<CGC::Schema::Result::Variation>
 __PACKAGE__->belongs_to(
   "variation",
   "CGC::Schema::Result::Variation",
-  { variation_id => "variation_id" },
+  { id => "variation_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 00:15:37
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xLLpRkQgOK4/QNKYGdVZsg
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 12:52:37
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jMKtDqDOCxSa1+VLjXcRnw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

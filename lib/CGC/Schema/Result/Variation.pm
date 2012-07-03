@@ -38,7 +38,7 @@ __PACKAGE__->table("variation");
 
 =head1 ACCESSORS
 
-=head2 variation_id
+=head2 id
 
   data_type: 'integer'
   extra: {unsigned => 1}
@@ -51,7 +51,7 @@ __PACKAGE__->table("variation");
   is_nullable: 1
   size: 20
 
-=head2 public_name
+=head2 name
 
   data_type: 'varchar'
   is_nullable: 1
@@ -97,7 +97,7 @@ __PACKAGE__->table("variation");
 =cut
 
 __PACKAGE__->add_columns(
-  "variation_id",
+  "id",
   {
     data_type => "integer",
     extra => { unsigned => 1 },
@@ -106,7 +106,7 @@ __PACKAGE__->add_columns(
   },
   "wormbase_id",
   { data_type => "varchar", is_nullable => 1, size => 20 },
-  "public_name",
+  "name",
   { data_type => "varchar", is_nullable => 1, size => 30 },
   "chromosome",
   { data_type => "varchar", is_nullable => 1, size => 20 },
@@ -136,27 +136,27 @@ __PACKAGE__->add_columns(
 
 =over 4
 
-=item * L</variation_id>
+=item * L</id>
 
 =back
 
 =cut
 
-__PACKAGE__->set_primary_key("variation_id");
+__PACKAGE__->set_primary_key("id");
 
 =head1 UNIQUE CONSTRAINTS
 
-=head2 C<variation_public_name>
+=head2 C<variation_name_unique>
 
 =over 4
 
-=item * L</public_name>
+=item * L</name>
 
 =back
 
 =cut
 
-__PACKAGE__->add_unique_constraint("variation_public_name", ["public_name"]);
+__PACKAGE__->add_unique_constraint("variation_name_unique", ["name"]);
 
 =head1 RELATIONS
 
@@ -171,7 +171,7 @@ Related object: L<CGC::Schema::Result::AtomizedGenotype>
 __PACKAGE__->has_many(
   "atomized_genotypes",
   "CGC::Schema::Result::AtomizedGenotype",
-  { "foreign.variation_id" => "self.variation_id" },
+  { "foreign.variation_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
@@ -226,7 +226,7 @@ Related object: L<CGC::Schema::Result::Variation2gene>
 __PACKAGE__->has_many(
   "variation2genes",
   "CGC::Schema::Result::Variation2gene",
-  { "foreign.variation_id" => "self.variation_id" },
+  { "foreign.variation_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
@@ -241,8 +241,8 @@ Composing rels: L</variation2genes> -> gene
 __PACKAGE__->many_to_many("genes", "variation2genes", "gene");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 02:46:15
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:XJne0DloWmwPaUBsoqq2TQ
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 12:52:37
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wu4SxIroZspjjqGLVQy+mQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

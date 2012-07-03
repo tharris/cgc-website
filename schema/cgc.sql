@@ -75,41 +75,60 @@ CREATE TABLE `freezer_sample` (
 DROP TABLE IF EXISTS `gene`;
 
 CREATE TABLE `gene` (
-  `gene_id`          int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id`          int(11) unsigned NOT NULL AUTO_INCREMENT,
   `wormbase_id` varchar(20) DEFAULT NULL,
-  `public_name` varchar(30) DEFAULT NULL,
+  `name`        varchar(30) DEFAULT NULL,
   `locus_name` varchar(30) DEFAULT NULL,
   `sequence_name` varchar(30) DEFAULT NULL,
   `chromosome`  varchar(20) DEFAULT NULL,  
   `gmap` float(7,5) DEFAULT NULL,
   `pmap` int(8) unsigned DEFAULT NULL,
   `species_id` int(8) unsigned DEFAULT NULL,
-  PRIMARY KEY (`gene_id`),
-  UNIQUE KEY `gene_wormbase_id` (`wormbase_id`),
+  `gene_class_id` int(8) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `gene_wormbase_id_unique` (`wormbase_id`),
+  UNIQUE KEY `gene_name_unique` (`name`),
   KEY `gene_species_fk` (`species_id`),
-  CONSTRAINT `gene_species_fk` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`)
+  KEY `gene_class_fk` (`gene_class_id`),
+  CONSTRAINT `gene_species_fk` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`),
+  CONSTRAINT `gene_gene_class_fk` FOREIGN KEY (`gene_class_id`) REFERENCES `gene_class` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+DROP TABLE IF EXISTS `gene_class`;
+
+CREATE TABLE `gene_class` (
+  `id`   int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) NOT NULL DEFAULT '',
+  `description` mediumtext,
+  `designating_laboratory` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `gene_class_name_unique` (`name`)
+  KEY `gene_class_designating_laboratory_fk` (`laboratory_id`),
+  CONSTRAINT gene_class_designating_laboratory_fk` FOREIGN KEY (`laboratory_id`) REFERENCES `laboratory` (`id`),
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `variation`;
 
 CREATE TABLE `variation` (
-  `variation_id`          int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id`          int(11) unsigned NOT NULL AUTO_INCREMENT,
   `wormbase_id` varchar(20) DEFAULT NULL,
-  `public_name` varchar(30) DEFAULT NULL,
+  `name` varchar(30) DEFAULT NULL,
   `chromosome`  varchar(20) DEFAULT NULL,
   `gmap` float(7,5) DEFAULT NULL,
   `pmap` int(8) unsigned DEFAULT NULL,
   `species_id` int(11) unsigned DEFAULT NULL,
+  `gene_class_id` int(11) unsigned DEFAULT NULL,
   `strain_id` int(11) unsigned DEFAULT NULL,
   `is_reference_allele` int(1) DEFAULT NULL,
-  PRIMARY KEY (`variation_id`),
-  UNIQUE KEY `variation_public_name` (`public_name`),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `variation_name_unique` (`name`),
   KEY `variation_species_fk` (`species_id`),
+  KEY `variation_gene_class_fk` (`gene_class_id`),
   CONSTRAINT `variation_species_fk` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`),
-  CONSTRAINT `variation_strain_fk` FOREIGN KEY (`strain_id`) REFERENCES `strain` (`id`)
+  CONSTRAINT `variation_strain_fk` FOREIGN KEY (`strain_id`) REFERENCES `strain` (`id`),
+  CONSTRAINT `variation_gene_class_fk` FOREIGN KEY (`gene_class_id`) REFERENCES `gene_class` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -123,8 +142,8 @@ CREATE TABLE `variation2gene` (
   PRIMARY KEY (`variation_id`,`gene_id`),
   KEY `variation2gene_gene_id_fk` (`gene_id`),
   KEY `variation2gene_variation_id_fk` (`variation_id`),
-  CONSTRAINT `variation2gene_gene_id_fk` FOREIGN KEY (`gene_id`) REFERENCES `gene` (`gene_id`),
-  CONSTRAINT `variation2gene_variation_id_fk` FOREIGN KEY (`variation_id`) REFERENCES `variation` (`variation_id`)
+  CONSTRAINT `variation2gene_gene_id_fk` FOREIGN KEY (`gene_id`) REFERENCES `gene` (`id`),
+  CONSTRAINT `variation2gene_variation_id_fk` FOREIGN KEY (`variation_id`) REFERENCES `variation` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -138,8 +157,8 @@ CREATE TABLE `atomized_genotype` (
   PRIMARY KEY (`id`),
   KEY `atomized_genotype_gene_id_fk` (`gene_id`),
   KEY `atomized_genotype_variation_id_fk` (`variation_id`),
-  CONSTRAINT `atomized_genotype_gene_id_fk` FOREIGN KEY (`gene_id`) REFERENCES `gene` (`gene_id`),
-  CONSTRAINT `atomized_genotype_variation_id_fk` FOREIGN KEY (`variation_id`) REFERENCES `variation` (`variation_id`)
+  CONSTRAINT `atomized_genotype_gene_id_fk` FOREIGN KEY (`gene_id`) REFERENCES `gene` (`id`),
+  CONSTRAINT `atomized_genotype_variation_id_fk` FOREIGN KEY (`variation_id`) REFERENCES `variation` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -178,6 +197,7 @@ CREATE TABLE `laboratory` (
   `strain_designation` varchar(5) DEFAULT NULL,
   `address1` varchar(255) DEFAULT NULL,
   `address2` varchar(255) DEFAULT NULL,
+#   `street_address` varchar(255) DEFAULT NULL,
   `state` char(2) DEFAULT NULL,
   `zip` decimal(5,0) unsigned DEFAULT NULL,
   `country` varchar(255) DEFAULT NULL,
@@ -186,8 +206,38 @@ CREATE TABLE `laboratory` (
   `city` varchar(255) DEFAULT NULL,
   `website` varchar(255) DEFAULT NULL,
   `date_assigned` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+UNIQUE KEY `laboratory_designation_unique` (`laboratory_designation`)	
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `laboratory2gene_class`;
+
+CREATE TABLE `laboratory2gene_class` (
+  `laboratory_id` int(11) unsigned NOT NULL,
+  `gene_class_id`      int(11) unsigned NOT NULL,
+  PRIMARY KEY (`laboratory_id`,`gene_class_id`),
+  KEY `laboratory2gene_class_gene_class_id_fk` (`gene_class_id`),
+  KEY `laboratory2gene_class_laboratory_id_fk` (`laboratory_id`),
+  CONSTRAINT `laboratory2gene_class_gene_class_id_fk` FOREIGN KEY (`gene_class_id`) REFERENCES `gene_class` (`id`),
+  CONSTRAINT `laboratory2gene_class_laboratory_id_fk` FOREIGN KEY (laboratory_id`) REFERENCES `laboratory` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+
+DROP TABLE IF EXISTS `laboratory2variation`;
+
+CREATE TABLE `laboratory2variation` (
+  `laboratory_id` int(11) unsigned NOT NULL,
+  `variation_id`  int(11) unsigned NOT NULL,
+  PRIMARY KEY (`laboratory_id`,`variation_id`),
+  KEY `laboratory2variation_variation_id_fk` (`variation_id`),
+  KEY `laboratory2variation_laboratory_id_fk` (`laboratory_id`),
+  CONSTRAINT `laboratory2variation_variation_id_fk` FOREIGN KEY (`variation_id`) REFERENCES `variation` (`id`),
+  CONSTRAINT `laboratory2variation_laboratory_id_fk` FOREIGN KEY (laboratory_id`) REFERENCES `laboratory` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 
 
@@ -302,7 +352,7 @@ CREATE TABLE `strain` (
   `reference_strain` varchar(50) DEFAULT NULL,
   `sample_history`  varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `strain_name` (`name`),
+  UNIQUE KEY `strain_name_unique` (`name`),
 #  KEY `strain_genotype_fk` (`genotype_id`),
   KEY `strain_mutagen_fk` (`mutagen_id`),
   KEY `strain_species_fk` (`species_id`),

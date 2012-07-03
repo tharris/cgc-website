@@ -38,7 +38,7 @@ __PACKAGE__->table("gene");
 
 =head1 ACCESSORS
 
-=head2 gene_id
+=head2 id
 
   data_type: 'integer'
   extra: {unsigned => 1}
@@ -51,7 +51,7 @@ __PACKAGE__->table("gene");
   is_nullable: 1
   size: 20
 
-=head2 public_name
+=head2 name
 
   data_type: 'varchar'
   is_nullable: 1
@@ -94,10 +94,17 @@ __PACKAGE__->table("gene");
   is_foreign_key: 1
   is_nullable: 1
 
+=head2 gene_class_id
+
+  data_type: 'integer'
+  extra: {unsigned => 1}
+  is_foreign_key: 1
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
-  "gene_id",
+  "id",
   {
     data_type => "integer",
     extra => { unsigned => 1 },
@@ -106,7 +113,7 @@ __PACKAGE__->add_columns(
   },
   "wormbase_id",
   { data_type => "varchar", is_nullable => 1, size => 20 },
-  "public_name",
+  "name",
   { data_type => "varchar", is_nullable => 1, size => 30 },
   "locus_name",
   { data_type => "varchar", is_nullable => 1, size => 30 },
@@ -125,23 +132,42 @@ __PACKAGE__->add_columns(
     is_foreign_key => 1,
     is_nullable => 1,
   },
+  "gene_class_id",
+  {
+    data_type => "integer",
+    extra => { unsigned => 1 },
+    is_foreign_key => 1,
+    is_nullable => 1,
+  },
 );
 
 =head1 PRIMARY KEY
 
 =over 4
 
-=item * L</gene_id>
+=item * L</id>
 
 =back
 
 =cut
 
-__PACKAGE__->set_primary_key("gene_id");
+__PACKAGE__->set_primary_key("id");
 
 =head1 UNIQUE CONSTRAINTS
 
-=head2 C<gene_wormbase_id>
+=head2 C<gene_name_unique>
+
+=over 4
+
+=item * L</name>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("gene_name_unique", ["name"]);
+
+=head2 C<gene_wormbase_id_unique>
 
 =over 4
 
@@ -151,7 +177,7 @@ __PACKAGE__->set_primary_key("gene_id");
 
 =cut
 
-__PACKAGE__->add_unique_constraint("gene_wormbase_id", ["wormbase_id"]);
+__PACKAGE__->add_unique_constraint("gene_wormbase_id_unique", ["wormbase_id"]);
 
 =head1 RELATIONS
 
@@ -166,8 +192,28 @@ Related object: L<CGC::Schema::Result::AtomizedGenotype>
 __PACKAGE__->has_many(
   "atomized_genotypes",
   "CGC::Schema::Result::AtomizedGenotype",
-  { "foreign.gene_id" => "self.gene_id" },
+  { "foreign.gene_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 gene_class
+
+Type: belongs_to
+
+Related object: L<CGC::Schema::Result::GeneClass>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "gene_class",
+  "CGC::Schema::Result::GeneClass",
+  { id => "gene_class_id" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE",
+  },
 );
 
 =head2 species
@@ -201,7 +247,7 @@ Related object: L<CGC::Schema::Result::Variation2gene>
 __PACKAGE__->has_many(
   "variation2genes",
   "CGC::Schema::Result::Variation2gene",
-  { "foreign.gene_id" => "self.gene_id" },
+  { "foreign.gene_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
@@ -216,8 +262,8 @@ Composing rels: L</variation2genes> -> variation
 __PACKAGE__->many_to_many("variations", "variation2genes", "variation");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 02:46:15
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:GvmoyspRUjwQPInVO/wqTA
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 12:52:37
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:t6b7wwU4+E1MLAaeWmpQUA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -219,7 +219,7 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 UNIQUE CONSTRAINTS
 
-=head2 C<strain_name>
+=head2 C<strain_name_unique>
 
 =over 4
 
@@ -229,7 +229,7 @@ __PACKAGE__->set_primary_key("id");
 
 =cut
 
-__PACKAGE__->add_unique_constraint("strain_name", ["name"]);
+__PACKAGE__->add_unique_constraint("strain_name_unique", ["name"]);
 
 =head1 RELATIONS
 
@@ -339,8 +339,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 02:12:27
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:KG9C7IDzH/mghMCyKQBOLw
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 12:52:37
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1DCn+enWIfza8tft656Eqw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

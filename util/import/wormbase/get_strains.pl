@@ -3,9 +3,11 @@
 use Ace;
 use strict;
 
+# Fetch information on strains, genes, and alleles from WormBase
+# and load into the CGC schema.
 
 my $db       = Ace->connect(-host => 'localhost',-port=>'2005');
-my $iterator = $db->fetch_many(Gene => '*');
+my $iterator = $db->fetch_many(Strain => '*');
 
 my $version = $db->version;
 open OUT,">$version-wormbase_genes.txt";
