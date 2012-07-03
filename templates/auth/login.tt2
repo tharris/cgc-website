@@ -1,38 +1,31 @@
-<script> 
 [% IF reload || error_notice  %] 
+<script> 
   window.close();
-[% END %]  
-
-//WB.hideTextOnFocus(".email");
-//WB.hideTextOnFocus(".password");
 </script>
-
-
-[% WRAPPER modal title="Please Sign In" %]
-
-  [% WRAPPER modal_body %]
-
-           <!-- Login form -->
-           <div id="login-form">
-               <div class="login-holder" style="margin: -0.2em 0 0.5em; padding:0 1em;">
-                   <form method="post" action="[% c.secure_uri_for("/auth/login") %]">
-                       <div class="login-holder">
-                            <span id="fade">email</span><br />
-                            <input class="email" type="email" name="email" size="30" />
-                       </div>
-                       <div class="login-holder">
-                           <span id="fade">password</span><br />
-                           <input class="password" type="password" name="password" size="30"  />
-                       </div>
-
-
-               </div>
-           </div>
-
-      [% END %]
-
-     [% WRAPPER modal_footer %]
-               <button class="btn btn-primary" type="submit" onClick='var form = $jq("#login-form"); return validate_fields(form.find("input.email"), null, form.find("input.password")  );'>Sign in</button>	       
-               </form>
-     [% END %]
 [% END %]
+
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+    <h3>Please sign in</h3>
+</div>
+<div class="modal-body">
+    <form id="login-form" method="post" action="[% c.secure_uri_for("/auth/login") %]">
+    <label>email</label>
+    <input class="email" type="email" name="email" size="30" />
+    <label>password</label>
+    <input class="password" type="password" name="password" size="30"  />
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="submit" onClick='return login()'>Sign in</button>	       
+    </form>
+</div>
+<script>
+function login() {
+    var form = $("#login-form");
+    return App.validateFields(
+        form.find("input.email"),
+        null,
+        form.find("input.password")
+    );
+}
+</script>

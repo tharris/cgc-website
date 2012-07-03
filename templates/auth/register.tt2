@@ -28,39 +28,44 @@
 </form>
 </div>
 <script>
-$(function () {
     $("#why-lab-affiliation").popover();
-  function register(r){
-    var reg = $('#register-form'),  
-        email = reg.find("#email"),        
-        username= reg.find("#name"),
-        password = reg.find("#password"),
-        wbid = reg.find("#wbid"),
-        redirect = reg.find("#redirect");
-    if(WB.validate_fields(email,username,password,reg.find("#confirm-password")) == false) {
-        return false;
-    }
-    $.ajax({   
-          type: "POST",
-          url: "/rest/register",
-          data: {username:username.val(),email:email.val(), password:password.val(), redirect:redirect.val()},
-          success: function(data){
-                if(data==0) {
-                alert("The email address has already been registered!"); 
+
+    function register(r) {
+        var reg = $('#register-form'),
+            email = reg.find("#email"),
+            username = reg.find("#name"),
+            password = reg.find("#password"),
+            wbid = reg.find("#wbid"),
+            redirect = reg.find("#redirect");
+        if (!App.validateFields(email, username, password, reg.find("#confirm-password"))) {
+            return false;
+        }
+        $.ajax({
+            type: "POST",
+            url: "/rest/register",
+            data: {
+                username: username.val(),
+                email: email.val(),
+                password: password.val(),
+                redirect: redirect.val()
+            },
+            success: function(data) {
+                if (data == 0) {
+                    alert("The email address has already been registered!");
                 } else {
-//        $("#modal").modal('hide');
-                  var content = $("#modal");
-                  content.children().not("#spacer").remove();
-                  content.prepend(data);
+                    //        $("#modal").modal('hide');
+                    var content = $("#modal");
+                    content.children().not("#spacer").remove();
+                    content.prepend(data);
                 }
             },
-          error: function(request,status,error) {
-              if(xmlHttpRequest.readyState == 0 || xmlHttpRequest.status == 0) 
-                  return; 
-              alert(request + " " + status + " " + error );
+            error: function(request, status, error) {
+                if (xmlHttpRequest.readyState == 0 ||
+                    xmlHttpRequest.status == 0) return;
+                alert(request + " " + status + " " + error);
             }
-      });
-    return false;
+        });
+        return false;
     }
-});
 </script>
+

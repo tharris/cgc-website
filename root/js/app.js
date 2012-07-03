@@ -38,3 +38,46 @@ $(function () {
 		});
 	});
 }(window.jQuery);
+
+var App = (function (window) {
+    var app = {};
+
+    // TODO: Bootstrapify
+    app.validateFields = function(email, username, password, confirmPassword) {
+        if (email.val() == "") {
+            email.focus().addClass("ui-state-error");
+            return false;
+        } else if (email.val() &&
+            !app.validateEmail(email.val(), "Not a valid email address!")) {
+            email.focus().addClass("ui-state-error");
+            return false;
+        } else if (password) {
+            if (password.val() == "") {
+                password.focus().addClass("ui-state-error");
+                return false;
+            } else if (confirmPassword &&
+                (password.val() != confirmPassword.val())) {
+                alert("The passwords do not match. Please enter again");
+                password.focus().addClass("ui-state-error");
+                return false;
+            }
+        } else if (username && username.val() == "") {
+            username.focus().addClass("ui-state-error");
+            return false;
+        } else {
+            return true;
+        }
+    };
+
+    app.validateEmail = function (field, alerttxt) {
+        var apos = field.indexOf("@"),
+            dotpos = field.lastIndexOf(".");
+        if (apos < 1 || dotpos - apos < 2) {
+            alert(alerttxt);
+            return false;
+        } else {
+            return true;
+        }
+    };
+    return app;
+})(this);
