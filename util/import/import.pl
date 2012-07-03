@@ -321,11 +321,11 @@ sub populate_strains {
         my ($input, $table, $column) = @_;
         my $value;
         eval "\$value = \$input->$column";
-        return find_or_create($schema, $table, { name => $value });
+        return update_or_create($schema, $table, { name => $value });
     };
     my $resultset = $schema->resultset('Strain');
     for my $input (@{ $strains->[0] }) {
-        my $strain = $resultset->find_or_create(
+        my $strain = $resultset->update_or_create(
             {   name        => $input->strain,
                 description => $input->description,
                 received    => $input->received,
@@ -335,7 +335,7 @@ sub populate_strains {
                 genotype    => $finder->($input, 'Genotype', 'genotype'),
                 species     => $finder->($input, 'Species', 'species'),
             },
-            { primary => 'name' }
+            { primary => 'strain_name_unique' }
         );
     }
 }
@@ -350,14 +350,15 @@ sub populate_laboratories {
             = (    defined $input->commercial
                 && $input->commercial ne 'N'
                 && $input->commercial ne '');
-        my $laboratory = $resultset->find_or_create(
-            {   head        => $labdata->{head},
+        my $laboratory = $resultset->update_or_create(
+            {   laboratory_designation => $laboratory,
+		head        => $labdata->{head},
                 institution => $labdata->{institution},
                 city        => $labdata->{city},
                 state       => $labdata->{state},
                 commercial  => $is_commercial,
                 country     => $input->country,
-            }
+            },	    
         );
 
         # Add legacy data and associate with laboratory.
