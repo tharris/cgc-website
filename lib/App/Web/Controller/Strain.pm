@@ -37,7 +37,7 @@ sub strain_GET {
 			name       => $strain->name,
 			species    => $strain->species->name,
 			outcrossed => $strain->outcrossed,
-#			mutagen    => $strain->mutagen->name,
+			mutagen    => $strain->mutagen->name,
 			genotype   => $strain->genotype,
 			received   => $strain->received
 				? $strain->received->strftime('%Y/%m/%d') : undef,
