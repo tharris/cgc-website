@@ -70,14 +70,27 @@ sub run {
     my $self = shift; 
     my $ace  = $self->ace_handle;
 
+    my $log  = join('/',$self->import_log_dir,'laboratories.log');
+    my %previous = $self->_parse_previous_import_log($log);
+
+    # Open cache log for writing.
+    open OUT,">>$log";
+
     my $iterator = $ace->fetch_many(Laboratory => '*');
     my $c = 1;
     my $test = $self->test;
     while (my $obj = $iterator->next) {
+	if ($previous{$obj}) {	
+	    print STDERR "Already seen $obj. Skipping...";
+	    print STDERR -t STDOUT && !$ENV{EMACS} ? "\r" : "\n"; 
+	    next;
+	}
 	last if ($test && $test == ++$c);
 	$self->log->warn("Processing ($obj)...");
 	$self->process_object($obj);
+	print OUT "$obj\n";
     }
+    close OUT;
 }
 
 
@@ -108,7 +121,7 @@ sub process_object {
 	{ key => 'laboratory_designation_unique' }
         );
 
-    my $l2g_rs = $self->get_rs('Laboratory2GeneClass');    
+    my $l2g_rs = $self->get_rs('Laboratory2geneClass');    
     foreach my $gen_class ($obj->Gene_classes) {
 	my $gene_row = $self->gene_finder($gene_class->name);
 	$l2g_rs->update_or_create({
@@ -116,7 +129,7 @@ sub process_object {
 	    gene_class_id => $gene_row->id });
     }
 
-    my $l2v_rs = $self->get_rs('Laboratory2Variation');        
+    my $l2v_rs = $self->get_rs('Laboratory2variation');        
     foreach my $var ($obj->Alleles) {
 	my $var_row = $self->variation_finder($var->name);
 	$l2v_rs->update_or_create({

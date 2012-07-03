@@ -73,13 +73,19 @@ __PACKAGE__->table("laboratory");
 
   data_type: 'varchar'
   is_nullable: 1
-  size: 5
+  size: 25
 
 =head2 strain_designation
 
   data_type: 'varchar'
   is_nullable: 1
   size: 5
+
+=head2 street_address
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 255
 
 =head2 address1
 
@@ -160,9 +166,11 @@ __PACKAGE__->add_columns(
   "lab_head_last_name",
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "laboratory_designation",
-  { data_type => "varchar", is_nullable => 1, size => 5 },
+  { data_type => "varchar", is_nullable => 1, size => 25 },
   "strain_designation",
   { data_type => "varchar", is_nullable => 1, size => 5 },
+  "street_address",
+  { data_type => "varchar", is_nullable => 1, size => 255 },
   "address1",
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "address2",
@@ -202,7 +210,36 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("id");
 
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<laboratory_designation_unique>
+
+=over 4
+
+=item * L</laboratory_designation>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("laboratory_designation_unique", ["laboratory_designation"]);
+
 =head1 RELATIONS
+
+=head2 gene_classes_2s
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::GeneClass>
+
+=cut
+
+__PACKAGE__->has_many(
+  "gene_classes_2s",
+  "CGC::Schema::Result::GeneClass",
+  { "foreign.designating_laboratory_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 =head2 lab_order
 
@@ -216,6 +253,36 @@ __PACKAGE__->might_have(
   "lab_order",
   "CGC::Schema::Result::LabOrder",
   { "foreign.id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 laboratory2gene_classes
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::Laboratory2geneClass>
+
+=cut
+
+__PACKAGE__->has_many(
+  "laboratory2gene_classes",
+  "CGC::Schema::Result::Laboratory2geneClass",
+  { "foreign.laboratory_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 laboratory2variations
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::Laboratory2variation>
+
+=cut
+
+__PACKAGE__->has_many(
+  "laboratory2variations",
+  "CGC::Schema::Result::Laboratory2variation",
+  { "foreign.laboratory_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
@@ -249,9 +316,29 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 gene_classes
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 02:12:27
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8//PuCVdEe/GzmSfKX0dVw
+Type: many_to_many
+
+Composing rels: L</laboratory2gene_classes> -> gene_class
+
+=cut
+
+__PACKAGE__->many_to_many("gene_classes", "laboratory2gene_classes", "gene_class");
+
+=head2 variations
+
+Type: many_to_many
+
+Composing rels: L</laboratory2variations> -> variation
+
+=cut
+
+__PACKAGE__->many_to_many("variations", "laboratory2variations", "variation");
+
+
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 22:16:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:RblRY1Kv7HtkgitWHSLoeQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

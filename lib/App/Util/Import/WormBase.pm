@@ -182,4 +182,44 @@ sub mutagen_finder {
 }    
 
 
+
+
+
+
+sub _parse_previous_import_log {
+    my ($self,$log_file) = @_;
+    $self->log->info("  ---> parsing log of previous imports at $log_file");
+    my %previous;
+    if (-e "$log_file") {
+#	# First off, just tail the file to see if we're finished.
+#	my $complete_flag = `tail -1 $cache_log`;
+#	chomp $complete_flag;
+#	if ($complete_flag =~ /COMPLETE/) {
+#	    $previous{COMPLETE}++;
+#	    $self->log->info("  ---> all widgets already cached.");
+#	    return %previous;
+#	}
+
+	open IN,"$log_file" or $self->log->warn("$!");
+
+	while (<IN>) {
+#	    if (/COMPLETE/) {
+#		$previous{COMPLETE}++;
+#		next;
+#	    }
+	    chomp;
+	    $previous{$_}++;
+#	    print STDERR "   Recording $obj as seen...";
+#	    print STDERR -t STDOUT && !$ENV{EMACS} ? "\r" : "\n";
+	}
+#	print STDERR "\n";
+	close IN;
+    }
+    return %previous;
+}
+
+
+
+
+
 1;

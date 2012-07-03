@@ -262,8 +262,8 @@ Composing rels: L</variation2genes> -> variation
 __PACKAGE__->many_to_many("variations", "variation2genes", "variation");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 12:52:37
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:t6b7wwU4+E1MLAaeWmpQUA
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 21:38:25
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:MT7NZApNYQDaFHYuoEb7Hw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

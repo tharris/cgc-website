@@ -101,11 +101,11 @@ CREATE TABLE `gene_class` (
   `id`   int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL DEFAULT '',
   `description` mediumtext,
-  `designating_laboratory` int(11) unsigned DEFAULT NULL,
+  `designating_laboratory_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `gene_class_name_unique` (`name`)
-  KEY `gene_class_designating_laboratory_fk` (`laboratory_id`),
-  CONSTRAINT gene_class_designating_laboratory_fk` FOREIGN KEY (`laboratory_id`) REFERENCES `laboratory` (`id`),
+  UNIQUE KEY `gene_class_name_unique` (`name`),
+  KEY `gene_class_designating_laboratory_fk` (`designating_laboratory_id`),
+  CONSTRAINT `gene_class_designating_laboratory_fk` FOREIGN KEY (`designating_laboratory_id`) REFERENCES `laboratory` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -193,11 +193,11 @@ CREATE TABLE `laboratory` (
   `lab_head_first_name` varchar(255) DEFAULT NULL,
   `lab_head_middle_name` varchar(255) DEFAULT NULL,  
   `lab_head_last_name` varchar(255) DEFAULT NULL,
-  `laboratory_designation` varchar(5) DEFAULT NULL,
+  `laboratory_designation` varchar(25) DEFAULT NULL,
   `strain_designation` varchar(5) DEFAULT NULL,
+  `street_address` varchar(255) DEFAULT NULL,
   `address1` varchar(255) DEFAULT NULL,
   `address2` varchar(255) DEFAULT NULL,
-#   `street_address` varchar(255) DEFAULT NULL,
   `state` char(2) DEFAULT NULL,
   `zip` decimal(5,0) unsigned DEFAULT NULL,
   `country` varchar(255) DEFAULT NULL,
@@ -207,7 +207,7 @@ CREATE TABLE `laboratory` (
   `website` varchar(255) DEFAULT NULL,
   `date_assigned` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
-UNIQUE KEY `laboratory_designation_unique` (`laboratory_designation`)	
+  UNIQUE KEY `laboratory_designation_unique` (`laboratory_designation`)	
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -220,7 +220,7 @@ CREATE TABLE `laboratory2gene_class` (
   KEY `laboratory2gene_class_gene_class_id_fk` (`gene_class_id`),
   KEY `laboratory2gene_class_laboratory_id_fk` (`laboratory_id`),
   CONSTRAINT `laboratory2gene_class_gene_class_id_fk` FOREIGN KEY (`gene_class_id`) REFERENCES `gene_class` (`id`),
-  CONSTRAINT `laboratory2gene_class_laboratory_id_fk` FOREIGN KEY (laboratory_id`) REFERENCES `laboratory` (`id`)
+  CONSTRAINT `laboratory2gene_class_laboratory_id_fk` FOREIGN KEY (`laboratory_id`) REFERENCES `laboratory` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -235,7 +235,7 @@ CREATE TABLE `laboratory2variation` (
   KEY `laboratory2variation_variation_id_fk` (`variation_id`),
   KEY `laboratory2variation_laboratory_id_fk` (`laboratory_id`),
   CONSTRAINT `laboratory2variation_variation_id_fk` FOREIGN KEY (`variation_id`) REFERENCES `variation` (`id`),
-  CONSTRAINT `laboratory2variation_laboratory_id_fk` FOREIGN KEY (laboratory_id`) REFERENCES `laboratory` (`id`)
+  CONSTRAINT `laboratory2variation_laboratory_id_fk` FOREIGN KEY (`laboratory_id`) REFERENCES `laboratory` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

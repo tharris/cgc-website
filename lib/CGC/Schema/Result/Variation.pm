@@ -82,6 +82,13 @@ __PACKAGE__->table("variation");
   is_foreign_key: 1
   is_nullable: 1
 
+=head2 gene_class_id
+
+  data_type: 'integer'
+  extra: {unsigned => 1}
+  is_foreign_key: 1
+  is_nullable: 1
+
 =head2 strain_id
 
   data_type: 'integer'
@@ -115,6 +122,13 @@ __PACKAGE__->add_columns(
   "pmap",
   { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
   "species_id",
+  {
+    data_type => "integer",
+    extra => { unsigned => 1 },
+    is_foreign_key => 1,
+    is_nullable => 1,
+  },
+  "gene_class_id",
   {
     data_type => "integer",
     extra => { unsigned => 1 },
@@ -171,6 +185,41 @@ Related object: L<CGC::Schema::Result::AtomizedGenotype>
 __PACKAGE__->has_many(
   "atomized_genotypes",
   "CGC::Schema::Result::AtomizedGenotype",
+  { "foreign.variation_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 gene_class
+
+Type: belongs_to
+
+Related object: L<CGC::Schema::Result::GeneClass>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "gene_class",
+  "CGC::Schema::Result::GeneClass",
+  { id => "gene_class_id" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE",
+  },
+);
+
+=head2 laboratory2variations
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::Laboratory2variation>
+
+=cut
+
+__PACKAGE__->has_many(
+  "laboratory2variations",
+  "CGC::Schema::Result::Laboratory2variation",
   { "foreign.variation_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -240,9 +289,19 @@ Composing rels: L</variation2genes> -> gene
 
 __PACKAGE__->many_to_many("genes", "variation2genes", "gene");
 
+=head2 laboratories
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 12:52:37
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wu4SxIroZspjjqGLVQy+mQ
+Type: many_to_many
+
+Composing rels: L</laboratory2variations> -> laboratory
+
+=cut
+
+__PACKAGE__->many_to_many("laboratories", "laboratory2variations", "laboratory");
+
+
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 21:38:25
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+klqFRfMFiiFN03gbmkYbQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

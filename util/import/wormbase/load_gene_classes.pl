@@ -4,7 +4,7 @@ use strict;
 use Getopt::Long;
 use FindBin qw/$Bin/;
 use lib "$Bin/../../../lib";
-use App::Util::Import::WormBase::Gene_classes;
+use App::Util::Import::WormBase::GeneClasses;
 
 my ($help,$log_dir,$dbic_conf_file,$ace_host,$ace_port,$test);
 GetOptions('log_dir=s'  => \$log_dir,
@@ -30,7 +30,7 @@ END
 ;
 }
 
-my $agent = App::Util::Import::WormBase::Gene_classes->new();
+my $agent = App::Util::Import::WormBase::GeneClasses->new();
 
 # This causes all moose attributes to be undef if not provided on command line.
 #my $agent = App::Util::Import::WormBase::Genes->new({ #log_dir              => $log_dir,
