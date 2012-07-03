@@ -66,8 +66,12 @@
 			<button class="btn" type="submit">Sign in</button>
 			-->
 
-   		        <a class="btn btn-primary-inverse" data-toggle="modal" data-target="#modal" href="[% c.secure_uri_for("/login") %]">Sign In</a>
-    		        <a class="btn btn-inverse" data-toggle="modal" data-target="#modal" href="[% c.secure_uri_for("/register") %]">Sign up</a>
+			<a class="btn btn-primary-inverse" data-toggle="modal"
+				data-uri="[% c.secure_uri_for("/login") %]"
+				href="#modal">Sign In</a>
+			<a class="btn btn-inverse" data-toggle="modal"
+				data-uri="[% c.secure_uri_for("/register") %]"
+				href="#modal">Sign up</a>
 		</form>
           [% END %]
 	</div>

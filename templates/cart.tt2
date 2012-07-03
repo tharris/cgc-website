@@ -12,9 +12,9 @@
 	[% END %]
 </table>
 <a class="btn" href="#">Empty cart</a>
-<a class="btn btn-primary" href="#"
-	data-uri="/register"
-	data-target="#checkout">Checkout</a>
+<a class="btn btn-primary" href="#checkout" data-uri="/register?inline">
+	Checkout
+</a>
 </div>
 
 <div id="checkout"></div>

@@ -29,7 +29,7 @@
         <tr><th>Made by</th>   <td>[% strain.made_by %]</td></tr>
     </tbody>
     </table>
-    <p><a class="btn" data-toggle="modal" href="#orderForm">Order strain "<b>[% strain.name %]</b>"</a></p>
+    <p><a class="btn" data-uri="/register?inline" data-toggle="modal" href="#orderForm">Order strain "<b>[% strain.name %]</b>"</a></p>
 </div>
 <div class="modal hide fade" id="orderForm">
     <div class="modal-header">
