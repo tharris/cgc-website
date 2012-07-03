@@ -1,3 +1,9 @@
+$(function () {
+	$("a[rel=popover]").popover().click(function(e) {
+		e.preventDefault()
+	});
+});
+
 // SUBDOC
 !function ($) {
 	var Subdoc = function () {};

@@ -1,96 +1,35 @@
-[% WRAPPER modal title="Register a new account" %]
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">×</button>
+	<h2>Register</h2>
+</div>
+    
+<div class="modal-body">
+	<form method="post" id="register-form" action="[% c.secure_uri_for("/register") %]" style="float:left;">
+		  <label>full name</label>
+		  <input id="name" type="text" name="name" size="30" placeholder="John Smith" value="[% full_name %]" />
+			  <label>email</label>
+			  <input id="email" type="email" name="email" size="30"  placeholder="john@example.net"  value="[% email %]"/>
 
-  [% WRAPPER modal_body %]
+		  <div class="login-holder ui-corner-all register-notice" id="system-message" style="width:15em;display:none;"></div>
 
+		   <label>laboratory affiliation (<a href="#" id="why-lab-affiliation" rel="popover" data-content="To order strains from the CGC, you must be affiliated with a lab assigned an official lab designation. We only ship strains to the primary addresses for these registered labs. If you don't have a lab designation, please contact us." data-original-title="Lab affiliation">why?</a>)</label>
+		   <input class="lab-designation" type="text" data-provide="typeahead" name="lab-designation" size="30"  />
 
-                <form method="post" id="register-form" action="[% c.secure_uri_for("/register") %]" style="float:left;">
-					  <label>full name</label>
-					  <input id="name" type="text" name="name" size="30" placeholder="John Smith" value="[% full_name %]" />
-                          <label>email</label>
-                          <input id="email" type="email" name="email" size="30"  placeholder="john@example.net"  value="[% email %]"/>
-
-                      <div class="login-holder ui-corner-all register-notice" id="system-message" style="width:15em;display:none;"></div>
-
-					   <label>laboratory affiliation (<a href="#" id="why-lab-affiliation" data-provide="popover" rel="popover" data-content="To order strains from the CGC, you must be affiliated with a lab assigned an official lab designation. We only ship strains to the primary addresses for these registered labs. If you don't have a lab designation, please contact us." data-original-title="Why do we need this?">why?</a>)</label>
-					   <input class="lab-designation" type="text" data-provide="typeahead" name="lab-designation" size="30"  />
-
-					   <label>password</label>
-					   <input id="password" type="password" name="password" size="30" value="[% password %]"/>
-					   <label>confirm password</label>
-					   <input id="confirm-password" type="password" name="password" size="30"/>
-                      <input id="redirect" type="text" name="redirect" size="0" value="[% redirect %]" style="display:none;" />
-                  </div>
-
+		   <label>password</label>
+		   <input id="password" type="password" name="password" size="30" value="[% password %]"/>
+		   <label>confirm password</label>
+		   <input id="confirm-password" type="password" name="password" size="30"/>
+		  <input id="redirect" type="text" name="redirect" size="0" value="[% redirect %]" style="display:none;" />
+	  </div>
+</div><!-- modal-body -->
+<div class="modal-footer">
+<button href="#" class="btn btn-primary" type="submit" onClick="register($(this));return false;">sign up ›</button>
+<p><em> Already a member? <strong><a id="login" onClick='$(this).parent().parent().parent().parent().parent().load("[% c.secure_uri_for("/login") %]"); return false;'  href="[% c.secure_uri_for('/login') %]">Sign in...</a></strong></em>           
+</form>
+</div>
 <script>
-// Charles Lawrence - Feb 16, 2012. Free to use and modify. Please attribute back to @geuis if you find this useful
-// Twitter Bootstrap Typeahead doesn't support remote data querying. This is an expected feature in the future. In the meantime, others have submitted patches to the core bootstrap component that allow it. 
-// The following will allow remote autocompletes *without* modifying any officially released core code. 
-// If others find ways to improve this, please share.
-    var autocomplete = $('[data-provide=typeahead]').typeahead()
-        .on('keyup', function(ev){
-
-            ev.stopPropagation();
-            ev.preventDefault();
-
-            //filter out up/down, tab, enter, and escape keys
-            if( $.inArray(ev.keyCode,[40,38,9,13,27]) === -1 ){
-
-                var self = $(this);
-                
-                //set typeahead source to empty
-                self.data('typeahead').source = [];
-
-                //active used so we aren't triggering duplicate keyup events
-                if( !self.data('active') && self.val().length > 0){
-
-                    self.data('active', true);
-
-                    //Do data request. Insert your own API logic here.
-// curl -H content-type:application/json http://localhost/rest/search/laboratory_designation/q
-                    $.getJSON("[% c.uri_for('/search') %]/laboratory/",{
-                        q: $(this).val()
-                    }, function(data) {
-
-                        //set this to true when your callback executes
-                        self.data('active',true);
-
-
-                        //Filter out your own parameters. Populate them into an array, since this is what typeahead's source requires
-                        var arr = [],
-                            i=data.results.length;
-                        while(i--){
-                            arr[i] = data.results[i].head;
-                        }
-
-                        //set your results into the typehead's source 
-                        self.data('typeahead').source = arr;
-
-                        //trigger keyup on the typeahead to make it search
-                        self.trigger('keyup');
-
-                        //All done, set to false to prepare for the next remote query.
-                        self.data('active', false);
-
-                    });
-
-                }
-            }
-        });
-        
-        $('#why-lab-affiliation').popover();
-</script>
-
-  [% END %]
-
-
-   [% WRAPPER modal_footer %]
-
-            <button href="#" class="btn btn-primary" type="submit" onClick="register($(this));return false;">sign up ›</button>
-            <p><em> Already a member? <strong><a id="login" onClick='$(this).parent().parent().parent().parent().parent().load("[% c.secure_uri_for("/login") %]"); return false;'  href="[% c.secure_uri_for('/login') %]">Sign in...</a></strong></em>           
-           </form>
-
-
-<script>
+$(function () {
+    $("#why-lab-affiliation").popover();
   function register(r){
     var reg = $('#register-form'),  
         email = reg.find("#email"),        
@@ -109,7 +48,7 @@
                 if(data==0) {
                 alert("The email address has already been registered!"); 
                 } else {
-//		  $("#modal").modal('hide');
+//        $("#modal").modal('hide');
                   var content = $("#modal");
                   content.children().not("#spacer").remove();
                   content.prepend(data);
@@ -123,6 +62,5 @@
       });
     return false;
     }
+});
 </script>
-   [% END %]
-[% END %]
