@@ -31,11 +31,16 @@ sub index : Private {
 
 
 sub registered_users :Path("registered_users") {
-    my ( $self, $c ) = @_;
+    my ($self,$c) = @_;
+    $c->{stash}->{template} = 'auth/logout.tt2';
+}
+
+sub registered_users2 :Path("registered_users2") {
+    my ($self,$c) = @_;
     $c->stash->{noboiler} = 1;
-    $c->stash->{'template'}='admin/registered_users.tt2';
-    my @array;
-    if($c->check_user_roles('admin')){
+    $c->stash->{template} = 'admin/registered_users.tt2';
+    my @array;    
+    if ($c->check_user_roles('admin')) {
 #       my $iter=$c->model('CGC::AppUser') ;
 #       while( my $user= $iter->next){
 # 	  my $hash = { username   => $user->username,
@@ -44,12 +49,14 @@ sub registered_users :Path("registered_users") {
 # 	  };
 
       my @users = $c->model('CGC::AppUser')->search();
-      map { 
-        my @roles = $_->roles;
-        foreach my $role (@roles){
-          $_->{$role->role} = 1;
-        }
-      } @users;
+#      map { 
+#        my @roles = $_->roles;
+#        foreach my $role (@roles){
+#          $_->{$role->role} = 1;
+#        }
+#      } @users;
+
+
 # 	  
 # 	  my @roles =$user->roles;
 # 	  
@@ -57,7 +64,7 @@ sub registered_users :Path("registered_users") {
 # 	  push @array,$hash;
 #       }
 #       
-      $c->stash->{users}=\@users;
+      $c->stash->{users} = \@users;
     }  
 } 
 

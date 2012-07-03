@@ -30,11 +30,11 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<app_user>
+=head1 TABLE: C<app_users>
 
 =cut
 
-__PACKAGE__->table("app_user");
+__PACKAGE__->table("app_users");
 
 =head1 ACCESSORS
 
@@ -134,8 +134,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("user_id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-02 20:50:53
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:K2mzVjTxIyW1FFLoFsfdrQ
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-29 17:50:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Ev4PBLY1129V5Q1lQratcg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

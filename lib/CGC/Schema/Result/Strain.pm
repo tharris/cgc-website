@@ -79,20 +79,68 @@ Number of times outcrossed? Another table?
   is_foreign_key: 1
   is_nullable: 1
 
-=head2 genotype_id
+=head2 genotype
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 100
+
+=head2 received
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 50
+
+=head2 made_by
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 50
+
+=head2 laboratory_id
 
   data_type: 'integer'
   extra: {unsigned => 1}
   is_foreign_key: 1
   is_nullable: 1
 
-=head2 received
+=head2 males
 
-  data_type: 'timestamp'
-  datetime_undef_if_invalid: 1
+  data_type: 'varchar'
   is_nullable: 1
+  size: 50
 
-=head2 made_by
+=head2 inbreeding_state_selfed
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 50
+
+=head2 inbreeding_state_isofemale
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 50
+
+=head2 inbreeding_state_multifemale
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 50
+
+=head2 inbreeding_state_inbred
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 50
+
+=head2 reference_strain
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 50
+
+=head2 sample_history
 
   data_type: 'varchar'
   is_nullable: 1
@@ -128,20 +176,32 @@ __PACKAGE__->add_columns(
     is_foreign_key => 1,
     is_nullable => 1,
   },
-  "genotype_id",
+  "genotype",
+  { data_type => "varchar", is_nullable => 1, size => 100 },
+  "received",
+  { data_type => "varchar", is_nullable => 1, size => 50 },
+  "made_by",
+  { data_type => "varchar", is_nullable => 1, size => 50 },
+  "laboratory_id",
   {
     data_type => "integer",
     extra => { unsigned => 1 },
     is_foreign_key => 1,
     is_nullable => 1,
   },
-  "received",
-  {
-    data_type => "timestamp",
-    datetime_undef_if_invalid => 1,
-    is_nullable => 1,
-  },
-  "made_by",
+  "males",
+  { data_type => "varchar", is_nullable => 1, size => 50 },
+  "inbreeding_state_selfed",
+  { data_type => "varchar", is_nullable => 1, size => 50 },
+  "inbreeding_state_isofemale",
+  { data_type => "varchar", is_nullable => 1, size => 50 },
+  "inbreeding_state_multifemale",
+  { data_type => "varchar", is_nullable => 1, size => 50 },
+  "inbreeding_state_inbred",
+  { data_type => "varchar", is_nullable => 1, size => 50 },
+  "reference_strain",
+  { data_type => "varchar", is_nullable => 1, size => 50 },
+  "sample_history",
   { data_type => "varchar", is_nullable => 1, size => 50 },
 );
 
@@ -159,7 +219,7 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 UNIQUE CONSTRAINTS
 
-=head2 C<strain_name_unique>
+=head2 C<strain_name>
 
 =over 4
 
@@ -169,7 +229,7 @@ __PACKAGE__->set_primary_key("id");
 
 =cut
 
-__PACKAGE__->add_unique_constraint("strain_name_unique", ["name"]);
+__PACKAGE__->add_unique_constraint("strain_name", ["name"]);
 
 =head1 RELATIONS
 
@@ -188,26 +248,6 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 genotype
-
-Type: belongs_to
-
-Related object: L<CGC::Schema::Result::Genotype>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "genotype",
-  "CGC::Schema::Result::Genotype",
-  { id => "genotype_id" },
-  {
-    is_deferrable => 1,
-    join_type     => "LEFT",
-    on_delete     => "CASCADE",
-    on_update     => "CASCADE",
-  },
-);
-
 =head2 lab_order
 
 Type: might_have
@@ -221,6 +261,26 @@ __PACKAGE__->might_have(
   "CGC::Schema::Result::LabOrder",
   { "foreign.id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 laboratory
+
+Type: belongs_to
+
+Related object: L<CGC::Schema::Result::Laboratory>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "laboratory",
+  "CGC::Schema::Result::Laboratory",
+  { id => "laboratory_id" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE",
+  },
 );
 
 =head2 mutagen
@@ -263,9 +323,24 @@ __PACKAGE__->belongs_to(
   },
 );
 
+=head2 variations
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-28 17:36:50
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:O/jJ6HapmKpZmgZauoNyPg
+Type: has_many
+
+Related object: L<CGC::Schema::Result::Variation>
+
+=cut
+
+__PACKAGE__->has_many(
+  "variations",
+  "CGC::Schema::Result::Variation",
+  { "foreign.strain_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 02:12:27
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:KG9C7IDzH/mghMCyKQBOLw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -1,12 +1,12 @@
 use utf8;
-package CGC::Schema::Result::FreezerSample;
+package CGC::Schema::Result::AtomizedGenotype;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-CGC::Schema::Result::FreezerSample
+CGC::Schema::Result::AtomizedGenotype
 
 =cut
 
@@ -30,11 +30,11 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<freezer_sample>
+=head1 TABLE: C<atomized_genotype>
 
 =cut
 
-__PACKAGE__->table("freezer_sample");
+__PACKAGE__->table("atomized_genotype");
 
 =head1 ACCESSORS
 
@@ -45,36 +45,25 @@ __PACKAGE__->table("freezer_sample");
   is_auto_increment: 1
   is_nullable: 0
 
-=head2 freezer_id
-
-  data_type: 'integer'
-  extra: {unsigned => 1}
-  is_foreign_key: 1
-  is_nullable: 1
-
 =head2 strain_id
 
   data_type: 'integer'
   extra: {unsigned => 1}
+  is_nullable: 0
+
+=head2 variation_id
+
+  data_type: 'integer'
+  extra: {unsigned => 1}
   is_foreign_key: 1
   is_nullable: 1
 
-=head2 vials
-
-  data_type: 'tinyint'
-  extra: {unsigned => 1}
-  is_nullable: 1
-
-=head2 freeze_date
-
-  data_type: 'datetime'
-  datetime_undef_if_invalid: 1
-  is_nullable: 1
-
-=head2 frozen_by
+=head2 gene_id
 
   data_type: 'integer'
-  is_nullable: 0
+  extra: {unsigned => 1}
+  is_foreign_key: 1
+  is_nullable: 1
 
 =cut
 
@@ -86,30 +75,22 @@ __PACKAGE__->add_columns(
     is_auto_increment => 1,
     is_nullable => 0,
   },
-  "freezer_id",
-  {
-    data_type => "integer",
-    extra => { unsigned => 1 },
-    is_foreign_key => 1,
-    is_nullable => 1,
-  },
   "strain_id",
+  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 0 },
+  "variation_id",
   {
     data_type => "integer",
     extra => { unsigned => 1 },
     is_foreign_key => 1,
     is_nullable => 1,
   },
-  "vials",
-  { data_type => "tinyint", extra => { unsigned => 1 }, is_nullable => 1 },
-  "freeze_date",
+  "gene_id",
   {
-    data_type => "datetime",
-    datetime_undef_if_invalid => 1,
+    data_type => "integer",
+    extra => { unsigned => 1 },
+    is_foreign_key => 1,
     is_nullable => 1,
   },
-  "frozen_by",
-  { data_type => "integer", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -126,18 +107,18 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 freezer
+=head2 gene
 
 Type: belongs_to
 
-Related object: L<CGC::Schema::Result::Freezer>
+Related object: L<CGC::Schema::Result::Gene>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "freezer",
-  "CGC::Schema::Result::Freezer",
-  { id => "freezer_id" },
+  "gene",
+  "CGC::Schema::Result::Gene",
+  { gene_id => "gene_id" },
   {
     is_deferrable => 1,
     join_type     => "LEFT",
@@ -146,18 +127,18 @@ __PACKAGE__->belongs_to(
   },
 );
 
-=head2 strain
+=head2 variation
 
 Type: belongs_to
 
-Related object: L<CGC::Schema::Result::Strain>
+Related object: L<CGC::Schema::Result::Variation>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "strain",
-  "CGC::Schema::Result::Strain",
-  { id => "strain_id" },
+  "variation",
+  "CGC::Schema::Result::Variation",
+  { variation_id => "variation_id" },
   {
     is_deferrable => 1,
     join_type     => "LEFT",
@@ -168,7 +149,7 @@ __PACKAGE__->belongs_to(
 
 
 # Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 02:46:15
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:AaiyGA/0M2qxtzz/ka1fqQ
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:zTy4UllS7hHatMfvJzO4Jw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

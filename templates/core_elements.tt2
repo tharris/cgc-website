@@ -1,14 +1,4 @@
-[%#
-####################################################
-#
-#  Widgets, Fields, Subfields
-#
-####################################################
-%]
-
-
-
-
+[%# Core template elements %]
 
 
 [% BLOCK modal %]
@@ -130,35 +120,11 @@
 
 [% END %] 
 
-[% MACRO short_list(objects) BLOCK %]
 
-   [% FOREACH row IN objects.list %]    
-       [% FOREACH item IN row %]
-     [% IF item.class.defined %]
-                [% tag2link(item) %]
-               [% ELSE %][% item %]
-    [% END %]
-      [% UNLESS loop.last %];[% END %]
-      [% END %]
-      [% UNLESS loop.last %]<br>[% END %]
-   [% END %]           
 
-    
 
-[% END %]
 
-[% 
-  # For dsiplaying a list of objects in a field
-  # Should probably be expanded to included some actual formatting,
-  # What to do if there are too many objects, etc
-%]
-[% MACRO object_list(objects) BLOCK %]
 
-            [% FOREACH object IN objects.keys %]
-             [%- tag2link(objects.$object) -%]
-                     [%- UNLESS loop.last -%], [% END %]
-            [% END %]
-[% END %]
 
 
 [% BLOCK status_bar %]
@@ -250,36 +216,7 @@
 %]
 [% BLOCK google_analytics %]
    <!-- GA -->
-
-
-
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-16257183-1']);
-  _gaq.push(['_setDomainName', '.wormbase.org']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
-
-[% END %]
-
-[%#
- #####################################################
- #
- #  ShareThis
- #
- ####################################################
-%]
-[% BLOCK share_this %]
-   <!-- ShareThis. Or not. -->
-
-   <script type="text/javascript"
-   src="http://w.sharethis.com/widget/?tabs=web%2Cpost%2Cemail&amp;charset=utf-8&amp;services=reddit%2Cdigg%2Cfacebook%2Cmyspace%2Cdelicious%2Cstumbleupon%2Ctechnorati%2Cgoogle_bmarks%2Cyahoo_bmarks%2Cslashdot&amp;style=default&amp;publisher=7ab86fe8-5972-4c0c-b8d5-e8a0240bc09d&amp;popup=true">
-   </script>
+   <!-- TODO: replace with our tracker -->
 [% END %]
 
 

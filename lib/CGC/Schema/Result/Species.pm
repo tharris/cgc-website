@@ -80,6 +80,21 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
+=head2 genes
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::Gene>
+
+=cut
+
+__PACKAGE__->has_many(
+  "genes",
+  "CGC::Schema::Result::Gene",
+  { "foreign.species_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 strains
 
 Type: has_many
@@ -95,9 +110,24 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 variations
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-28 17:36:50
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dhBEUItuWWw9aKt698dxPQ
+Type: has_many
+
+Related object: L<CGC::Schema::Result::Variation>
+
+=cut
+
+__PACKAGE__->has_many(
+  "variations",
+  "CGC::Schema::Result::Variation",
+  { "foreign.species_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 02:12:27
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rJidT6tDniAZOmoC43UVig
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

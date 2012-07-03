@@ -38,7 +38,7 @@ __PACKAGE__->table("gene");
 
 =head1 ACCESSORS
 
-=head2 id
+=head2 gene_id
 
   data_type: 'integer'
   extra: {unsigned => 1}
@@ -47,11 +47,11 @@ __PACKAGE__->table("gene");
 
 =head2 wormbase_id
 
-  data_type: 'integer'
-  extra: {unsigned => 1}
+  data_type: 'varchar'
   is_nullable: 1
+  size: 20
 
-=head2 name
+=head2 public_name
 
   data_type: 'varchar'
   is_nullable: 1
@@ -75,10 +75,29 @@ __PACKAGE__->table("gene");
   is_nullable: 1
   size: 20
 
+=head2 gmap
+
+  data_type: 'float'
+  is_nullable: 1
+  size: [7,5]
+
+=head2 pmap
+
+  data_type: 'integer'
+  extra: {unsigned => 1}
+  is_nullable: 1
+
+=head2 species_id
+
+  data_type: 'integer'
+  extra: {unsigned => 1}
+  is_foreign_key: 1
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
-  "id",
+  "gene_id",
   {
     data_type => "integer",
     extra => { unsigned => 1 },
@@ -86,8 +105,8 @@ __PACKAGE__->add_columns(
     is_nullable => 0,
   },
   "wormbase_id",
-  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
-  "name",
+  { data_type => "varchar", is_nullable => 1, size => 20 },
+  "public_name",
   { data_type => "varchar", is_nullable => 1, size => 30 },
   "locus_name",
   { data_type => "varchar", is_nullable => 1, size => 30 },
@@ -95,23 +114,110 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 30 },
   "chromosome",
   { data_type => "varchar", is_nullable => 1, size => 20 },
+  "gmap",
+  { data_type => "float", is_nullable => 1, size => [7, 5] },
+  "pmap",
+  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
+  "species_id",
+  {
+    data_type => "integer",
+    extra => { unsigned => 1 },
+    is_foreign_key => 1,
+    is_nullable => 1,
+  },
 );
 
 =head1 PRIMARY KEY
 
 =over 4
 
-=item * L</id>
+=item * L</gene_id>
 
 =back
 
 =cut
 
-__PACKAGE__->set_primary_key("id");
+__PACKAGE__->set_primary_key("gene_id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<gene_wormbase_id>
+
+=over 4
+
+=item * L</wormbase_id>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("gene_wormbase_id", ["wormbase_id"]);
+
+=head1 RELATIONS
+
+=head2 atomized_genotypes
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::AtomizedGenotype>
+
+=cut
+
+__PACKAGE__->has_many(
+  "atomized_genotypes",
+  "CGC::Schema::Result::AtomizedGenotype",
+  { "foreign.gene_id" => "self.gene_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 species
+
+Type: belongs_to
+
+Related object: L<CGC::Schema::Result::Species>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "species",
+  "CGC::Schema::Result::Species",
+  { id => "species_id" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE",
+  },
+);
+
+=head2 variation2genes
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::Variation2gene>
+
+=cut
+
+__PACKAGE__->has_many(
+  "variation2genes",
+  "CGC::Schema::Result::Variation2gene",
+  { "foreign.gene_id" => "self.gene_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 variations
+
+Type: many_to_many
+
+Composing rels: L</variation2genes> -> variation
+
+=cut
+
+__PACKAGE__->many_to_many("variations", "variation2genes", "variation");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-29 16:29:40
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:letaZ7Vco0aWKnibTMG/4Q
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 02:46:15
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:GvmoyspRUjwQPInVO/wqTA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

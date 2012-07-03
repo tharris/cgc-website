@@ -1,0 +1,13 @@
+<h1>Developer Documentation</h1>
+
+<h3>App development</h3>
+<ul>
+<li><a href="[% c.uri_for('/documentation/roles') %]">Roles</a></li> -- how to make use of role-based authorization</em></li>
+</ul>
+
+
+<h3>User Interface elements</h3>
+<ul>
+<li><a href="[% c.uri_for('/documentation/ui-messaging') %]">Messaging</a></li> -- using the user alert message system</em></li>
+</ul>
+
