@@ -123,8 +123,8 @@ __PACKAGE__->config->{authentication} = {
 # This also impacts A::W::V::TT configuration.
 __PACKAGE__->config(
     static => {
-        dirs         => [qw/css js img tmp /],
-        include_path => [ "$ENV{APP_ROOT}/tmp", __PACKAGE__->config->{root}, "$ENV{APP_ROOT}/external/bootstrap/assets"]
+        dirs         => [qw/css js img tmp/],
+        include_path => [ "$ENV{APP_ROOT}/tmp", __PACKAGE__->config->{root}, "$ENV{APP_ROOT}/external/bootstrap/assets", "$ENV{APP_ROOT}/root/static" ],
         #   logging  => 1,
     }
 );

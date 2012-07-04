@@ -41,9 +41,7 @@ The default action is run last when no other action matches.
 =cut
 
 sub default :Path {
-    my ($self,$c) = @_;
-    $c->log->warn("DEFAULT: couldn't find an appropriate action");
-    
+    my ($self,$c) = @_;    
     my $path = $c->request->path;
 
     # A user may be trying to request the top level page
@@ -56,15 +54,15 @@ sub default :Path {
     # each class.  Each class will have a single default screen.
     if (defined $class && $c->config->{pages}->{$class}) {
 	
-	# Use the debug index pages.
-	if ($c->config->{debug}) {
-	  $c->stash->{template} = 'debug/index.tt2';
-	} else {
-	    $c->stash->{template} = 'species/report.tt2';
-	    $c->stash->{path} = $c->request->path;
-	}
+		# Use the debug index pages.
+		if ($c->config->{debug}) {
+		  $c->stash->{template} = 'debug/index.tt2';
+		} else {
+			$c->stash->{template} = 'species/report.tt2';
+			$c->stash->{path} = $c->request->path;
+		}
     } else {
-	$c->detach('/soft_404');
+		$c->detach('/soft_404');
     }
 }
 
@@ -72,7 +70,8 @@ sub soft_404 :Path('/soft_404') {
     my ($self,$c) = @_;
     # 404: Page not found...
     $c->stash->{template} = 'status/404.tt2';
-    $c->error('page not found');
+    print STDERR "[SP] srsly?\n";
+    $c->error('Page not found');
     $c->response->status(404);
 }
     
