@@ -1,1 +1,11 @@
 This directory contains scripts for porting data from WormBase.
+
+Should be loaded in this order:
+
+./load_species.pl
+./load_gene_classes.pl
+./load_laboratories.pl
+
+./load_strains.pl
+./load_variations.pl
+./load_genes.pl

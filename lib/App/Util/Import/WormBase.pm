@@ -154,7 +154,7 @@ sub gene_class_finder {
 # By default, find using the lab designation.
 sub lab_finder {
     my ($self,$name,$column) = @_;
-    $column ||= 'laboratory_designation';
+    $column ||= 'name';
     my $schema = $self->schema;
     my $resultset = $schema->resultset('Laboratory');    
     my $row = $resultset->update_or_create({ $column => $name });
@@ -203,14 +203,15 @@ sub _parse_previous_import_log {
 	open IN,"$log_file" or $self->log->warn("$!");
 
 	while (<IN>) {
+
 #	    if (/COMPLETE/) {
 #		$previous{COMPLETE}++;
 #		next;
 #	    }
 	    chomp;
 	    $previous{$_}++;
-#	    print STDERR "   Recording $obj as seen...";
-#	    print STDERR -t STDOUT && !$ENV{EMACS} ? "\r" : "\n";
+	    print STDERR "   Recording $_ as seen...";
+	    print STDERR -t STDOUT && !$ENV{EMACS} ? "\r" : "\n";
 	}
 #	print STDERR "\n";
 	close IN;

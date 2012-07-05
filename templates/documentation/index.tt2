@@ -11,3 +11,11 @@
 <li><a href="[% c.uri_for('/documentation/ui-messaging') %]">Messaging</a></li> -- using the user alert message system</em></li>
 </ul>
 
+
+
+
+<h3>Data Model</h3>
+<ul>
+<li><a href="[% c.uri_for('/documentation/model_use_cases') %]">Messaging</a></li> -- Model use case questions</em></li>
+</ul>
+

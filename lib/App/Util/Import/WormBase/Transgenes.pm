@@ -8,18 +8,26 @@ has 'step' => (
     default => 'loading transgenes associated features from WormBase'
     );
 
+# hehe.  Has class.
+has 'class' => (
+    is => 'ro',
+    default => 'transgene',
+    );
 
 sub run {
     my $self = shift; 
     my $ace  = $self->ace_handle;
+    $|++;
+    die "THIS CLASS IS NOT COMPLETE\n";
 
-    my $log  = join('/',$self->import_log_dir,'transgenes.log');
+    my $class = $self->class;
+    my $log  = join('/',$self->import_log_dir,"$class.log");
     my %previous = $self->_parse_previous_import_log($log);
 
     # Open cache log for writing.
     open OUT,">>$log";
 
-    my $iterator = $ace->fetch_many(Transgene => '*');
+    my $iterator = $ace->fetch_many(ucfirst($class) => '*');
     my $c = 1;
     my $test = $self->test;
     while (my $obj = $iterator->next) {

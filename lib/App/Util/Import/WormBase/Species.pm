@@ -1,17 +1,17 @@
-package App::Util::Import::WormBase::GeneClasses;
+package App::Util::Import::WormBase::Species;
 
 use Moose;
 extends 'App::Util::Import::WormBase';
 
 has 'step' => (
     is => 'ro',
-    default => 'loading gene_classes and associated features from WormBase'
+    default => 'loading species and associated features from WormBase'
     );
 
 # hehe.  Has class.
 has 'class' => (
     is => 'ro',
-    default => 'gene_class',
+    default => 'species',
     );
 
 sub run {
@@ -19,7 +19,6 @@ sub run {
     my $ace  = $self->ace_handle;
 
     $|++;
-
     my $class = $self->class;
     my $log  = join('/',$self->import_log_dir,"$class.log");
     my %previous = $self->_parse_previous_import_log($log);
@@ -31,13 +30,13 @@ sub run {
     my $c = 1;
     my $test = $self->test;
     while (my $obj = $iterator->next) {
-	if ($previous{$obj}) {
+        if ($previous{$obj}) {
 	    print STDERR "Already seen $obj. Skipping...";
 	    print STDERR -t STDOUT && !$ENV{EMACS} ? "\r" : "\n"; 
 	    next;
 	}
 	last if ($test && $test == ++$c);
-	$self->log->warn("Processing ($obj)...");
+	$self->log->info("Processing ($obj)...");
 	$self->process_object($obj);
 	print OUT "$obj\n";
     }
@@ -45,18 +44,28 @@ sub run {
 }
 
 
+
+
+
 sub process_object {
     my ($self,$obj) = @_;
-   
-    my $rs  = $self->get_rs('GeneClass');
+
+    my $rs  = $self->get_rs('Species');
+    my $name      = $obj->name;
+    my $truncated = substr($name,0,200);
+    return if length $name > 250;  # kludge for some seriously broken object names
     my $row = $rs->update_or_create(
-	{   name          => $obj->name        || undef,
-	    description   => $obj->Description || undef,
-	    laboratory_id => $self->lab_finder($obj->Designating_laboratory || 'not specified')->id,
+	{   name             => $truncated,
+	    ncbi_taxonomy_id => $obj->NCBITaxonomyID || undef,
 	},
-	{ key => 'gene_class_name_unique' }
-        );
+	{ key => 'species_name_unique' }
+        );    
 }
+
+
+
+
+
 
 1;
 

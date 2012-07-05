@@ -8,18 +8,26 @@ has 'step' => (
     default => 'loading strains and associated features from WormBase'
     );
 
+# hehe.  Has class.
+has 'class' => (
+    is => 'ro',
+    default => 'strain',
+    );
 
 sub run {
     my $self = shift; 
     my $ace  = $self->ace_handle;
 
-    my $log  = join('/',$self->import_log_dir,'strains.log');
+    $|++;
+
+    my $class = $self->class;
+    my $log  = join('/',$self->import_log_dir,"$class.log");
     my %previous = $self->_parse_previous_import_log($log);
 
     # Open cache log for writing.
     open OUT,">>$log";
 
-    my $iterator = $ace->fetch_many(Strain => '*');
+    my $iterator = $ace->fetch_many(ucfirst($class) => '*');
     my $c = 1;
     my $test = $self->test;
     while (my $obj = $iterator->next) {
@@ -46,12 +54,13 @@ sub process_object {
     my ($self,$obj) = @_;
    
     my $strain_rs  = $self->get_rs('Strain');
-    my $lab = eval { $obj->Made_by->Laboratory };
+    
 
-    # Get a name for who made this.
-    my $name;
-    if (my $made_by = $obj->Made_by) {
-	$name = $made_by->Standard_name || $made_by->Full_name || 'unknown';
+    # Get a name for who made this.  This should maybe be a foreign key (no; prob not, most peeps not in system).
+    my ($made_by,$lab);
+    if (my $o = $obj->Made_by) {
+	$made_by = $o->Standard_name || $o->Full_name || $o || 'unknown';
+	$lab = $o->Laboratory;
     }
 
     my $strain_row = $strain_rs->update_or_create(
@@ -59,8 +68,8 @@ sub process_object {
 	    description => $obj->Remark       || undef,
 	    outcrossed  => $obj->Outcrossed   || undef,
 	    received    => $obj->CGC_received || undef,
-	    made_by     => $name              || undef,
-	    laboratory_id => $lab ? $self->lab_finder($lab)->id : undef,
+	    made_by     => $made_by           || undef,
+	    laboratory_id => $self->lab_finder($lab ? $lab : 'not specified')->id,
 	    males       => $obj->Males        || undef,	    
 	    inbreeding_state_selfed      => $obj->Selfed      || undef,
 	    inbreeding_state_isofemale   => $obj->Isofemale   || undef,
@@ -68,9 +77,9 @@ sub process_object {
 	    inbreeding_state_inbred      => $obj->Inbred      || undef,
 #	    reference_strain => $finder->($obj->Reference_strain,'Strain','name'),
 	    sample_history   => $obj->Sample_history || undef,
-	    mutagen_id       => $obj->Mutagen ? $self->mutagen_finder($obj->Mutagen)->id : undef,
+	    mutagen_id       => $self->mutagen_finder($obj->Mutagen ? $obj->Mutagen : 'not specified')->id,
 	    genotype    => $obj->Genotype || undef,
-	    species     => $self->species_finder($obj->Species || 'not specified; probably C. elegans'),
+	    species     => $self->species_finder($obj->Species || 'not specified'),
 	},
 	{ key => 'strain_name_unique' }
         );
@@ -82,9 +91,14 @@ sub process_object {
 	    strain_id => $strain_row->id,
 	    gene_id   => $gene_row->id });
     }
-    
+
+    return if $obj eq 'CB4856'; # Seg faulting. Skip for now.
+    return if $obj eq 'CB4858'; # Seg faulting. Skip for now.
+    return if $obj eq 'N2';     # Seg faulting. Skip for now.
+    return if $obj eq 'HK104';  # Seg faulting. Skip for now.
+    return if $obj eq 'HK105';  # Seg faulting. Skip for now.
     foreach my $var ($obj->Variation) {
-	my $var_row = $self->variation_finder($var->name,'wormbase_id');
+	my $var_row = $self->variation_finder($var->Public_name || $var->name);
 	$ag_rs->update_or_create({
 	    strain_id    => $strain_row->id,
 	    variation_id => $var_row->id });

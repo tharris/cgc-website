@@ -8,60 +8,67 @@ has 'step' => (
     default => 'loading laboratories and associated features from WormBase'
     );
 
-has 'address_data' => (
-    is   => 'ro',
-    isa  => 'HashRef',	
-    lazy => 1,
-    default => sub {	
-	my $self = shift;
-	my $object = $self->object;
-	my %address;
-	
-	foreach my $tag ($object->Address) {
-	    if ($tag =~ m/street|email|office/i) {		
-		my @data = map { $_->name } $tag->col;
-		$address{lc($tag)} = \@data;
-	    } else {
-		$address{lc($tag)} =  $tag->right->name;
-	    }
-	}
-	return \%address;
-    }
+# hehe.  Has class.
+has 'class' => (
+    is => 'ro',
+    default => 'laboratory',
     );
 
+sub address_data {
+    my ($self,$object) = @_;
+    my %address;
+    
+    foreach my $tag ($object->Address) {
+	if ($tag =~ m/street|email|office/i) {		
+	    my @data = map { $_->name } $tag->col;
+	    $address{lc($tag)} = \@data;
+	} else {
+	    $address{lc($tag)} =  $tag->right->name;
+	}
+    }
+    return \%address;
+}    
+
 sub street_address {
-    my $self    = shift;
-    my $address = $self->address_data;
-    return $address->{street_address} || undef;
+    my ($self,$object) = @_;   
+    my $address = $self->address_data($object);
+
+    if ($address->{street_address}) {
+	return join("\n",@{$address->{street_address}});
+    } else {
+	return undef;
+    }
 }
 
 sub country {    
-    my $self = shift;
-    my $address = $self->address_data;
+    my ($self,$object) = @_;   
+    my $address = $self->address_data($object);
     return $address->{country} || undef;
 }
 
 sub institution {
-    my $self    = shift;
-    my $address = $self->address_data;
+    my ($self,$object) = @_;   
+    my $address = $self->address_data($object);
     return $address->{institution} || undef;
 }
 
 
 sub email {
-    my $self    = shift;
-    my $address = $self->address_data;
-    my $data = { description => 'email addresses of the person',
-		 data        => $address->{email} || undef };
-    return $data;
+    my ($self,$object) = @_;   
+    my $address = $self->address_data($object);
+    if ($address->{email}) {
+	return join(",",@{$address->{email}});
+    } else {
+	return undef;
+    }
 }
 
 
 sub web_page {
-    my $self    = shift;
-    my $address = $self->address_data;
-    my $url = $address->{web_page};
-    $url =~ s/HTTP\:\/\///;
+    my ($self,$object) = @_;   
+    my $address = $self->address_data($object);
+    my $url     = $address->{web_page};
+    if ($url) { $url =~ s/HTTP\:\/\///; }
     return $url || undef;
 }
 
@@ -70,18 +77,20 @@ sub run {
     my $self = shift; 
     my $ace  = $self->ace_handle;
 
-    my $log  = join('/',$self->import_log_dir,'laboratories.log');
+    $|++;
+    my $class = $self->class;
+    my $log      = join('/',$self->import_log_dir,"$class.log");    
     my %previous = $self->_parse_previous_import_log($log);
 
     # Open cache log for writing.
-    open OUT,">>$log";
+    open OUT,">>$log" or $self->log->die("uh oh: $!");
 
-    my $iterator = $ace->fetch_many(Laboratory => '*');
+    my $iterator = $ace->fetch_many(ucfirst($class) => '*');
     my $c = 1;
     my $test = $self->test;
     while (my $obj = $iterator->next) {
 	if ($previous{$obj}) {	
-	    print STDERR "Already seen $obj. Skipping...";
+	    print STDERR "Already seen $obj. Skipping...\n";
 	    print STDERR -t STDOUT && !$ENV{EMACS} ? "\r" : "\n"; 
 	    next;
 	}
@@ -96,45 +105,66 @@ sub run {
 
 sub process_object {
     my ($self,$obj) = @_;
-   
+  
     my $lab_rs  = $self->get_rs('Laboratory');
 
     my $rep    = $obj->Representative;
-    my $head   = $rep->Standard_name || undef;
-    my $first  = $rep->First_name if $rep;
-    my $middle = $rep->Middle_name if $rep;
-    my $last   = $rep->Last_name if $rep;
-
-    # Address not aomized at WOrmABse: missing state, city, zip, and missing date_assigned.
+    my ($head,$first,$middle,$last);
+    my ($address,$country,$institution,$website,$email);
+    if ($rep) {
+	$head    = $rep->Standard_name;
+	$first   = $rep->First_name;
+	$middle  = $rep->Middle_name;
+	$last    = $rep->Last_name;
+	$address = $self->street_address($rep);
+	$country = $self->country($rep);
+	$institution = $self->institution($rep);
+	$website = $self->web_page($rep);
+	$email   = $self->email($rep);
+    }
+    
+    # Address not atomized at WOrmABse: missing state, city, zip, and missing date_assigned.
     my $lab_row = $lab_rs->update_or_create(
-	{   laboratory_designation   => $obj->name   || undef,
-	    allele_designation       => $obj->Allele_designation || undef,
-	    head                     => $head        || undef,
-	    lab_head_first_name      => $first       || undef,
-	    lab_head_middle_name     => $middle      || undef,
-	    lab_head_last_name       => $last        || undef,
-	    address1                 => $self->street_address,
-	    country                  => $self->country,
-	    institution              => $self->institution,
-	    website                  => $self->web_page,
+	{   name                   => $obj->name   || undef,
+	    allele_designation     => $obj->Allele_designation || undef,
+	    head                   => $head        || undef,
+	    lab_head_first_name    => $first       || undef,
+	    lab_head_middle_name   => $middle      || undef,
+	    lab_head_last_name     => $last        || undef,
+	    address1               => $address     || undef,
+	    country                => $country     || undef,
+	    institution            => $institution || undef,
+	    website                => $website     || undef,
+	    contact_email          => $email       || undef,
 	},
-	{ key => 'laboratory_designation_unique' }
+	{ key => 'name_unique' }
         );
 
-    my $l2g_rs = $self->get_rs('Laboratory2geneClass');    
-    foreach my $gen_class ($obj->Gene_classes) {
-	my $gene_row = $self->gene_finder($gene_class->name);
-	$l2g_rs->update_or_create({
+# This should already have been handled by GeneClasses.pm
+    my $gc_rs = $self->get_rs('GeneClass');    
+    foreach my $gene_class ($obj->Gene_classes) {
+	my $row = $self->gene_class_finder($gene_class->name);
+	$gc_rs->update_or_create({
 	    laboratory_id => $lab_row->id,
-	    gene_class_id => $gene_row->id });
+	    name          => $gene_class->name,
+				 },
+				 { key => 'gene_class_name_unique' });
     }
 
-    my $l2v_rs = $self->get_rs('Laboratory2variation');        
+    return if $obj eq 'CP'; # Seg faulting. Skip for now.
+    return if $obj eq 'OTN'; # Seg faulting. Skip for now.
+    return if $obj eq 'RW'; # Seg faulting. Skip for now.
+    return if $obj eq 'VC'; # Seg faulting. Skip for now.
+
+    # Associate variations <-> laboratories, using the laboratory_id foreign key.
+    my $var_rs = $self->get_rs('Variation');
     foreach my $var ($obj->Alleles) {
-	my $var_row = $self->variation_finder($var->name);
-	$l2v_rs->update_or_create({
-	    laboratory_id    => $lab_row->id,
-	    variation_id => $var_row->id });
+	my $var_row = $self->variation_finder($var->Public_name || $var->name);
+	$var_rs->update_or_create({
+	    laboratory_id  => $lab_row->id,
+	    id             => $var_row->id,
+				  },
+				  { primary => 'id' });
     }
 }
 

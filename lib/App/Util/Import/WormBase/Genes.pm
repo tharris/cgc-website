@@ -8,18 +8,26 @@ has 'step' => (
     default => 'loading genes and associated features from WormBase'
     );
 
+# hehe.  Has class.
+has 'class' => (
+    is => 'ro',
+    default => 'gene',
+    );
 
 sub run {
     my $self = shift; 
     my $ace  = $self->ace_handle;
 
-    my $log  = join('/',$self->import_log_dir,'genes.log');
+    $|++;
+
+    my $class = $self->class;
+    my $log  = join('/',$self->import_log_dir,"$class.log");
     my %previous = $self->_parse_previous_import_log($log);
 
     # Open cache log for writing.
     open OUT,">>$log";
 
-    my $iterator = $ace->fetch_many(Gene => '*');
+    my $iterator = $ace->fetch_many(ucfirst($class) => '*');
     my $c = 1;
     my $test = $self->test;
     while (my $obj = $iterator->next) {
@@ -43,7 +51,7 @@ sub run {
 sub process_object {
     my ($self,$gene) = @_;
 
-    my $schema = $self->schema;
+
     my ($chromosome,$gmap) = $self->_get_gmap_position($gene);
 
     my $gene_resultset = $self->get_rs('Gene');
@@ -68,21 +76,21 @@ sub process_object {
 	    gene_class    => $self->gene_class_finder($gene->Gene_class || 'not assigned'),
 	    species       => $self->species_finder($gene->Species || 'not specified; probably C. elegans'),
 	},
-	{ key => 'gene_wormbase_id_unique' }
+#	{ key => 'gene_wormbase_id_unique' }
+	{ key => 'gene_name_unique' }
         );
-    return;
    
     # Variations can remove more than one gene.
-    my $variation_resultset = $schema->resultset('Variation');
+    my $variation_resultset = $self->get_rs('Variation');
     foreach my $variation ($gene->Allele) {
 	my ($chromosome,$gmap) = _get_chromosome($variation);
 	my $var_row = $variation_resultset->update_or_create(
 	    {   wormbase_id   => $variation->name,
-		name          => $variation->Public_name || undef,
+		name          => $variation->Public_name || $variation->name || undef,
 		chromosome    => $chromosome             || undef,
 		gmap          => $gmap                   || undef,
 		is_reference_allele => ($gene->Reference_allele && $gene->Reference_allele eq $variation) ? 1 : undef,		
-     	        species       => $self->species_finder($variation->Species || $gene->Species || 'not specified; probably C. elegans'),		
+     	        species       => $self->species_finder($variation->Species || $gene->Species || 'not specified; probably C. elegans'),
 	    },
 	    { key => 'variation_name_unique' }
 	    );	
@@ -96,7 +104,7 @@ sub process_object {
 #	       $variation->Species);
 
 	my @genes     = $variation->Gene;
-	my $v2gene_rs = $schema->resultset('Variation2gene');
+	my $v2gene_rs = $self->get_rs('Variation2gene');
 	foreach (@genes) {
 	    my $gene_row = $self->gene_finder($_->name,'wormbase_id');
 	    $v2gene_rs->update_or_create(

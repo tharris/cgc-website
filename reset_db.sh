@@ -1,8 +1,9 @@
 #!/bin/bash
-mysqladmin -u root -p3l3g@nz drop cgc
-mysqladmin -u root -p3l3g@nz create cgc
-mysql -u root -p3l3g@nz cgc < schema/cgc.sql 
+DB=$1
+mysqladmin -u root -p3l3g@nz drop $DB
+mysqladmin -u root -p3l3g@nz create $DB
+mysql -u root -p3l3g@nz $DB < schema/cgc.sql 
 cd schema
-./regenerate_schema.sh
+./regenerate_schema.sh $DB
 cd
-#./util/import/wormbase/get_genes.pl
+
