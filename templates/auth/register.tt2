@@ -22,8 +22,9 @@
 	  </div>
 </div><!-- modal-body -->
 <div class="modal-footer">
-<button href="#" class="btn btn-primary" type="submit" onClick="register($(this));return false;">sign up ›</button>
-<p><em> Already a member? <strong><a id="login" onClick='$(this).parent().parent().parent().parent().parent().load("[% c.secure_uri_for("/login") %]"); return false;'  href="[% c.secure_uri_for('/login') %]">Sign in...</a></strong></em>           
+	<button href="#" class="btn btn-primary" type="submit"
+		onClick="register($(this));return false;">sign up ›</button>
+	<p><em> Already a member? <strong><a id="login" onClick='$(this).parent().parent().parent().parent().parent().load("[% c.secure_uri_for("/login") %]"); return false;'  href="[% c.secure_uri_for('/login') %]">Sign in...</a></strong></em>           
 </form>
 </div>
 <script>
@@ -36,7 +37,8 @@
             password = reg.find("#password"),
             wbid = reg.find("#wbid"),
             redirect = reg.find("#redirect");
-        if (!App.validateFields(email, username, password, reg.find("#confirm-password"))) {
+        if (!App.validateFields(email, username, password,
+        	reg.find("#confirm-password"))) {
             return false;
         }
         $.ajax({

@@ -3,7 +3,7 @@
 	<p>The [% c.config.site_name %] team has been notified of this problem and we are working to resolve the issue. If you'd like to send us a personal message please send our support team an <a href="mailto:[% c.config.issue_email %]">email</a> including this error report:
 	</p>
 	<br/>
-	<h4 class="alert-heading">Technical Details</h4>
+	<!-- <h4 class="alert-heading">Technical Details</h4>
 	<tt style="font-size:small">
 Expected URL: [% c.req.path %]</br>
 Server Error: 500</br>

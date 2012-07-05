@@ -35,12 +35,13 @@ sub strain_GET {
 	if (defined($strain)) {
 		$entity = {
 			name       => $strain->name,
-			species    => $strain->species->name,
+			species    => $strain->species
+				? $strain->species->name : 'No species',
 			outcrossed => $strain->outcrossed,
-			mutagen    => $strain->mutagen->name,
+			mutagen    => $strain->mutagen
+				? $strain->mutagen->name : 'No mutagen',
 			genotype   => $strain->genotype,
-			received   => $strain->received
-				? $strain->received->strftime('%Y/%m/%d') : undef,
+			received   => $strain->received,
 			# lab_order  => $strain->lab_order,
 			made_by    => $strain->made_by,
 			history    => [] # TODO: Track history

@@ -16,9 +16,7 @@
     <link type="text/css" href="/css/main.css" rel="stylesheet" />
     
     <style>
-    body {
-        padding-top: 60px;
-    }
+    body { padding-top: 60px; }
     </style>
 
     <script src="/js/bootstrap/jquery.js"></script>
@@ -33,9 +31,5 @@
 
   <body>  
     [%- content -%]
-
-
-
-
   </body>
 </html>
