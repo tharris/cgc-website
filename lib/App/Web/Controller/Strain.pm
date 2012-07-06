@@ -55,7 +55,8 @@ sub list : Local : ActionClass('REST') { }
 sub list_GET {
 	my ($self, $c) = @_;
 
-	my $strains = [ $c->model('CGC::Strain')->get_column('name')->all() ];
+	my $strains = [ map { +{ id => $_->id, name => $_->name } } $c->model('CGC::Strain')
+		->search(undef, { columns => [qw/id name/] }) ];
 	$self->status_ok(
 		$c,
 		entity => $strains

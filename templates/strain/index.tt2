@@ -49,14 +49,17 @@
 
 <script>
     $(function () {
-        $.ajax({
-            url: '/strain/list',
-            dataType: 'json',
-            success: function (json) {
-                $('#search-strain').typeahead({
-                    source: json
-                });
-            }
+        // $.ajax({
+        //     url: '/strain/list',
+        //     dataType: 'json',
+        //     success: function (json) {
+        //         $('#search-strain').typeahead({
+        //             source: json
+        //         });
+        //     }
+        // });
+        $('#search-strain').typeahead({
+            ajax: { url: '/strain/list', triggerLength: 2, method: 'GET' }
         });
         
         $('#search-strain').on('change',
