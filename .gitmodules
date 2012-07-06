@@ -1,3 +1,6 @@
 [submodule "external/bootstrap"]
 	path = external/bootstrap
 	url = https://github.com/twitter/bootstrap.git
+[submodule "external/bootstrap-typeahead"]
+	path = external/bootstrap-typeahead
+	url = https://github.com/gingi/twitter-bootstrap-typeahead.git

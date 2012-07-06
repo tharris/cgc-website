@@ -11,7 +11,8 @@
         <span class="help-inline" style="margin-bottom: 9px"><small>Example:
         <a href="/strain/CA257">CA257</a>,
         <a href="/strain/RGD1">RGD1</a>,
-        <a href="/strain/N2">N2</a></small></span>
+        <a href="/strain/N2">N2</a>
+        </small></span>
     </div>
 </div>
 
@@ -29,9 +30,9 @@
         <tr><th>Made by</th>   <td>[% strain.made_by %]</td></tr>
     </tbody>
     </table>
-    <p><a class="btn" data-uri="/register?inline" data-toggle="modal" href="#orderForm">Order strain "<b>[% strain.name %]</b>"</a></p>
+    <p><a class="btn" data-uri="/register" data-toggle="modal" href="#addToCart"><i class="icon-shopping-cart"></i> Add to Cart</a></p>
 </div>
-<div class="modal hide fade" id="orderForm">
+<div class="modal hide fade" id="addToCart">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">×</button>
         <h3>Order strain [% strain.name %]</h3>
@@ -40,8 +41,8 @@
         <p>You are about to order the strain</p>
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn" data-dismiss="modal">Cancel</a>
-        <a href="#" class="btn btn-primary">Add to Cart</a>
+		<a href="#" class="btn" data-dismiss="modal">Cancel</a>
+		<a href="#" class="btn btn-primary">Add to Cart</a>
     </div>
 </div>
 [% END %]

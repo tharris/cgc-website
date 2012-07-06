@@ -30,8 +30,8 @@ sub widgets {
 sub fields {
     my ( $self, $page, $widget, $c ) = @_;
     my @fields = eval { @{ $c->config->{pages}->{$page}->{widgets}->{$widget} }; };
-#  @fields || die
-#    "Check configuration for $page:$widget: all widgets specified in widget_order must exist in 'widgets'";
+	# @fields || die
+	# "Check configuration for $page:$widget: all widgets specified in widget_order must exist in 'widgets'";
     return @fields;
 }
 

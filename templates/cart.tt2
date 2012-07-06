@@ -4,9 +4,11 @@
 <p>Here are the contents of your cart:</p>
 <div class="span6">
 <table class="table table-striped">
-	[% FOR strain IN cart.strains %]
-	<tr>
-		<td><a href="#"><i class="icon-remove"></i></a></td>
+	[% last_strain = cart.strains.size - 1 -%]
+	[% FOR i IN [ 0 .. last_strain ] %]
+		[% strain = cart.strains.$i %]
+	<tr id="item-[% i %]">
+		<td><a data-remove="item-[% i %]" href="#"><i class="icon-remove"></i></a></td>
 		<td><a href="/strain/[% strain %]">[% strain %]</a></td>
 	</tr>
 	[% END %]
@@ -18,3 +20,10 @@
 </div>
 
 <div id="checkout"></div>
+<script>
+	console.log($('a[data-remove]'));
+	$('a[data-remove]').on('click', function (e) {
+		var remove = $(e.target).parent().attr('data-remove');
+		$('tr#' + remove).css('background-color','#fcc');
+	});
+</script>
