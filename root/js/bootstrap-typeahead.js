@@ -27,17 +27,18 @@ function ($) {
      * ================================= */
 
     var Typeahead = function (element, options) {
-            this.$element = $(element)
-            this.options = $.extend({}, $.fn.typeahead.defaults, options)
-            this.matcher = this.options.matcher || this.matcher
-            this.sorter = this.options.sorter || this.sorter
-            this.highlighter = this.options.highlighter || this.highlighter
-            this.updater = this.options.updater || this.updater
-            this.$menu = $(this.options.menu).appendTo('body')
-            this.source = this.options.source
-            this.shown = false
-            this.listen()
-        }
+        this.$element = $(element);
+        this.options = $.extend({}, $.fn.typeahead.defaults, options);
+        this.matcher = this.options.matcher || this.matcher;
+        this.sorter = this.options.sorter || this.sorter;
+        this.highlighter = this.options.highlighter || this.highlighter;
+        this.updater = this.options.updater || this.updater;
+        this.$menu = $(this.options.menu).appendTo('body');
+        this.source = this.options.source;
+        this.ajax   = this.options.ajax;
+        this.shown = false;
+        this.fetchSources(this.listen);
+    };
 
     Typeahead.prototype = {
 
@@ -76,13 +77,12 @@ function ($) {
         ,
         lookup: function (event) {
             var that = this,
-                items, q
+                items, q;
+            this.query = this.$element.val()
 
-                this.query = this.$element.val()
-
-                if (!this.query) {
-                    return this.shown ? this.hide() : this
-                }
+            if (!this.query) {
+                return this.shown ? this.hide() : this
+            }
 
             items = $.grep(this.source, function (item) {
                 return that.matcher(item)
@@ -179,6 +179,22 @@ function ($) {
                 $.proxy(this.mouseenter, this))
         }
         ,
+        fetchSources: function (callback) {
+            var that = this;
+            var uri = this.ajax && this.ajax.uris ? this.ajax.uris[0] : null;
+            if (uri) {
+                $.ajax(uri, {
+                    dataType: 'json',
+                    success: function (json) {
+                        that.source = json;
+                        callback.apply(that);
+                    }
+                });
+            } else {
+                callback.apply(that);
+            }
+        }
+        ,
         keyup: function (e) {
             switch (e.keyCode) {
             case 40:
@@ -271,7 +287,8 @@ function ($) {
                 options = typeof option == 'object' && option
             if (!data)
                 $this.data('typeahead', (data = new Typeahead(this, options)))
-            if (typeof option == 'string') data[option]()
+            if (typeof option == 'string')
+                data[option]()
         })
     }
 

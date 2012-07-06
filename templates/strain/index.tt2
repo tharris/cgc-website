@@ -59,7 +59,7 @@
         //     }
         // });
         $('#search-strain').typeahead({
-            ajax: { url: '/strain/list', triggerLength: 2, method: 'GET' }
+            ajax: { uris: [ '/strain/list' ] }
         });
         
         $('#search-strain').on('change',
