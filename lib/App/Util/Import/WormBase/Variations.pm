@@ -51,6 +51,11 @@ sub process_object {
     my ($chromosome,$gmap) = $self->_get_gmap_position($obj);
     my $schema = $self->schema;
 
+    my $lab = $obj->Laboratory;
+    unless ($lab) {
+	$lab = eval { $obj->Person->Laboratory } ;
+    }
+
     # Variations can remove more than one gene.
     my $variation_rs = $self->get_rs('Variation');
     my $var_row = $variation_rs->update_or_create(
@@ -58,8 +63,13 @@ sub process_object {
 	    name          => $obj->Public_name       || $obj,
 	    chromosome    => $chromosome             || undef,
 	    gmap          => $gmap                   || undef,
+	    is_snp        => $obj->SNP(0)            ? 1 : undef,
+	    is_rflp       => $obj->RFLP           ? 1 : undef,
+	    is_natural_variant => $obj->Natural_variant(0) ? 1 : undef,
+	    is_transposon_insertion => $obj->Transposon_insetion(0) ? 1 : undef,
 	    species       => $self->species_finder($obj->Species       || 'not specified; probably C. elegans'),
 	    gene_class    => $self->gene_class_finder($obj->Gene_class || 'not specified'),
+	    laboratory_id => $self->lab_finder($lab ? $lab : 'not specified')->id,	    
 	},
 	{ key => 'variation_name_unique' }
 	);	

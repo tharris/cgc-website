@@ -172,6 +172,25 @@ sub gene_finder {
 }    
 
 
+sub transgene_finder {
+    my ($self,$name,$column) = @_;
+    $column ||= 'name';
+    my $schema = $self->schema;
+    my $resultset = $schema->resultset('Transgene');    
+    my $row = $resultset->update_or_create({ $column => $name });
+    return $row;
+}    
+
+
+sub rearrangement_finder {
+    my ($self,$name,$column) = @_;
+    $column ||= 'name';
+    my $schema = $self->schema;
+    my $resultset = $schema->resultset('Rearrangement');    
+    my $row = $resultset->update_or_create({ $column => $name });
+    return $row;
+}    
+
 sub mutagen_finder {
     my ($self,$name,$column) = @_;
     $column ||= 'name';

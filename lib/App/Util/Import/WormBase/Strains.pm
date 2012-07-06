@@ -55,7 +55,6 @@ sub process_object {
    
     my $strain_rs  = $self->get_rs('Strain');
     
-
     # Get a name for who made this.  This should maybe be a foreign key (no; prob not, most peeps not in system).
     my ($made_by,$lab);
     if (my $o = $obj->Made_by) {
@@ -90,6 +89,20 @@ sub process_object {
 	$ag_rs->update_or_create({
 	    strain_id => $strain_row->id,
 	    gene_id   => $gene_row->id });
+    }
+
+    foreach my $trans ($obj->Transgene) {
+	my $trans_row = $self->transgene_finder($trans->name);
+	$ag_rs->update_or_create({
+	    strain_id    => $strain_row->id,
+	    transgene_id => $trans_row->id });
+    }
+
+    foreach my $rearg ($obj->Rearrangement) {
+	my $rearg_row = $self->rearrangement_finder($rearg->name);
+	$ag_rs->update_or_create({
+	    strain_id        => $strain_row->id,
+	    rearrangement_id => $rearg_row->id });
     }
 
     return if $obj eq 'CB4856'; # Seg faulting. Skip for now.
