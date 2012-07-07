@@ -55,18 +55,21 @@ sub list : Local : ActionClass('REST') { }
 sub list_GET {
 	my ($self, $c) = @_;
 
-	my $strains = [ $c->model('CGC::Strain')->get_column('name')->all() ];
-	# my $strains = [ map { +{ id => $_->id, name => $_->name } } $c->model('CGC::Strain')
-	# 	->search(undef, { columns => [qw/id name/] }) ];
+	my $columns = $c->request->param('columns')
+		? [ split(',', $c->request->param('columns')) ]
+		: [ qw/name/ ];
+	my $transformer = sub {
+		my $row = shift;
+		return [ map { $row->get_column($_) } @$columns ];
+	};
+	my $strains = [ map { $transformer->($_) }
+		$c->model('CGC::Strain')->search(undef, { columns => $columns }) ];
 	$c->stash->{cachecontrol}{list} =  1800; # 30 minutes
 	$self->status_ok(
 		$c,
 		entity => $strains
-	);	
+	);
 }
-
-# sub strain : Path('/strain') : Args(2) : ActionClass('REST') {}
-# sub strain_GET { my ($self,$c,@args) = @_; if $args[0] eq 'list' {}....
 
 =head1 AUTHOR
 

@@ -49,17 +49,16 @@
 
 <script>
     $(function () {
-        // $.ajax({
-        //     url: '/strain/list',
-        //     dataType: 'json',
-        //     success: function (json) {
-        //         $('#search-strain').typeahead({
-        //             source: json
-        //         });
-        //     }
-        // });
         $('#search-strain').typeahead({
-            ajax: { uris: [ '/strain/list' ] }
+            ajax: {
+            	uris: [
+            		'/strain/list?columns=genotype',
+            		'/strain/list?columns=name',
+            	],
+				preprocess: function (item) {
+					return item[0];
+				}
+            },
         });
         
         $('#search-strain').on('change',

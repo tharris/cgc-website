@@ -181,14 +181,29 @@ function ($) {
         ,
         fetchSources: function (callback) {
             var that = this;
-            var uri = this.ajax && this.ajax.uris ? this.ajax.uris[0] : null;
-            if (uri) {
-                $.ajax(uri, {
-                    dataType: 'json',
-                    success: function (json) {
-                        that.source = json;
-                        callback.apply(that);
+            var uris = this.ajax ? this.ajax.uris : [];
+            console.log(uris);
+            if (uris.length > 0) {
+                // var deferreds = [];
+                // for (var i = 0; i < uris.length; i++) {
+                //     deferreds.push(function () {
+                //         console.log("Ajax " + uris[i]);
+                //         $.ajax(uris[i], { dataType: 'json' });
+                //     });
+                // } 
+                var preprocess = this.ajax.preprocess;
+                // $.when(deferreds).done(function () {
+                $.when($.ajax(uris[0]), $.ajax(uris[1])).done(function () {
+                    for (var i = 0; i < arguments.length; i++) {
+                        var dataset = arguments[i][0];
+                        for (var j = 0; j < dataset.length; j++) {
+                            var item = preprocess(dataset[j]);
+                            if (item) { that.source.push(item); }
+                        }
                     }
+                    console.log("Source loaded: ", that.source.length);
+                    console.log(that.source.slice(0,100));
+                    callback.apply(that);
                 });
             } else {
                 callback.apply(that);
@@ -294,7 +309,10 @@ function ($) {
 
     $.fn.typeahead.defaults = {
         source: [],
-        ajax: {},
+        ajax: {
+            preprocess: function (item) { return item },
+            uris: []
+        },
         items: 8,
         menu: '<ul class="typeahead dropdown-menu"></ul>',
         item: '<li><a href="#"></a></li>'

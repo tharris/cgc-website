@@ -71,35 +71,35 @@ __PACKAGE__->config->{authentication} = {
                 #  use_userdata_from_session => 0,
             }
         },
-        openid => {
-            credential => {
-                class      => 'OpenID',
-                ua_class   => 'LWP::UserAgent',
-                extensions => [
-                    'http://openid.net/srv/ax/1.0' => {
-                        mode => 'fetch_request',
-                        'type.nickname' =>
-                            'http://axschema.org/namePerson/friendly',
-                        'type.email' => 'http://axschema.org/contact/email',
-                        # 'type.fullname' => 'http://axschema.org/namePerson',
-                        'type.firstname' =>
-                            'http://axschema.org/namePerson/first',
-                        'type.lastname' =>
-                            'http://axschema.org/namePerson/last',
-                        # 'type.dob' => 'http://axschema.org/birthDate',
-                        'type.gender' => 'http://axschema.org/person/gender',
-                        'type.country' =>
-                            'http://axschema.org/contact/country/home',
-                        'type.language' =>
-                            'http://axschema.org/pref/language',
-                        'type.timezone' =>
-                            'http://axschema.org/pref/timezone',
-                        required     => 'nickname,email,firstname,lastname',
-                        if_available => 'gender,country,language,timezone',
-                    },
-                ],
-            },
-        },
+        # openid => {
+        #     credential => {
+        #         class      => 'OpenID',
+        #         ua_class   => 'LWP::UserAgent',
+        #         extensions => [
+        #             'http://openid.net/srv/ax/1.0' => {
+        #                 mode => 'fetch_request',
+        #                 'type.nickname' =>
+        #                     'http://axschema.org/namePerson/friendly',
+        #                 'type.email' => 'http://axschema.org/contact/email',
+        #                 # 'type.fullname' => 'http://axschema.org/namePerson',
+        #                 'type.firstname' =>
+        #                     'http://axschema.org/namePerson/first',
+        #                 'type.lastname' =>
+        #                     'http://axschema.org/namePerson/last',
+        #                 # 'type.dob' => 'http://axschema.org/birthDate',
+        #                 'type.gender' => 'http://axschema.org/person/gender',
+        #                 'type.country' =>
+        #                     'http://axschema.org/contact/country/home',
+        #                 'type.language' =>
+        #                     'http://axschema.org/pref/language',
+        #                 'type.timezone' =>
+        #                     'http://axschema.org/pref/timezone',
+        #                 required     => 'nickname,email,firstname,lastname',
+        #                 if_available => 'gender,country,language,timezone',
+        #             },
+        #         ],
+        #     },
+        # },
         members => {
             credential => {
                 class          => 'Password',
