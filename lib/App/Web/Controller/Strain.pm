@@ -62,8 +62,11 @@ sub list_GET {
 		my $row = shift;
 		return [ map { $row->get_column($_) } @$columns ];
 	};
+	my $select = exists $c->request->parameters->{distinct}
+		? { select => { distinct => $columns }, as => $columns }
+		: { columns => $columns };
 	my $strains = [ map { $transformer->($_) }
-		$c->model('CGC::Strain')->search(undef, { columns => $columns }) ];
+		$c->model('CGC::Strain')->search(undef, $select) ];
 	$c->stash->{cachecontrol}{list} =  1800; # 30 minutes
 	$self->status_ok(
 		$c,

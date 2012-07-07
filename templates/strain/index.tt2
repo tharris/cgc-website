@@ -52,8 +52,8 @@
         $('#search-strain').typeahead({
             ajax: {
             	uris: [
-            		'/strain/list?columns=genotype',
-            		'/strain/list?columns=name',
+            		'/strain/list?distinct;columns=genotype',
+            		'/strain/list?distinct;columns=name',
             	],
 				preprocess: function (item) {
 					return item[0];

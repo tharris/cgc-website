@@ -182,27 +182,21 @@ function ($) {
         fetchSources: function (callback) {
             var that = this;
             var uris = this.ajax ? this.ajax.uris : [];
-            console.log(uris);
             if (uris.length > 0) {
-                // var deferreds = [];
-                // for (var i = 0; i < uris.length; i++) {
-                //     deferreds.push(function () {
-                //         console.log("Ajax " + uris[i]);
-                //         $.ajax(uris[i], { dataType: 'json' });
-                //     });
-                // } 
                 var preprocess = this.ajax.preprocess;
-                // $.when(deferreds).done(function () {
-                $.when($.ajax(uris[0]), $.ajax(uris[1])).done(function () {
-                    for (var i = 0; i < arguments.length; i++) {
-                        var dataset = arguments[i][0];
-                        for (var j = 0; j < dataset.length; j++) {
-                            var item = preprocess(dataset[j]);
-                            if (item) { that.source.push(item); }
-                        }
-                    }
-                    console.log("Source loaded: ", that.source.length);
-                    console.log(that.source.slice(0,100));
+                var deferreds = [];
+                for (var i = 0; i < uris.length; i++) {
+                    deferreds.push(
+                        $.ajax(uris[i], { dataType: 'json' })
+                        .success(function (json) {
+                            for (var i = 0; i < json.length; i++) {
+                                var item = preprocess(json[i]);
+                                if (item) { that.source.push(item); }
+                            }
+                        })
+                    );
+                } 
+                $.when.apply(null, deferreds).done(function () {
                     callback.apply(that);
                 });
             } else {
