@@ -111,6 +111,12 @@ __PACKAGE__->table("gene");
   is_nullable: 1
   size: 1
 
+=head2 status
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 20
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -153,6 +159,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_nullable => 1 },
   "strand",
   { data_type => "char", is_nullable => 1, size => 1 },
+  "status",
+  { data_type => "varchar", is_nullable => 1, size => 20 },
 );
 
 =head1 PRIMARY KEY
@@ -276,8 +284,8 @@ Composing rels: L</variation2genes> -> variation
 __PACKAGE__->many_to_many("variations", "variation2genes", "variation");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-08 14:31:35
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:k1yY84dmwHkseyFzebRGkg
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-08 15:26:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:MMpsxunnCnhNDt+KBkeP3w
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

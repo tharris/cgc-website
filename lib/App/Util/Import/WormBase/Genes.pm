@@ -45,6 +45,7 @@ sub process_object {
 	    strand        => $strand              || undef,
 	    gene_class    => $self->gene_class_finder($gene->Gene_class || 'not assigned'),
 	    species       => $self->species_finder($gene->Species || 'not specified; probably C. elegans'),
+	    status        => $self->Status        || undef,
 	},
 	{ key => 'gene_wormbase_id_unique' }
 #	{ key => 'gene_name_unique' }
