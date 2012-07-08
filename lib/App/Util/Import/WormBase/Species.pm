@@ -15,35 +15,11 @@ has 'class' => (
     );
 
 sub run {
-    my $self = shift; 
-    my $ace  = $self->ace_handle;
-
-    $|++;
+    my $self  = shift;
     my $class = $self->class;
-    my $log  = join('/',$self->import_log_dir,"$class.log");
-    my %previous = $self->_parse_previous_import_log($log);
-
-    # Open cache log for writing.
-    open OUT,">>$log";
-
-    my $iterator = $ace->fetch_many(ucfirst($class) => '*');
-    my $c = 1;
-    my $test = $self->test;
-    while (my $obj = $iterator->next) {
-        if ($previous{$obj}) {
-	    print STDERR "Already seen $obj. Skipping...";
-	    print STDERR -t STDOUT && !$ENV{EMACS} ? "\r" : "\n"; 
-	    next;
-	}
-	last if ($test && $test == ++$c);
-	$self->log->info("Processing ($obj)...");
-	$self->process_object($obj);
-	print OUT "$obj\n";
-    }
-    close OUT;
+    $self->run_with_offset($class);
+#    $self->run_with_iterator($class);
 }
-
-
 
 
 

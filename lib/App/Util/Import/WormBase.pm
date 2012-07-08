@@ -1,6 +1,7 @@
 package App::Util::Import::WormBase;
 
 use Moose;
+use Bio::DB::GFF;
 use Ace;
 
 extends 'App::Util::ImportNew';
@@ -26,10 +27,34 @@ sub _build_ace_handle {
 			    -port => $self->ace_port) or die;
 }
 
-
 has 'test' => (
     is => 'rw',
     );
+
+
+has 'gff_handle' => (
+    is         => 'rw',
+    lazy_build => 1,
+    );
+
+
+
+sub _build_gff_handle {
+    my $self = shift;
+    
+    my $db = Bio::DB::GFF->new( -user => 'root',# $self->user,
+				-pass => '3l3g@nz', # $self->pass,
+				-dsn =>"dbi:mysql:database=c_elegans;host=localhost",  # "dbi:mysql:database=c_elegans".$self->source.";host=" . $self->host,
+				-adaptor     => "dbi::mysql",
+				-aggregators => [
+				     "processed_transcript{coding_exon,5_UTR,3_UTR/CDS}",
+				     "full_transcript{coding_exon,five_prime_UTR,three_prime_UTR/Transcript}",
+				     
+				     "transposon{coding_exon,five_prime_UTR,three_prime_UTR}"
+				]);
+return $db;
+}
+
 
 
 
@@ -202,8 +227,9 @@ sub mutagen_finder {
 }    
 
 
-
-sub _get_offset {
+# Instead of lengthy reitrations of objects already parsed,
+# Just get an offset.
+sub _get_ace_offset {
     my ($self,$log_file) = @_;
     $self->log->info("  ---> getting offset from $log_file");	
     if (-e "$log_file") {
@@ -213,6 +239,11 @@ sub _get_offset {
 	chomp $wc;
 	$wc =~ /(\d*)\s.*/;
 	my $offset = $1;
+	if ($offset) {
+	    $offset = $offset <= 30 ? $offset = 0 : ($offset - 30);
+	} else {
+	    $offset = 0;
+	}
 	return $offset;
     }
 }
@@ -250,6 +281,76 @@ sub _parse_previous_import_log {
     }
     return %previous;
 }
+
+
+
+
+sub run_with_offset {
+    my ($self,$class) = @_;
+    my $ace  = $self->ace_handle;
+    $|++;
+#    my $class = $self->class;
+    my $log  = join('/',$self->import_log_dir,"$class.log");
+
+    # Open cache log for writing.
+    open OUT,">>$log";
+    my $offset = $self->_get_ace_offset($log);
+    my @objects = $ace->fetch(-class => ucfirst($class),
+			      -name  => '*',
+			      -offset => ($offset));
+    my $c = 1;
+    my $test = $self->test;
+    foreach my $obj (@objects) {
+	$ace->reopen();
+	last if ($test && $test == ++$c);
+	$self->log->info("Processing ($obj)...");
+	$self->process_object($obj);
+	print OUT "$obj\n";
+    }
+    close OUT;
+}
+
+
+
+sub run_with_iterator {
+    my ($self,$class) = @_;
+    my $ace  = $self->ace_handle;
+
+    $|++;
+#    my $class = $self->class;
+    my $log  = join('/',$self->import_log_dir,"$class.log");
+    my %previous = $self->_parse_previous_import_log($log);
+
+    # Open cache log for writing.
+    open OUT,">>$log";
+
+    my $iterator = $ace->fetch_many(ucfirst($class) => '*');
+    my $c = 1;
+    my $test = $self->test;
+    while (my $obj = $iterator->next) {
+	$ace->reopen();
+	last if ($test && $test == ++$c);
+	$self->log->info("Processing ($obj)...");
+	$self->process_object($obj);
+	print OUT "$obj\n";
+    }
+    close OUT;
+}
+
+
+
+
+
+
+sub genomic_position {
+    my ($self,$segment) = @_;
+    my ($ref, $start, $stop) = map { $segment->$_ } qw(abs_ref abs_start abs_stop);
+    my $strand = ($stop < $start) ? '-' : '+';
+    return ($ref,$start,$stop,$strand);
+}
+
+
+
 
 
 

@@ -1,2 +1,5 @@
+* Split the genic_location to a join table (variations can affect multiple things)
+* add in pmap
+
 The nomenclature tab on the CGC site really contains 
 links to canned queries and is more like a reference.

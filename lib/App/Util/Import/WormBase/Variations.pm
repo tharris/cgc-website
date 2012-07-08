@@ -14,41 +14,15 @@ has 'class' => (
     default => 'variation',
     );
 
+
 sub run {
-    my $self = shift; 
-    my $ace  = $self->ace_handle;
-
-    $|++;
+    my $self  = shift;
     my $class = $self->class;
-    my $log  = join('/',$self->import_log_dir,"$class.log");
-#    my %previous = $self->_parse_previous_import_log($log);
-
-    my $offset = $self->_get_offset($log);
-
-    # Open cache log for writing.
-    open OUT,">>$log";
-
-#    my $iterator = $ace->fetch_many(ucfirst($class) => '*');
-    my @objects = $ace->fetch(-class => ucfirst($class),
-			      -name  => '*',
-			      -offset => ($offset -20));
-    my $c = 1;
-    my $test = $self->test;
-#    while (my $obj = $iterator->next) {
-    foreach my $obj (@objects) {
-	$ace->reopen();
-#	if ($previous{$obj}) { 
-#	    print STDERR "Already seen $obj. Skipping...";
-#	    print STDERR -t STDOUT && !$ENV{EMACS} ? "\r" : "\n"; 
-#	    next;
-#	}
-	last if ($test && $test == ++$c);
-	$self->log->info("Processing ($obj)...");
-	$self->process_object($obj);
-	print OUT "$obj\n";
-    }
-    close OUT;
+    $self->run_with_offset($class);
+#    $self->run_with_iterator($class);
 }
+
+
 
 
 
@@ -62,11 +36,8 @@ sub process_object {
     unless ($lab) {
 	$lab = eval { $obj->Person->Laboratory } ;
     }
-
-    # Add: 
-    # The following three items (location, effect_on_protein, protein_change)
-    # are all dependent on context. There can be more than one context per
-    # variation.
+    my ($ref,$start,$stop,$strand) 
+	= $self->_get_genomic_position($gene);
 
     my ($protein_effects,$location_effects) = $self->features_affected($obj);
     my ($type_of_protein_change,$protein_change_position);
@@ -85,6 +56,9 @@ sub process_object {
 	    name                    => eval { $obj->Public_name }  || $obj,
 	    chromosome              => $chromosome                 || undef,
 	    gmap                    => $gmap                       || undef,
+	    pmap_start    => $start               || undef,
+	    pmap_stop     => $stop                || undef,
+	    strand        => $strand              || undef,
 	    genic_location          => $location                   || undef,
 	    variation_type          => $self->variation_type($obj) || undef,
 	    type_of_dna_change      => $obj->Type_of_mutation ? lc($obj->Type_of_mutation) : undef,
@@ -102,19 +76,12 @@ sub process_object {
 	{ key => 'variation_name_unique' }
 	);	
 
-
-    # Need to add in pmap.
     my $gene_rs = $schema->resultset('Gene');
     my @genes   = $obj->Gene;
     foreach my $gene (@genes) {
 	my $gene_row = $gene_rs->update_or_create(
 	    {   wormbase_id   => $gene->name,
 		name          => eval { $gene->Public_name }   || undef,
-		locus_name    => eval { $gene->CGC_name }      || undef,
-		sequence_name => eval { $gene->Sequence_name } || undef,
-		chromosome    => $chromosome          || undef,
-		gmap          => $gmap                || undef,
-		species       => $self->species_finder($obj->Species || 'not specified; probably C. elegans'),
 	    },
 	    { key => 'gene_wormbase_id_unique' }
 	    );
@@ -215,6 +182,27 @@ sub features_affected {
     }
     return ( {}, {} );
 }
+
+
+sub _get_genomic_position {
+    my ($self,$obj) = @_;
+    my $segments = $self->_segments($obj);
+    if ($segments) {
+	my @pos = $self->genomic_position($segments[0]);
+	return \@pos;
+    } else {
+	return;
+    }
+}
+
+
+sub _segments {
+    my ($self,$obj) = shift;
+    my $gff_handle  = $self->gff_handle;
+    return [$self->gff_handle->segment($obj->class => $obj)];    
+}
+
+
 
 
    

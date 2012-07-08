@@ -69,12 +69,6 @@ __PACKAGE__->table("variation");
   is_nullable: 1
   size: [7,5]
 
-=head2 pmap
-
-  data_type: 'integer'
-  extra: {unsigned => 1}
-  is_nullable: 1
-
 =head2 is_reference_allele
 
   data_type: 'integer'
@@ -156,6 +150,22 @@ __PACKAGE__->table("variation");
   is_nullable: 1
   size: 30
 
+=head2 pmap_stop
+
+  data_type: 'integer'
+  is_nullable: 1
+
+=head2 pmap_start
+
+  data_type: 'integer'
+  is_nullable: 1
+
+=head2 strand
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -174,8 +184,6 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 20 },
   "gmap",
   { data_type => "float", is_nullable => 1, size => [7, 5] },
-  "pmap",
-  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
   "is_reference_allele",
   { data_type => "integer", is_nullable => 1 },
   "is_snp",
@@ -219,6 +227,12 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 30 },
   "type_of_protein_change",
   { data_type => "varchar", is_nullable => 1, size => 30 },
+  "pmap_stop",
+  { data_type => "integer", is_nullable => 1 },
+  "pmap_start",
+  { data_type => "integer", is_nullable => 1 },
+  "strand",
+  { data_type => "char", is_nullable => 1, size => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -350,8 +364,8 @@ Composing rels: L</variation2genes> -> gene
 __PACKAGE__->many_to_many("genes", "variation2genes", "gene");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-07 15:34:19
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:26+72b0R2M4cTREykPQdgw
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-08 14:31:35
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wodCNe65XkFJ5wT0nhz4iQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
