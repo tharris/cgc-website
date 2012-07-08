@@ -45,6 +45,12 @@ __PACKAGE__->table("laboratory");
   is_auto_increment: 1
   is_nullable: 0
 
+=head2 name
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 25
+
 =head2 head
 
   data_type: 'varchar'
@@ -69,13 +75,7 @@ __PACKAGE__->table("laboratory");
   is_nullable: 1
   size: 255
 
-=head2 laboratory_designation
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 25
-
-=head2 strain_designation
+=head2 allele_designation
 
   data_type: 'varchar'
   is_nullable: 1
@@ -141,6 +141,12 @@ __PACKAGE__->table("laboratory");
   is_nullable: 1
   size: 255
 
+=head2 contact_email
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 255
+
 =head2 date_assigned
 
   data_type: 'varchar'
@@ -157,6 +163,8 @@ __PACKAGE__->add_columns(
     is_auto_increment => 1,
     is_nullable => 0,
   },
+  "name",
+  { data_type => "varchar", is_nullable => 1, size => 25 },
   "head",
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "lab_head_first_name",
@@ -165,9 +173,7 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "lab_head_last_name",
   { data_type => "varchar", is_nullable => 1, size => 255 },
-  "laboratory_designation",
-  { data_type => "varchar", is_nullable => 1, size => 25 },
-  "strain_designation",
+  "allele_designation",
   { data_type => "varchar", is_nullable => 1, size => 5 },
   "street_address",
   { data_type => "varchar", is_nullable => 1, size => 255 },
@@ -194,6 +200,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "website",
   { data_type => "varchar", is_nullable => 1, size => 255 },
+  "contact_email",
+  { data_type => "varchar", is_nullable => 1, size => 255 },
   "date_assigned",
   { data_type => "varchar", is_nullable => 1, size => 255 },
 );
@@ -212,21 +220,36 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 UNIQUE CONSTRAINTS
 
-=head2 C<laboratory_designation_unique>
+=head2 C<name_unique>
 
 =over 4
 
-=item * L</laboratory_designation>
+=item * L</name>
 
 =back
 
 =cut
 
-__PACKAGE__->add_unique_constraint("laboratory_designation_unique", ["laboratory_designation"]);
+__PACKAGE__->add_unique_constraint("name_unique", ["name"]);
 
 =head1 RELATIONS
 
-=head2 gene_classes_2s
+=head2 app_orders
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::AppOrder>
+
+=cut
+
+__PACKAGE__->has_many(
+  "app_orders",
+  "CGC::Schema::Result::AppOrder",
+  { "foreign.laboratory_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 gene_classes
 
 Type: has_many
 
@@ -235,53 +258,8 @@ Related object: L<CGC::Schema::Result::GeneClass>
 =cut
 
 __PACKAGE__->has_many(
-  "gene_classes_2s",
+  "gene_classes",
   "CGC::Schema::Result::GeneClass",
-  { "foreign.designating_laboratory_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 lab_order
-
-Type: might_have
-
-Related object: L<CGC::Schema::Result::LabOrder>
-
-=cut
-
-__PACKAGE__->might_have(
-  "lab_order",
-  "CGC::Schema::Result::LabOrder",
-  { "foreign.id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 laboratory2gene_classes
-
-Type: has_many
-
-Related object: L<CGC::Schema::Result::Laboratory2geneClass>
-
-=cut
-
-__PACKAGE__->has_many(
-  "laboratory2gene_classes",
-  "CGC::Schema::Result::Laboratory2geneClass",
-  { "foreign.laboratory_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 laboratory2variations
-
-Type: has_many
-
-Related object: L<CGC::Schema::Result::Laboratory2variation>
-
-=cut
-
-__PACKAGE__->has_many(
-  "laboratory2variations",
-  "CGC::Schema::Result::Laboratory2variation",
   { "foreign.laboratory_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -301,6 +279,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 rearrangements
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::Rearrangement>
+
+=cut
+
+__PACKAGE__->has_many(
+  "rearrangements",
+  "CGC::Schema::Result::Rearrangement",
+  { "foreign.laboratory_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 strains
 
 Type: has_many
@@ -316,29 +309,39 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 gene_classes
+=head2 transgenes
 
-Type: many_to_many
+Type: has_many
 
-Composing rels: L</laboratory2gene_classes> -> gene_class
+Related object: L<CGC::Schema::Result::Transgene>
 
 =cut
 
-__PACKAGE__->many_to_many("gene_classes", "laboratory2gene_classes", "gene_class");
+__PACKAGE__->has_many(
+  "transgenes",
+  "CGC::Schema::Result::Transgene",
+  { "foreign.laboratory_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 =head2 variations
 
-Type: many_to_many
+Type: has_many
 
-Composing rels: L</laboratory2variations> -> variation
+Related object: L<CGC::Schema::Result::Variation>
 
 =cut
 
-__PACKAGE__->many_to_many("variations", "laboratory2variations", "variation");
+__PACKAGE__->has_many(
+  "variations",
+  "CGC::Schema::Result::Variation",
+  { "foreign.laboratory_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 22:16:19
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:RblRY1Kv7HtkgitWHSLoeQ
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-05 22:10:16
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:6wYXKxxR3k4n9Ok2zcqhyw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

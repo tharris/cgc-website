@@ -58,7 +58,21 @@ __PACKAGE__->table("atomized_genotype");
   is_foreign_key: 1
   is_nullable: 1
 
+=head2 transgene_id
+
+  data_type: 'integer'
+  extra: {unsigned => 1}
+  is_foreign_key: 1
+  is_nullable: 1
+
 =head2 gene_id
+
+  data_type: 'integer'
+  extra: {unsigned => 1}
+  is_foreign_key: 1
+  is_nullable: 1
+
+=head2 rearrangement_id
 
   data_type: 'integer'
   extra: {unsigned => 1}
@@ -84,7 +98,21 @@ __PACKAGE__->add_columns(
     is_foreign_key => 1,
     is_nullable => 1,
   },
+  "transgene_id",
+  {
+    data_type => "integer",
+    extra => { unsigned => 1 },
+    is_foreign_key => 1,
+    is_nullable => 1,
+  },
   "gene_id",
+  {
+    data_type => "integer",
+    extra => { unsigned => 1 },
+    is_foreign_key => 1,
+    is_nullable => 1,
+  },
+  "rearrangement_id",
   {
     data_type => "integer",
     extra => { unsigned => 1 },
@@ -127,6 +155,46 @@ __PACKAGE__->belongs_to(
   },
 );
 
+=head2 rearrangement
+
+Type: belongs_to
+
+Related object: L<CGC::Schema::Result::Rearrangement>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "rearrangement",
+  "CGC::Schema::Result::Rearrangement",
+  { id => "rearrangement_id" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE",
+  },
+);
+
+=head2 transgene
+
+Type: belongs_to
+
+Related object: L<CGC::Schema::Result::Transgene>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "transgene",
+  "CGC::Schema::Result::Transgene",
+  { id => "transgene_id" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE",
+  },
+);
+
 =head2 variation
 
 Type: belongs_to
@@ -148,8 +216,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 12:52:37
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:iGUvZEHCf+rLFrX/k/DLMw
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-05 22:10:16
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:l1Uao1WsyrzC0H3pHjPtYQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

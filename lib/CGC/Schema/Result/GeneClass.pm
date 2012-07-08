@@ -57,7 +57,7 @@ __PACKAGE__->table("gene_class");
   data_type: 'mediumtext'
   is_nullable: 1
 
-=head2 designating_laboratory_id
+=head2 laboratory_id
 
   data_type: 'integer'
   extra: {unsigned => 1}
@@ -78,7 +78,7 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", default_value => "", is_nullable => 0, size => 20 },
   "description",
   { data_type => "mediumtext", is_nullable => 1 },
-  "designating_laboratory_id",
+  "laboratory_id",
   {
     data_type => "integer",
     extra => { unsigned => 1 },
@@ -115,26 +115,6 @@ __PACKAGE__->add_unique_constraint("gene_class_name_unique", ["name"]);
 
 =head1 RELATIONS
 
-=head2 designating_laboratory
-
-Type: belongs_to
-
-Related object: L<CGC::Schema::Result::Laboratory>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "designating_laboratory",
-  "CGC::Schema::Result::Laboratory",
-  { id => "designating_laboratory_id" },
-  {
-    is_deferrable => 1,
-    join_type     => "LEFT",
-    on_delete     => "CASCADE",
-    on_update     => "CASCADE",
-  },
-);
-
 =head2 genes
 
 Type: has_many
@@ -150,19 +130,24 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 laboratory2gene_classes
+=head2 laboratory
 
-Type: has_many
+Type: belongs_to
 
-Related object: L<CGC::Schema::Result::Laboratory2geneClass>
+Related object: L<CGC::Schema::Result::Laboratory>
 
 =cut
 
-__PACKAGE__->has_many(
-  "laboratory2gene_classes",
-  "CGC::Schema::Result::Laboratory2geneClass",
-  { "foreign.gene_class_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
+__PACKAGE__->belongs_to(
+  "laboratory",
+  "CGC::Schema::Result::Laboratory",
+  { id => "laboratory_id" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE",
+  },
 );
 
 =head2 variations
@@ -180,19 +165,9 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 laboratories
 
-Type: many_to_many
-
-Composing rels: L</laboratory2gene_classes> -> laboratory
-
-=cut
-
-__PACKAGE__->many_to_many("laboratories", "laboratory2gene_classes", "laboratory");
-
-
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 22:12:03
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:yRoZ2l6aPlnJopqXwVe8YQ
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-05 22:10:16
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:uJcvrClv49mahdUG6UV+Cw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

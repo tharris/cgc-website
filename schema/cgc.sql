@@ -57,20 +57,36 @@ CREATE TABLE `freezer_sample` (
 
 
 
-# Dump of table lab_order
+# Dump of table order
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `lab_order`;
+DROP TABLE IF EXISTS `app_order`;
 
-CREATE TABLE `lab_order` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `laboratory_id` int(11) unsigned DEFAULT NULL,
-  `user_id` int(11) unsigned DEFAULT NULL,
-  `strain_id` int(11) unsigned DEFAULT NULL,
-  `order_date` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+CREATE TABLE `app_order` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `laboratory_id` int(11) unsigned DEFAULT NULL,  
+  `remark`    mediumtext COMMENT 'Special order requests supplied by user',
+  `date_received` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `date_shipped`  mediumtext COMMENT 'this needs to be some sort of timestamp',
   PRIMARY KEY (`id`),
-  CONSTRAINT `lab_order_laboratory_fk` FOREIGN KEY (`id`) REFERENCES `laboratory` (`id`),
-  CONSTRAINT `lab_order_strain_fk` FOREIGN KEY (`id`) REFERENCES `strain` (`id`)
+  CONSTRAINT `app_order_user_fk` FOREIGN KEY (`user_id`) REFERENCES `app_user` (`user_id`),
+  CONSTRAINT `app_order_laboratory_fk` FOREIGN KEY (`laboratory_id`) REFERENCES `laboratory` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `app_order_contents`;
+
+CREATE TABLE `app_order_contents` (
+  `order_id` int(11) unsigned NOT NULL,
+  `strain_id`      int(11) unsigned NOT NULL,
+  `date_thawed` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `thaw_status` enum('success','failed'),
+  `curator_remarks` varchar(5) DEFAULT NULL COMMENT 'to be added by whoever freezes/thaws strain',
+  PRIMARY KEY (`order_id`,`strain_id`),
+  KEY `app_order_contents_strain_id_fk` (`strain_id`),
+  KEY `app_order_contents_order_id_fk` (`order_id`),
+  CONSTRAINT `app_order_contents_strain_id_fk` FOREIGN KEY (`strain_id`) REFERENCES `strain` (`id`),
+  CONSTRAINT `app_order_contents_order_id_fk` FOREIGN KEY (`order_id`) REFERENCES `strain_order` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -382,7 +398,17 @@ CREATE TABLE `variation` (
   `chromosome`  varchar(20) DEFAULT NULL,
   `gmap` float(7,5) DEFAULT NULL,
   `pmap` int(8) unsigned DEFAULT NULL,
+  `genic_location` varchar(30) DEFAULT NULL COMMENT 'eg intron, exon, promoter',
+  `variation_type` varchar(30) DEFAULT NULL COMMENT 'synthesis of the is_* cols, eg Naturally occurring insertion',
+  `type_of_dna_change` varchar(30) DEFAULT NULL COMMENT 'eg substitution, insertion, deletion',
+  `type_of_protein_change` varchar(30) DEFAULT NULL COMMENT 'eg missense, nonsense, frameshift',
+  `protein_change_position` varchar(30) DEFAULT NULL COMMENT 'A212D',
+  `is_ko_consortium_allele` int(1) DEFAULT NULL,
   `is_reference_allele` int(1) DEFAULT NULL,
+  `is_snp` int(1) DEFAULT NULL,
+  `is_rflp` int(1) DEFAULT NULL,
+  `is_natural_variant` int(1) DEFAULT NULL,
+  `is_transposon_insertion` int(1) DEFAULT NULL,
   `species_id` int(11) unsigned DEFAULT NULL,
   `gene_class_id` int(11) unsigned DEFAULT NULL,
   `laboratory_id` int(11) unsigned DEFAULT NULL,
@@ -410,18 +436,78 @@ CREATE TABLE `variation2gene` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+
+
+DROP TABLE IF EXISTS `transgene`;
+
+CREATE TABLE `transgene` (
+  `id`          int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `wormbase_id` varchar(20) DEFAULT NULL,
+  `name` varchar(30) DEFAULT NULL,
+  `description`  varchar(255) DEFAULT NULL,
+  `reporter_type` varchar(40) DEFAULT NULL,
+  `reporter_product` varchar(40) DEFAULT NULL,
+  `extrachromosomal` int(1) unsigned DEFAULT NULL,
+  `integrated` int(1) unsigned DEFAULT NULL,
+  `reporter_product_gene_id` int(11) unsigned DEFAULT NULL,
+  `chromosome`  varchar(20) DEFAULT NULL,  
+  `gmap` float(7,5) DEFAULT NULL,
+  `pmap` int(8) unsigned DEFAULT NULL,  
+  `species_id` int(11) unsigned DEFAULT NULL,
+  `laboratory_id` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `transgene_name_unique` (`name`),
+  KEY `transgene_species_fk` (`species_id`),
+  KEY `transgene_laboratory_fk` (`laboratory_id`),
+  CONSTRAINT `transgene_species_fk` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`),
+  CONSTRAINT `transgene_laboratory_fk` FOREIGN KEY (`laboratory_id`) REFERENCES `laboratory` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+
+DROP TABLE IF EXISTS `rearrangement`;
+
+CREATE TABLE `rearrangement` (
+  `id`          int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `wormbase_id` varchar(20) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `description`  varchar(255) DEFAULT NULL,
+  `type` varchar(100) DEFAULT NULL,
+  `mutagen_id` int(11) unsigned DEFAULT NULL,
+  `chromosome`  varchar(20) DEFAULT NULL,  
+  `gmap` float(7,5) DEFAULT NULL,
+  `pmap` int(8) unsigned DEFAULT NULL,  
+  `species_id` int(11) unsigned DEFAULT NULL,
+  `laboratory_id` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `rearrangement_name_unique` (`name`),
+  KEY `rearrangement_species_fk` (`species_id`),
+  KEY `rearrangement_laboratory_fk` (`laboratory_id`),
+  CONSTRAINT `rearrangement_species_fk` FOREIGN KEY (`species_id`) REFERENCES `species` (`id`),
+  CONSTRAINT `rearrangement_laboratory_fk` FOREIGN KEY (`laboratory_id`) REFERENCES `laboratory` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
 DROP TABLE IF EXISTS `atomized_genotype`;
 
 CREATE TABLE `atomized_genotype` (
-  `id`           int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `strain_id`    int(11) unsigned NOT NULL,
-  `variation_id` int(11) unsigned DEFAULT NULL,
-  `gene_id`      int(11) unsigned DEFAULT NULL,
+  `id`               int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `strain_id`        int(11) unsigned NOT NULL,
+  `variation_id`     int(11) unsigned DEFAULT NULL,
+  `transgene_id`     int(11) unsigned DEFAULT NULL,
+  `gene_id`          int(11) unsigned DEFAULT NULL,
+  `rearrangement_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `atomized_genotype_gene_id_fk` (`gene_id`),
   KEY `atomized_genotype_variation_id_fk` (`variation_id`),
+  KEY `atomized_genotype_transgene_id_fk` (`transgene_id`),
+  KEY `atomized_genotype_rearrangement_id_fk` (`rearrangement_id`),
   CONSTRAINT `atomized_genotype_gene_id_fk` FOREIGN KEY (`gene_id`) REFERENCES `gene` (`id`),
-  CONSTRAINT `atomized_genotype_variation_id_fk` FOREIGN KEY (`variation_id`) REFERENCES `variation` (`id`)
+  CONSTRAINT `atomized_genotype_variation_id_fk` FOREIGN KEY (`variation_id`) REFERENCES `variation` (`id`),
+  CONSTRAINT `atomized_genotype_transgene_id_fk` FOREIGN KEY (`transgene_id`) REFERENCES `transgene` (`id`),
+  CONSTRAINT `atomized_genotype_rearrangement_id_fk` FOREIGN KEY (`rearrangement_id`) REFERENCES `rearrangement` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

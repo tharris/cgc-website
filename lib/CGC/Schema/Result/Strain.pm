@@ -233,6 +233,21 @@ __PACKAGE__->add_unique_constraint("strain_name_unique", ["name"]);
 
 =head1 RELATIONS
 
+=head2 app_order_contents
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::AppOrderContent>
+
+=cut
+
+__PACKAGE__->has_many(
+  "app_order_contents",
+  "CGC::Schema::Result::AppOrderContent",
+  { "foreign.strain_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 freezer_samples
 
 Type: has_many
@@ -245,21 +260,6 @@ __PACKAGE__->has_many(
   "freezer_samples",
   "CGC::Schema::Result::FreezerSample",
   { "foreign.strain_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 lab_order
-
-Type: might_have
-
-Related object: L<CGC::Schema::Result::LabOrder>
-
-=cut
-
-__PACKAGE__->might_have(
-  "lab_order",
-  "CGC::Schema::Result::LabOrder",
-  { "foreign.id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
@@ -323,24 +323,9 @@ __PACKAGE__->belongs_to(
   },
 );
 
-=head2 variations
 
-Type: has_many
-
-Related object: L<CGC::Schema::Result::Variation>
-
-=cut
-
-__PACKAGE__->has_many(
-  "variations",
-  "CGC::Schema::Result::Variation",
-  { "foreign.strain_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 12:52:37
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1DCn+enWIfza8tft656Eqw
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-05 22:10:16
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:aD0361I8Vf+7Tg0WvXlshA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -1,12 +1,12 @@
 use utf8;
-package CGC::Schema::Result::FreezerSample;
+package CGC::Schema::Result::AppOrder;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-CGC::Schema::Result::FreezerSample
+CGC::Schema::Result::AppOrder
 
 =cut
 
@@ -30,88 +30,77 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<freezer_sample>
+=head1 TABLE: C<app_order>
 
 =cut
 
-__PACKAGE__->table("freezer_sample");
+__PACKAGE__->table("app_order");
 
 =head1 ACCESSORS
 
 =head2 id
 
   data_type: 'integer'
-  extra: {unsigned => 1}
   is_auto_increment: 1
   is_nullable: 0
 
-=head2 freezer_id
+=head2 user_id
+
+  data_type: 'integer'
+  is_foreign_key: 1
+  is_nullable: 1
+
+=head2 laboratory_id
 
   data_type: 'integer'
   extra: {unsigned => 1}
   is_foreign_key: 1
   is_nullable: 1
 
-=head2 strain_id
+=head2 remark
 
-  data_type: 'integer'
-  extra: {unsigned => 1}
-  is_foreign_key: 1
+  data_type: 'mediumtext'
   is_nullable: 1
 
-=head2 vials
+Special order requests supplied by user
 
-  data_type: 'tinyint'
-  extra: {unsigned => 1}
-  is_nullable: 1
+=head2 date_received
 
-=head2 freeze_date
-
-  data_type: 'datetime'
+  data_type: 'timestamp'
   datetime_undef_if_invalid: 1
   is_nullable: 1
 
-=head2 frozen_by
+=head2 date_shipped
 
-  data_type: 'integer'
-  is_nullable: 0
+  data_type: 'mediumtext'
+  is_nullable: 1
 
-Should probably be foreign key to app_user
+this needs to be some sort of timestamp
 
 =cut
 
 __PACKAGE__->add_columns(
   "id",
-  {
-    data_type => "integer",
-    extra => { unsigned => 1 },
-    is_auto_increment => 1,
-    is_nullable => 0,
-  },
-  "freezer_id",
-  {
-    data_type => "integer",
-    extra => { unsigned => 1 },
-    is_foreign_key => 1,
-    is_nullable => 1,
-  },
-  "strain_id",
+  { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
+  "user_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "laboratory_id",
   {
     data_type => "integer",
     extra => { unsigned => 1 },
     is_foreign_key => 1,
     is_nullable => 1,
   },
-  "vials",
-  { data_type => "tinyint", extra => { unsigned => 1 }, is_nullable => 1 },
-  "freeze_date",
+  "remark",
+  { data_type => "mediumtext", is_nullable => 1 },
+  "date_received",
   {
-    data_type => "datetime",
+    data_type => "timestamp",
     datetime_undef_if_invalid => 1,
     is_nullable => 1,
   },
-  "frozen_by",
-  { data_type => "integer", is_nullable => 0 },
+  "date_shipped",
+  { data_type => "mediumtext", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -128,18 +117,18 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 freezer
+=head2 laboratory
 
 Type: belongs_to
 
-Related object: L<CGC::Schema::Result::Freezer>
+Related object: L<CGC::Schema::Result::Laboratory>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "freezer",
-  "CGC::Schema::Result::Freezer",
-  { id => "freezer_id" },
+  "laboratory",
+  "CGC::Schema::Result::Laboratory",
+  { id => "laboratory_id" },
   {
     is_deferrable => 1,
     join_type     => "LEFT",
@@ -148,18 +137,18 @@ __PACKAGE__->belongs_to(
   },
 );
 
-=head2 strain
+=head2 user
 
 Type: belongs_to
 
-Related object: L<CGC::Schema::Result::Strain>
+Related object: L<CGC::Schema::Result::AppUser>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "strain",
-  "CGC::Schema::Result::Strain",
-  { id => "strain_id" },
+  "user",
+  "CGC::Schema::Result::AppUser",
+  { user_id => "user_id" },
   {
     is_deferrable => 1,
     join_type     => "LEFT",
@@ -170,7 +159,7 @@ __PACKAGE__->belongs_to(
 
 
 # Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-05 22:10:16
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nmGL2Hst8BND2NmaJjhcDA
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jWUjFParHB1urcMz0G2iOA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

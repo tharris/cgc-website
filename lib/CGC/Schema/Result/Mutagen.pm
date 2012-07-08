@@ -49,7 +49,7 @@ __PACKAGE__->table("mutagen");
 
   data_type: 'varchar'
   is_nullable: 1
-  size: 15
+  size: 40
 
 =cut
 
@@ -62,7 +62,7 @@ __PACKAGE__->add_columns(
     is_nullable => 0,
   },
   "name",
-  { data_type => "varchar", is_nullable => 1, size => 15 },
+  { data_type => "varchar", is_nullable => 1, size => 40 },
 );
 
 =head1 PRIMARY KEY
@@ -95,8 +95,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 02:12:27
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OHjpZbe6ZMTA5mZfyE2pBA
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-05 15:36:37
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:hkJwc+UrQsbNgusOYi4/0Q
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

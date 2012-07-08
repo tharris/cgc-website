@@ -50,7 +50,13 @@ __PACKAGE__->table("species");
   data_type: 'varchar'
   default_value: (empty string)
   is_nullable: 0
-  size: 50
+  size: 255
+
+=head2 ncbi_taxonomy_id
+
+  data_type: 'integer'
+  extra: {unsigned => 1}
+  is_nullable: 1
 
 =cut
 
@@ -63,7 +69,9 @@ __PACKAGE__->add_columns(
     is_nullable => 0,
   },
   "name",
-  { data_type => "varchar", default_value => "", is_nullable => 0, size => 50 },
+  { data_type => "varchar", default_value => "", is_nullable => 0, size => 255 },
+  "ncbi_taxonomy_id",
+  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -77,6 +85,20 @@ __PACKAGE__->add_columns(
 =cut
 
 __PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<species_name_unique>
+
+=over 4
+
+=item * L</name>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("species_name_unique", ["name"]);
 
 =head1 RELATIONS
 
@@ -95,6 +117,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 rearrangements
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::Rearrangement>
+
+=cut
+
+__PACKAGE__->has_many(
+  "rearrangements",
+  "CGC::Schema::Result::Rearrangement",
+  { "foreign.species_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 strains
 
 Type: has_many
@@ -106,6 +143,21 @@ Related object: L<CGC::Schema::Result::Strain>
 __PACKAGE__->has_many(
   "strains",
   "CGC::Schema::Result::Strain",
+  { "foreign.species_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 transgenes
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::Transgene>
+
+=cut
+
+__PACKAGE__->has_many(
+  "transgenes",
+  "CGC::Schema::Result::Transgene",
   { "foreign.species_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -126,8 +178,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 02:12:27
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rJidT6tDniAZOmoC43UVig
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-05 22:10:16
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:NIS3neeuVLDQ12THt5/uSg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

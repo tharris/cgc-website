@@ -26,6 +26,7 @@ sub _build_ace_handle {
 			    -port => $self->ace_port) or die;
 }
 
+
 has 'test' => (
     is => 'rw',
     );
@@ -202,14 +203,26 @@ sub mutagen_finder {
 
 
 
-
-
+sub _get_offset {
+    my ($self,$log_file) = @_;
+    $self->log->info("  ---> getting offset from $log_file");	
+    if (-e "$log_file") {
+	
+	# Instead just get the offset
+	my $wc = `wc -l $log_file`;
+	chomp $wc;
+	$wc =~ /(\d*)\s.*/;
+	my $offset = $1;
+	return $offset;
+    }
+}
 
 sub _parse_previous_import_log {
     my ($self,$log_file) = @_;
     $self->log->info("  ---> parsing log of previous imports at $log_file");
     my %previous;
     if (-e "$log_file") {
+
 #	# First off, just tail the file to see if we're finished.
 #	my $complete_flag = `tail -1 $cache_log`;
 #	chomp $complete_flag;

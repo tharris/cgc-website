@@ -1,12 +1,12 @@
 use utf8;
-package CGC::Schema::Result::Gene;
+package CGC::Schema::Result::Rearrangement;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
 
 =head1 NAME
 
-CGC::Schema::Result::Gene
+CGC::Schema::Result::Rearrangement
 
 =cut
 
@@ -30,11 +30,11 @@ extends 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<gene>
+=head1 TABLE: C<rearrangement>
 
 =cut
 
-__PACKAGE__->table("gene");
+__PACKAGE__->table("rearrangement");
 
 =head1 ACCESSORS
 
@@ -55,19 +55,25 @@ __PACKAGE__->table("gene");
 
   data_type: 'varchar'
   is_nullable: 1
-  size: 30
+  size: 255
 
-=head2 locus_name
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 30
-
-=head2 sequence_name
+=head2 description
 
   data_type: 'varchar'
   is_nullable: 1
-  size: 30
+  size: 255
+
+=head2 type
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 100
+
+=head2 mutagen_id
+
+  data_type: 'integer'
+  extra: {unsigned => 1}
+  is_nullable: 1
 
 =head2 chromosome
 
@@ -94,7 +100,7 @@ __PACKAGE__->table("gene");
   is_foreign_key: 1
   is_nullable: 1
 
-=head2 gene_class_id
+=head2 laboratory_id
 
   data_type: 'integer'
   extra: {unsigned => 1}
@@ -114,11 +120,13 @@ __PACKAGE__->add_columns(
   "wormbase_id",
   { data_type => "varchar", is_nullable => 1, size => 20 },
   "name",
-  { data_type => "varchar", is_nullable => 1, size => 30 },
-  "locus_name",
-  { data_type => "varchar", is_nullable => 1, size => 30 },
-  "sequence_name",
-  { data_type => "varchar", is_nullable => 1, size => 30 },
+  { data_type => "varchar", is_nullable => 1, size => 255 },
+  "description",
+  { data_type => "varchar", is_nullable => 1, size => 255 },
+  "type",
+  { data_type => "varchar", is_nullable => 1, size => 100 },
+  "mutagen_id",
+  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
   "chromosome",
   { data_type => "varchar", is_nullable => 1, size => 20 },
   "gmap",
@@ -132,7 +140,7 @@ __PACKAGE__->add_columns(
     is_foreign_key => 1,
     is_nullable => 1,
   },
-  "gene_class_id",
+  "laboratory_id",
   {
     data_type => "integer",
     extra => { unsigned => 1 },
@@ -155,7 +163,7 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 UNIQUE CONSTRAINTS
 
-=head2 C<gene_name_unique>
+=head2 C<rearrangement_name_unique>
 
 =over 4
 
@@ -165,19 +173,7 @@ __PACKAGE__->set_primary_key("id");
 
 =cut
 
-__PACKAGE__->add_unique_constraint("gene_name_unique", ["name"]);
-
-=head2 C<gene_wormbase_id_unique>
-
-=over 4
-
-=item * L</wormbase_id>
-
-=back
-
-=cut
-
-__PACKAGE__->add_unique_constraint("gene_wormbase_id_unique", ["wormbase_id"]);
+__PACKAGE__->add_unique_constraint("rearrangement_name_unique", ["name"]);
 
 =head1 RELATIONS
 
@@ -192,22 +188,22 @@ Related object: L<CGC::Schema::Result::AtomizedGenotype>
 __PACKAGE__->has_many(
   "atomized_genotypes",
   "CGC::Schema::Result::AtomizedGenotype",
-  { "foreign.gene_id" => "self.id" },
+  { "foreign.rearrangement_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 gene_class
+=head2 laboratory
 
 Type: belongs_to
 
-Related object: L<CGC::Schema::Result::GeneClass>
+Related object: L<CGC::Schema::Result::Laboratory>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "gene_class",
-  "CGC::Schema::Result::GeneClass",
-  { id => "gene_class_id" },
+  "laboratory",
+  "CGC::Schema::Result::Laboratory",
+  { id => "laboratory_id" },
   {
     is_deferrable => 1,
     join_type     => "LEFT",
@@ -236,34 +232,9 @@ __PACKAGE__->belongs_to(
   },
 );
 
-=head2 variation2genes
 
-Type: has_many
-
-Related object: L<CGC::Schema::Result::Variation2gene>
-
-=cut
-
-__PACKAGE__->has_many(
-  "variation2genes",
-  "CGC::Schema::Result::Variation2gene",
-  { "foreign.gene_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 variations
-
-Type: many_to_many
-
-Composing rels: L</variation2genes> -> variation
-
-=cut
-
-__PACKAGE__->many_to_many("variations", "variation2genes", "variation");
-
-
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-05 22:10:16
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:B6Gjki6CcNb/Wy4gjvGJSg
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-06 12:36:01
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:GFYS9LgNvZJOaMyOyxaGPQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

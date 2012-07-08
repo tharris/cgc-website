@@ -5,7 +5,9 @@ Should be loaded in this order:
 ./load_species.pl
 ./load_gene_classes.pl
 ./load_laboratories.pl
-
 ./load_strains.pl
+
 ./load_variations.pl
+./load_transgenes.pl
+./load_rearrengements.pl
 ./load_genes.pl

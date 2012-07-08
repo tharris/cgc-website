@@ -21,20 +21,27 @@ sub run {
     $|++;
     my $class = $self->class;
     my $log  = join('/',$self->import_log_dir,"$class.log");
-    my %previous = $self->_parse_previous_import_log($log);
+#    my %previous = $self->_parse_previous_import_log($log);
+
+    my $offset = $self->_get_offset($log);
 
     # Open cache log for writing.
     open OUT,">>$log";
 
-    my $iterator = $ace->fetch_many(ucfirst($class) => '*');
+#    my $iterator = $ace->fetch_many(ucfirst($class) => '*');
+    my @objects = $ace->fetch(-class => ucfirst($class),
+			      -name  => '*',
+			      -offset => ($offset -20));
     my $c = 1;
     my $test = $self->test;
-    while (my $obj = $iterator->next) {
-	if ($previous{$obj}) { 
-	    print STDERR "Already seen $obj. Skipping...";
-	    print STDERR -t STDOUT && !$ENV{EMACS} ? "\r" : "\n"; 
-	    next;
-	}
+#    while (my $obj = $iterator->next) {
+    foreach my $obj (@objects) {
+	$ace->reopen();
+#	if ($previous{$obj}) { 
+#	    print STDERR "Already seen $obj. Skipping...";
+#	    print STDERR -t STDOUT && !$ENV{EMACS} ? "\r" : "\n"; 
+#	    next;
+#	}
 	last if ($test && $test == ++$c);
 	$self->log->info("Processing ($obj)...");
 	$self->process_object($obj);
@@ -56,17 +63,38 @@ sub process_object {
 	$lab = eval { $obj->Person->Laboratory } ;
     }
 
+    # Add: 
+    # The following three items (location, effect_on_protein, protein_change)
+    # are all dependent on context. There can be more than one context per
+    # variation.
+
+    my ($protein_effects,$location_effects) = $self->features_affected($obj);
+    my ($type_of_protein_change,$protein_change_position);
+    foreach (keys %$protein_effects) {
+	$type_of_protein_change  = $_;
+	$protein_change_position = $protein_effects->{$_}->{protein_change_position};
+	last;
+    }
+
+    my ($location) = map { lc($_) } join(';',keys %$location_effects);
+
     # Variations can remove more than one gene.
     my $variation_rs = $self->get_rs('Variation');
     my $var_row = $variation_rs->update_or_create(
-	{   wormbase_id   => $obj->name,
-	    name          => $obj->Public_name       || $obj,
-	    chromosome    => $chromosome             || undef,
-	    gmap          => $gmap                   || undef,
-	    is_snp        => $obj->SNP(0)            ? 1 : undef,
-	    is_rflp       => $obj->RFLP           ? 1 : undef,
-	    is_natural_variant => $obj->Natural_variant(0) ? 1 : undef,
-	    is_transposon_insertion => $obj->Transposon_insetion(0) ? 1 : undef,
+	{   wormbase_id             => $obj->name,
+	    name                    => eval { $obj->Public_name }  || $obj,
+	    chromosome              => $chromosome                 || undef,
+	    gmap                    => $gmap                       || undef,
+	    genic_location          => $location                   || undef,
+	    variation_type          => $self->variation_type($obj) || undef,
+	    type_of_dna_change      => $obj->Type_of_mutation ? lc($obj->Type_of_mutation) : undef,
+	    type_of_protein_change  => $protein_effects->{type_of_protein_change}  || undef,
+	    protein_change_position => $protein_effects->{protein_change_position} || undef,	    
+	    is_snp                  => $obj->SNP(0)             ? 1 : undef,
+	    is_rflp                 => $obj->RFLP               ? 1 : undef,
+	    is_natural_variant      => $obj->Natural_variant(0) ? 1 : undef,
+	    is_transposon_insertion => $obj->Transposon_insertion(0) ? 1 : undef,
+	    is_ko_consortium_allele => $obj->KO_consortium_allele(0) ? 1 : undef,
 	    species       => $self->species_finder($obj->Species       || 'not specified; probably C. elegans'),
 	    gene_class    => $self->gene_class_finder($obj->Gene_class || 'not specified'),
 	    laboratory_id => $self->lab_finder($lab ? $lab : 'not specified')->id,	    
@@ -81,9 +109,9 @@ sub process_object {
     foreach my $gene (@genes) {
 	my $gene_row = $gene_rs->update_or_create(
 	    {   wormbase_id   => $gene->name,
-		name          => $gene->Public_name   || undef,
-		locus_name    => $gene->CGC_name      || undef,
-		sequence_name => $gene->Sequence_name || undef,
+		name          => eval { $gene->Public_name }   || undef,
+		locus_name    => eval { $gene->CGC_name }      || undef,
+		sequence_name => eval { $gene->Sequence_name } || undef,
 		chromosome    => $chromosome          || undef,
 		gmap          => $gmap                || undef,
 		species       => $self->species_finder($obj->Species || 'not specified; probably C. elegans'),
@@ -98,6 +126,96 @@ sub process_object {
 	    });
     }
 }
+
+
+
+sub variation_type {
+    my ($self,$object) = @_;
+
+    my $type;
+    if ($object->Transposon_insertion(0) && !$object->Allele(0)) {
+	return 'transposon insertion';
+    } elsif ($object->Natural_variant(0) && !$object->SNP(0)) {
+	return 'naturally occurring allele'; 
+    } elsif ($object->Natural_variant(0) && $object->SNP(0)) {
+	return 'SNP';
+    } elsif ($object->Allele(0) && $object->Natural_variant(0)) {
+	return 'naturally occurring allele';
+    } elsif ($object->Allele(0) && $object->Transposon_insertion(0)) {
+       return 'transposon insertion';
+    } elsif ($object->SNP(0)) {
+	return 'SNP';
+    } else {
+	return 'allele';
+    }
+}
+
+
+# We capture which genes the variation affects later.
+sub features_affected {
+    my ($self,$object) = @_;
+    
+    foreach my $type_affected ($object->Affects) {
+	next unless $type_affected eq 'Predicted_CDS';
+
+	# We won't disambiguate when multiple CDSs are affected - just take the first.
+        foreach my $item_affected ($type_affected->col) { # is a subtree
+            my (%protein_effects,%location_effects);	    
+	    my %associated_meta = ( # this can be used to identify protein effects
+				    Missense    => [qw(position description)],
+				    Silent      => [qw(description)],
+				    Frameshift  => [qw(description)],
+				    Nonsense    => [qw(subtype description)],
+				    Splice_site => [qw(subtype description)],
+		);
+	    
+	    # Change type is one of the keys of %associated_meta (eg, Missense)
+	    # One or more per affected feature?
+	    # Let's just take the first and call it good.
+	    foreach my $change_type ($item_affected->col) {
+		
+		my @raw_change_data = $change_type->row;
+		shift @raw_change_data; # first one is the type
+		
+		my %change_data;
+		$change_data{type_of_protein_change} = lc($change_type);
+		
+		my $keys = $associated_meta{$change_type} || [];
+		@change_data{@$keys} = map {"$_"} @raw_change_data;
+		
+		
+		# This should be handled by change_data above. Oh well.
+		# Reformat the protein_position_change
+		if ($change_type eq 'Missense') {
+		    my ($aa_position,$aa_change_string) = $change_type->right->row;
+		    $aa_change_string =~ /(.*)\sto\s(.*)/;
+		    $change_data{protein_change_position} = "$1$aa_position$2";
+		}  elsif ($change_type eq 'Nonsense') {
+		    # "Position" here really one of Amber, Ochre, etc.
+		    my ($aa_position,$aa_change) = $change_type->right->row;
+		    $change_data{protein_change_position} = "$aa_change";
+		} elsif ($change_type eq 'Splice_site') {
+		    my $subtype = $change_data{subtype};
+		    $change_data{type_of_protein_change} = "splice site ($subtype)";
+		    $change_data{protein_change_position} = $change_data{description};
+		} elsif ($change_type eq 'Framshift' || $change_type eq 'Silent') {
+		    $change_data{protein_change_position} = $change_data{description};
+		}
+		
+		if ($associated_meta{$change_type}) { # only protein effects have extra data
+		    $protein_effects{$change_type} = \%change_data;
+		}
+		else {
+		    $location_effects{$change_type} = \%change_data;
+		}
+	    }
+	    return (\%protein_effects, \%location_effects);
+	}
+	return ( {}, {} );  # Good god.
+    }
+    return ( {}, {} );
+}
+
 
    
 1;

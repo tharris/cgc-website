@@ -133,9 +133,26 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("user_id");
 
+=head1 RELATIONS
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-02 20:50:53
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:K2mzVjTxIyW1FFLoFsfdrQ
+=head2 app_orders
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::AppOrder>
+
+=cut
+
+__PACKAGE__->has_many(
+  "app_orders",
+  "CGC::Schema::Result::AppOrder",
+  { "foreign.user_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-05 22:09:00
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:yapDStcNXOoKursFNGofaw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
