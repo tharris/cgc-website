@@ -42,42 +42,56 @@ $(function () {
 var App = (function (window) {
     var app = {};
 
-    // TODO: Bootstrapify
     app.validateFields = function(email, username, password, confirmPassword) {
-        if (email.val() == "") {
-            email.focus().addClass("ui-state-error");
-            return false;
-        } else if (email.val() &&
-            !app.validateEmail(email.val(), "Not a valid email address!")) {
-            email.focus().addClass("ui-state-error");
-            return false;
-        } else if (password) {
-            if (password.val() == "") {
-                password.focus().addClass("ui-state-error");
-                return false;
-            } else if (confirmPassword &&
-                (password.val() != confirmPassword.val())) {
-                alert("The passwords do not match. Please enter again");
-                password.focus().addClass("ui-state-error");
-                return false;
-            }
-        } else if (username && username.val() == "") {
-            username.focus().addClass("ui-state-error");
-            return false;
+    	var errors = [];
+        if (email == "") {
+            errors.push("Email is empty");
         } else {
-            return true;
+            var emailError = app.validateEmail(email);
+            if (emailError) { errors.push(emailError); }
         }
+        if (password == "") {
+			errors.push("Password is empty");
+		} else if (confirmPassword && password != confirmPassword) {
+			errors.push("The passwords do not match.");
+        }
+        if (username == "") {
+            errors.push("Username is empty");
+        }
+        return errors;
     };
 
-    app.validateEmail = function (field, alerttxt) {
+    app.validateEmail = function (field) {
         var apos = field.indexOf("@"),
             dotpos = field.lastIndexOf(".");
         if (apos < 1 || dotpos - apos < 2) {
-            alert(alerttxt);
-            return false;
+            return "Email address is not valid"
         } else {
-            return true;
+            return null;
         }
     };
+    
+    app.showAlert = function (args) {
+    	var $prependElement = args.prependTo || $(body);
+    	var items = args.items || [];
+		var alertDiv = $("#cgc-alert");
+		if (alertDiv.length > 0) {
+			alertDiv.empty();
+		} else {
+			alertDiv = $("<div></div>");
+			alertDiv.addClass("alert alert-block");
+			alertDiv.attr('id', 'cgc-alert');
+			$prependElement.prepend(alertDiv);
+		}
+		alertDiv
+			.append('<button class="close" data-dismiss="alert">×</button>')
+			.append('<h4 class="alert-heading">' + args.title + '</h4>');
+		for (var i = 0; i < items.length; i++) {
+			alertDiv.append(items[i] + "</br>");
+		}
+		if (args.fadeOut) {
+			alertDiv.fadeOut(args.fadeOut);
+		}
+    }
     return app;
 })(this);

@@ -177,56 +177,78 @@ sub auth_popup : Chained('auth') PathPart('popup')  Args(0){
     }     
 }
 
+sub authenticate {
+	my ($self, $c, $email, $password) = @_;
+	my $rs = $c->model('CGC::AppUser')->search({
+		active    => 1,
+		email     => $email,
+		validated => 1,
+		password => { '!=', undef }
+	}, {
+		select => ['me.user_id', 'password', 'username' ],
+        as     => [ qw/user_id password username/]
+    });
+	
+	if ($c->authenticate({
+		password   => $password,
+		dbix_class => { resultset => $rs }})) {
+	    $c->log->debug('Username login was successful.',
+	    	$c->user->get("username"));
+	} else {
+	    $c->log->debug('Login incorrect.', $email);
+	}
+	return $c->user;
+}
+
+sub xhr_login :Path('/auth/xhr-login') :Args(0) {
+	my ($self, $c) = @_;
+	
+	my $user;
+	eval {
+		$user = $self->authenticate(
+			$c,
+			$c->req->body_parameters->{email},
+			$c->req->body_parameters->{password}
+		);
+	};
+	if ($@) {
+		$c->response->status(500);
+		$c->response->header('entity' => 'Unexpected error: ' . $@);
+	} elsif (defined($user)) {
+		$c->response->status(200);
+		$c->response->body('Authentication successful.');
+	} else {
+		$c->response->status(401);
+		$c->response->header('entity' =>
+			'Unauthorized. Email/password combination not accepted.');
+	}
+	$c->response->finalize_headers($c);
+	return 1;
+}
+
 sub auth_login : Chained('auth') PathPart('login')  Args(0){
     my ($self, $c) = @_;
     my $email    = $c->req->body_parameters->{email};
     my $password = $c->req->body_parameters->{password}; 
     
     # Is the table join really necessary here?
-    if ( $email && $password ) {
-#        my $rs = $c->model('CGC::AppUser')->search({active=>1, email=>$email, validated=>1, password => { '!=', undef }},
-#						   {   select => [ 
-#							   'me.user_id',
-#							   'password', 
-#							   'username',
-#							   ],
-#							   as => [ qw/
-#                      user_id
-#                      password
-#                      username
-#                    /], 
-#		      join=>'email'
-#						   });
+    if ($email && $password) {
+		if ($self->authenticate($c, $email, $password)) {
+			$c->log->debug('Username login was successful. ' .
+				$c->user->get("username") .
+				$c->user->get("password")
+			);
+			# $self->reload($c);
+			# Maybe have a login_successful.tt2 modal template with timed redirect?
 
-        my $rs = $c->model('CGC::AppUser')->search({active=>1, email=>$email, validated=>1, password => { '!=', undef }},
-						   {   select => [ 
-							   'me.user_id',
-							   'password', 
-							   'username',
-							   ],
-							   as => [ qw/
-                      user_id
-                      password
-                      username
-                    /]});
-
-	
-	if ( $c->authenticate( { password => $password,
-				 'dbix_class' => { resultset => $rs }
-			       } ) ) {
-	    
-	    $c->log->debug('Username login was successful. '. $c->user->get("username") . $c->user->get("password"));
-	    #                 $self->reload($c);
-	    # Maybe have a login_successful.tt2 modal template with timed redirect?
-
-	    $c->res->redirect($c->uri_for('/')->path);
-#                 $c->res->redirect($c->uri_for($c->req->path));
-	} else {
-	    $c->log->debug('Login incorrect.'.$email);
-	    $c->stash->{template} = "auth/login_failed.tt2";
-	}
+			$c->res->redirect($c->uri_for('/')->path);
+			# $c->res->redirect($c->uri_for($c->req->path));
+		} else {
+			$c->log->debug('Login incorrect.'.$email);
+			$c->stash->{template} = "auth/login_failed.tt2";
+		}
     } else {
-	$c->stash->{template} = "auth/login_failed.tt2";
+		$c->stash->{template} = "auth/login_failed.tt2";
     }
 }
 

@@ -70,7 +70,6 @@ sub soft_404 :Path('/soft_404') {
     my ($self,$c) = @_;
     # 404: Page not found...
     $c->stash->{template} = 'status/404.tt2';
-    print STDERR "[SP] srsly?\n";
     $c->error('Page not found');
     $c->response->status(404);
 }

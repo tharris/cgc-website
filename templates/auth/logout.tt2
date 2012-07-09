@@ -5,7 +5,9 @@
   [% END %]
 
      [% WRAPPER modal_footer %]
-         <a class="btn btn-primary" id="login" onClick='$jq("#modal").load("[% c.secure_uri_for("/login") %]"); return false;'  href="[% c.secure_uri_for('/login') %]">sign in</a> or <a href="/">Return to the CGC Home</a>.
+         <a class="btn btn-primary-inverse" data-toggle="modal"
+				data-uri="[% c.secure_uri_for("/login") %]"
+				href="#modal">Sign in</a> or <a href="/">Return to the CGC Home</a>.
 
   [% END %]
 [% END %]
