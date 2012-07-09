@@ -9,23 +9,60 @@
     <h3>Please sign in</h3>
 </div>
 <div class="modal-body">
-    <form id="login-form" method="post" action="[% c.secure_uri_for("/auth/login") %]">
-    <label>email</label>
-    <input class="email" type="email" name="email" size="30" />
-    <label>password</label>
-    <input class="password" type="password" name="password" size="30"  />
+	<form id="login-form" method="post">
+		<label>email</label>
+		<input class="email" type="email" name="email" size="30" />
+		<label>password</label>
+		<input class="password" type="password" name="password" size="30" />
+	</form>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-primary" type="submit" onClick='return login()'>Sign in</button>	       
-    </form>
+	<button id="submit-login" class="btn btn-primary">Sign in</button>
+</div>
 </div>
 <script>
-function login() {
-    var form = $("#login-form");
-    return App.validateFields(
-        form.find("input.email"),
-        null,
-        form.find("input.password")
-    );
-}
+$(function () {
+	$("#submit-login").click(function () {
+		$("#login-form").submit();
+	});
+	$("#login-form").submit(function () {
+		var email    = $(this).find('input.email').attr('value');
+		var password = $(this).find('input.password').attr('value');
+		var errors = App.validateFields(
+			email, null, password
+		);
+		if (errors && errors.length > 0) {
+			App.showAlert({
+				prependTo: $(".modal-body"),
+				title: "Please correct the following errors:",
+				items: errors
+			});
+			return false;
+		} else {
+			$.ajax("[% c.secure_uri_for("/auth/xhr-login") %]", {
+				type: "POST",
+				data: { email: email, password: password, inline: 1 },
+				success: function (data) {
+					App.showAlert({
+						prependTo: $(".modal-body"),
+						title: "Login successful",
+						fadeOut: 2000
+					});
+					window.setTimeout('location.reload()', 1000);
+				},
+				error: function (jqXHR, textStatus, errorThrown) {
+					App.showAlert({
+						prependTo: $(".modal-body"),
+						title: "Login error",
+						items: [
+							jqXHR.getResponseHeader('Entity'),
+							"<small>Forgot your password? <a href=\"/password/email\">Reset it.</a></small>"
+						]
+					});
+				}
+			});
+			return false;
+		}
+	});
+});
 </script>

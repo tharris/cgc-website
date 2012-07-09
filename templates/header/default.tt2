@@ -53,13 +53,13 @@
                   		[% END %]
                           </ul>
                     </li>
-                    <li><a class="btn btn-inverse" data-toggle="modal" data-target="#modal" href="/logout">Logout</a></li>
+                    <li><a class="btn btn-inverse" data-toggle="modal" href="#modal" data-uri="/logout">Logout</a></li>
 
 		  </ul>
                 </div>
           [% ELSE %]
 
-	    <form method="post" action="/auth/login" class="navbar-form pull-right">
+		<div class="navbar-form pull-right">
 	    <!--
 			<input class="input-small" name="email" type="email" placeholder="Email"/>
 			<input class="input-small" name="password" type="password" placeholder="Password" />
@@ -72,7 +72,7 @@
 			<a class="btn btn-inverse" data-toggle="modal"
 				data-uri="[% c.secure_uri_for("/register") %]"
 				href="#modal">Sign up</a>
-		</form>
+		</div>
           [% END %]
 	</div>
   </div>
