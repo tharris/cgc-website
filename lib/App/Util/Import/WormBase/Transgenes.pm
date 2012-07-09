@@ -33,24 +33,23 @@ sub process_object {
 	$lab = eval { $obj->Person->Laboratory } ;
     }
 
-
+    my @genes = $obj->Gene;
     my $transgene_rs = $self->get_rs('Transgene');
-    my $transgene_ row = $transgene_rs->update_or_create(
+    my $transgene_row = $transgene_rs->update_or_create(
 	{   name          => $obj->name || undef,
 	    chromosome    => $chromosome             || undef,
 	    gmap          => $gmap                   || undef,
 	    description   => $obj->Summary           || undef,
 	    reporter_type => $obj->Reporter_type     || undef,
-	    reporter_product => $obj->Reporter_product || undef,
-	    reporter_gene => $obj->Gene ? $self->gene_finder($obj->Gene,'wormbase_id') : undef,
-	    extrachomosomal => $obj->Extrachromosomal || undef,
+	    reporter_product         => $obj->Reporter_product || undef,
+	    reporter_product_gene_id => @genes ? $self->gene_finder($genes[0],'wormbase_id') : undef,
+	    extrachromosomal => $obj->Extrachromosomal || undef,
 	    integrated    => $obj->Integrated        || undef,	    
 	    laboratory_id => $self->lab_finder($lab ? $lab : 'not specified')->id,
 	    species       => $self->species_finder($obj->Species || 'not specified; probably C. elegans'),	    
 	},
 	{ key => 'transgene_name_unique' }
 	);	
-    }	
 }
 
    

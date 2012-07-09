@@ -87,12 +87,6 @@ __PACKAGE__->table("rearrangement");
   is_nullable: 1
   size: [7,5]
 
-=head2 pmap
-
-  data_type: 'integer'
-  extra: {unsigned => 1}
-  is_nullable: 1
-
 =head2 species_id
 
   data_type: 'integer'
@@ -129,6 +123,11 @@ __PACKAGE__->table("rearrangement");
   is_nullable: 1
   size: 1
 
+=head2 reference_strain_id
+
+  data_type: 'integer'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -153,8 +152,6 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 20 },
   "gmap",
   { data_type => "float", is_nullable => 1, size => [7, 5] },
-  "pmap",
-  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
   "species_id",
   {
     data_type => "integer",
@@ -177,6 +174,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_nullable => 1 },
   "strand",
   { data_type => "char", is_nullable => 1, size => 1 },
+  "reference_strain_id",
+  { data_type => "integer", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -263,8 +262,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-08 15:26:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:suYYQ7LaLtd0ZiVLPNgDuQ
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-09 14:59:01
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:iVhJKiGIdbPzQoLBzM+Dpw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

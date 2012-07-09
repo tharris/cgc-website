@@ -37,7 +37,7 @@ sub process_object {
 	$lab = eval { $obj->Person->Laboratory } ;
     }
     my ($ref,$start,$stop,$strand) 
-	= $self->_get_genomic_position($gene);
+	= $self->_get_genomic_position($obj);
 
     my ($protein_effects,$location_effects) = $self->features_affected($obj);
     my ($type_of_protein_change,$protein_change_position);
@@ -81,7 +81,6 @@ sub process_object {
     foreach my $gene (@genes) {
 	my $gene_row = $gene_rs->update_or_create(
 	    {   wormbase_id   => $gene->name,
-		name          => eval { $gene->Public_name }   || undef,
 	    },
 	    { key => 'gene_wormbase_id_unique' }
 	    );
@@ -186,8 +185,8 @@ sub features_affected {
 
 sub _get_genomic_position {
     my ($self,$obj) = @_;
-    my $segments = $self->_segments($obj);
-    if ($segments) {
+    my @segments = $self->_segments($obj);
+    if (@segments) {
 	my @pos = $self->genomic_position($segments[0]);
 	return \@pos;
     } else {

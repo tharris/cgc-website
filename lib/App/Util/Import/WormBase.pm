@@ -197,6 +197,15 @@ sub gene_finder {
     return $row;
 }    
 
+sub strain_finder {
+    my ($self,$name,$column) = @_;
+    $column ||= 'name';
+    my $schema = $self->schema;
+    my $resultset = $schema->resultset('Strain');    
+    my $row = $resultset->update_or_create({ $column => $name });
+    return $row;
+}    
+
 
 sub transgene_finder {
     my ($self,$name,$column) = @_;

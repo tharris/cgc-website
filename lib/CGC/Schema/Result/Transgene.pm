@@ -105,12 +105,6 @@ __PACKAGE__->table("transgene");
   is_nullable: 1
   size: [7,5]
 
-=head2 pmap
-
-  data_type: 'integer'
-  extra: {unsigned => 1}
-  is_nullable: 1
-
 =head2 species_id
 
   data_type: 'integer'
@@ -177,8 +171,6 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 20 },
   "gmap",
   { data_type => "float", is_nullable => 1, size => [7, 5] },
-  "pmap",
-  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
   "species_id",
   {
     data_type => "integer",
@@ -287,8 +279,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-08 15:26:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ehgVEyhMtoMYs9vbU9LPdg
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-08 19:28:52
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:PU8/gwSvmiLDKazxmlv9oA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

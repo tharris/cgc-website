@@ -26,16 +26,23 @@ sub run {
 sub process_object {
     my ($self,$gene) = @_;
 
-
     my ($chromosome,$gmap) = $self->_get_gmap_position($gene);
 
     my $gene_resultset = $self->get_rs('Gene');
 
     my ($ref,$start,$stop,$strand) = $self->_get_genomic_position($gene);
-
+    my ($type,$confirmed) = $self->_get_type($gene);
+    
+    # Create a unique key for name so that we can track dead genes.
+    # Not sure if this is the best way to track wormbase data.
+    my $name = $gene->Public_name || "$gene";
+    if ($gene->Status eq 'Dead') {
+	$name .= "-dead";
+    }
+    
     my $gene_row = $gene_resultset->update_or_create(
 	{   wormbase_id   => $gene->name,
-	    name          => $gene->Public_name   || "$gene",
+	    name          => $name,
 	    locus_name    => $gene->CGC_name      || undef,
 	    sequence_name => $gene->Sequence_name || undef,
 	    chromosome    => $chromosome          || undef,
@@ -45,7 +52,9 @@ sub process_object {
 	    strand        => $strand              || undef,
 	    gene_class    => $self->gene_class_finder($gene->Gene_class || 'not assigned'),
 	    species       => $self->species_finder($gene->Species || 'not specified; probably C. elegans'),
-	    status        => $self->Status        || undef,
+	    status        => $gene->Status        || undef,
+	    type          => $type                || undef,
+	    confirmed     => $confirmed,
 	},
 	{ key => 'gene_wormbase_id_unique' }
 #	{ key => 'gene_name_unique' }
@@ -73,6 +82,31 @@ sub process_object {
     }
 }
 
+
+sub _get_type {
+    my ($self,$object) = @_; 
+
+    my $type;
+
+    # General type: coding gene, pseudogene, or RNA
+    if ($object->Corresponding_pseudogene) {
+	$type = 'pseudogene';
+    } elsif ($object->Corresponding_CDS) {
+        $type = "protein coding";
+    }
+    
+    unless ($type) {
+	# Is this a non-coding RNA?
+	if (my @transcripts = $object->Corresponding_transcript) {
+	    $type = $transcripts[0]->Transcript;
+	}
+    }
+    
+    # Confirmed?
+    my @cds = $object->Corresponding_CDS;
+    my $confirmed = @cds ? $cds[0]->Prediction_status->name : 0;
+    return ($type,$confirmed);
+}
 
 
 sub _get_genomic_position {
