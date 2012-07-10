@@ -3,6 +3,9 @@
 	.navbar-form input {
 		margin-top:auto;
 	}
+	.navbar ul.nav .btn {
+		line-height: 10px;
+	}
 </style>
 <div class="navbar navbar-fixed-top">
   <div class="navbar-inner">
@@ -34,38 +37,24 @@
           [% IF c.user_exists %]
 	       <div class="nav-collapse pull-right">
 		<ul class="nav">
-
-
-
-                    <li class="dropdown">                   
-                          <a href="#"
-                               class="dropdown-toggle"
-                               data-toggle="dropdown">
-                               Welcome, [% c.user.username %]!<b class="caret"></b>
-                           </a>
-                           <ul class="dropdown-menu">
-                                <li><a href="[% c.req.base %]user/[% c.user.user_id %]/profile" id="section-user" %]">Profile</a></li>
-                                <li><a href="[% c.req.base %]user/[% c.user.user_id %]/account" id="section-user" %]">Account</a></li>
-                                <li class="divider"></li>
-                                <li class="nav-header">Adminstration</li>
-                  		[% IF c.check_user_roles('admin') %]
-   		                  <li><a href="[% c.uri_for('/documentation') %]">Developer Docs</a></li>
-                  		[% END %]
-                          </ul>
-                    </li>
-                    <li><a class="btn btn-inverse" data-toggle="modal" href="#modal" data-uri="/logout">Logout</a></li>
-
+            <li class="dropdown">                   
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Welcome, <b>[% c.user.username %]</b>! <b class="caret"></b></a>
+                   <ul class="dropdown-menu">
+                        <li><a href="[% c.req.base %]user/[% c.user.user_id %]/profile" id="section-user" %]">Profile</a></li>
+                        <li><a href="[% c.req.base %]user/[% c.user.user_id %]/account" id="section-user" %]">Account</a></li>
+                        <li class="divider"></li>
+                        <li class="nav-header">Adminstration</li>
+          		[% IF c.check_user_roles('admin') %]
+                  <li><a href="[% c.uri_for('/documentation') %]">Developer Docs</a></li>
+          		[% END %]
+                  </ul>
+            </li>
+            <li><a class="btn btn-inverse" data-toggle="modal" href="#modal" data-uri="/logout">Logout</a></li>
 		  </ul>
                 </div>
           [% ELSE %]
 
 		<div class="navbar-form pull-right">
-	    <!--
-			<input class="input-small" name="email" type="email" placeholder="Email"/>
-			<input class="input-small" name="password" type="password" placeholder="Password" />
-			<button class="btn" type="submit">Sign in</button>
-			-->
-
 			<a class="btn btn-primary-inverse" data-toggle="modal"
 				data-uri="[% c.secure_uri_for("/login") %]"
 				href="#modal">Sign In</a>
