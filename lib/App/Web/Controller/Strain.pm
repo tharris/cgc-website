@@ -45,7 +45,7 @@ sub strain_GET {
 			# lab_order  => $strain->lab_order,
 			made_by    => $strain->made_by,
 			history    => [] # TODO: Track history
-		}
+		};
 	}
 	$self->status_ok($c, entity => $entity);
 }

@@ -207,8 +207,8 @@ sub xhr_login :Path('/auth/xhr-login') :Args(0) {
 	eval {
 		$user = $self->authenticate(
 			$c,
-			$c->req->body_parameters->{email},
-			$c->req->body_parameters->{password}
+			$c->req->param('email'),
+			$c->req->param('password')
 		);
 	};
 	if ($@) {
@@ -222,7 +222,7 @@ sub xhr_login :Path('/auth/xhr-login') :Args(0) {
 		$c->response->header('entity' =>
 			'Unauthorized. Email/password combination not accepted.');
 	}
-	$c->response->finalize_headers($c);
+	$c->finalize();
 	return 1;
 }
 
