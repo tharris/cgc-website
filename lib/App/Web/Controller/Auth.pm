@@ -222,7 +222,7 @@ sub xhr_login :Path('/auth/xhr-login') :Args(0) {
 		$c->response->header('entity' =>
 			'Unauthorized. Email/password combination not accepted.');
 	}
-	$c->response->finalize_headers($c);
+	$c->finalize();
 	return 1;
 }
 
