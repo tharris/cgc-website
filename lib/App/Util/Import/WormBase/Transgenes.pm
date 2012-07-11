@@ -42,11 +42,11 @@ sub process_object {
 	    description   => $obj->Summary           || undef,
 	    reporter_type => $obj->Reporter_type     || undef,
 	    reporter_product         => $obj->Reporter_product || undef,
-	    reporter_product_gene_id => @genes ? $self->gene_finder($genes[0],'wormbase_id') : undef,
-	    extrachromosomal => $obj->Extrachromosomal || undef,
-	    integrated    => $obj->Integrated        || undef,	    
-	    laboratory_id => $self->lab_finder($lab ? $lab : 'not specified')->id,
-	    species       => $self->species_finder($obj->Species || 'not specified; probably C. elegans'),	    
+	    reporter_product_gene_id => @genes ? $self->gene_finder($genes[0],'wormbase_id')->id : undef,
+	    extrachromosomal         => $obj->Extrachromosomal || undef,
+	    integrated               => $obj->Integrated        || undef,	    
+	    laboratory_id            => $lab ? $self->lab_finder($lab)->id : undef,
+	    species_id               => $obj->Species ? $self->species_finder($obj->Species)->id : undef,
 	},
 	{ key => 'transgene_name_unique' }
 	);	

@@ -21,13 +21,16 @@
     <table id="strain-view" class="table table-striped">
     <thead><h3>Strain Information</h3></thead>
     <tbody>
-        <tr><th>Name</th>      <td>[% strain.name %]</td></tr>
-        <tr><th>Species</th>   <td><em>[% strain.species %]</em></td></tr>
-        <tr><th>Genotype</th>  <td>[% strain.genotype %]</td></tr>
-        <tr><th>Mutagen</th>   <td>[% strain.mutagen %]</td></tr>
-        <tr><th>Outcrossed</th><td>[% strain.outcrossed %]</td></tr>
-        <tr><th>Received</th>  <td>[% strain.received %]</td></tr>
-        <tr><th>Made by</th>   <td>[% strain.made_by %]</td></tr>
+        <tr><th>Name</th>       <td>[% strain.name %]</td></tr>
+        <tr><th>Species</th>    <td><em>[% strain.species %]</em></td></tr>
+        <tr><th>Genotype</th>   <td>[% strain.genotype %]</td></tr>	
+        <tr><th>Mutagen</th>    <td>[% strain.mutagen %]</td></tr>
+        <tr><th>Outcrossed</th> <td>[% strain.outcrossed %]</td></tr>
+        <tr><th>Received</th>   <td>[% strain.received %]</td></tr>
+        <tr><th>Made by</th>    <td>[% strain.made_by %]</td></tr>
+	<tr><th>Laboratory</th> <td>[% strain.laboratory %]</td></tr>
+	<tr><th>Made by</th>    <td>[% strain.made_by %] ([% link_to_wormbase('Person',strain.made_by,'view at WormBase') %])</td></tr>
+
     </tbody>
     </table>
     <p><a class="btn" data-uri="/register" data-toggle="modal" href="#addToCart"><i class="icon-shopping-cart"></i> Add to Cart</a></p>

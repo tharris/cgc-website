@@ -72,7 +72,7 @@ has 'import_log_dir' => (
     );
 
 sub _build_import_log_dir {
-    my $self = shift;
+    my $self    = shift;
     my $log_dir = $self->log_dir;
     my $import_logs = join("/",$log_dir,'import_logs');
     system("mkdir -p $import_logs");

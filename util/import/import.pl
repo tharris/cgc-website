@@ -351,14 +351,15 @@ sub populate_laboratories {
                 && $input->commercial ne 'N'
                 && $input->commercial ne '');
         my $laboratory = $resultset->update_or_create(
-            {   laboratory_designation => $laboratory,
+            {   name        => $laboratory,
 		head        => $labdata->{head},
                 institution => $labdata->{institution},
                 city        => $labdata->{city},
                 state       => $labdata->{state},
                 commercial  => $is_commercial,
                 country     => $input->country,
-            },	    
+            },
+	    { primary => 'name_unique' }
         );
 
         # Add legacy data and associate with laboratory.

@@ -23,14 +23,11 @@
                     <li class="nav-header">Orders</li>
                     <li><a href="#"><i class="icon-inbox"></i> Pending Orders</a></li>
                     <li><a href="#"><i class="icon-inbox"></i> Recently Shipped</a></li>
-<li><a href="#"><i class="icon-user"></i> Registered users</a></li>
 
                     <li class="nav-header">Users</li>
-
-<li><a href="#"><i class="icon-user"></i> Registered users</a></li>
-<li><a href="[% c.uri_for('/admin/registered_users') %]" id="registered-users" class="menu-item-todd"><i class="icon-user"></i> Registered users 2</a></li>
-
-
+                    <li><a data-uri="[% c.uri_for('/admin/registered_users') %]" 
+                           href="#content-pane"><i class="icon-user"></i> Registered users</a>
+                    </li>
 
 
                     <li class="nav-header"> Reports</li>
@@ -47,14 +44,17 @@
         <div class="span9">
           <div class="hero-unit">
             <h1>Hello, [% c.user.username %]!</h1>
-            <p>This is a template for a simple marketing or informational website. It includes a large callout called the hero unit and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-            <p><a class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+            [% IF c.check_user_roles('admin') %]
+                <p>You're an administrator! With great privilege comes great responsibility!</p>
+            [% ELSE %]
+                <p>From here you can manage your orders, see past orders and update your account details.</p>
+	    [% END %]
           </div>
 
 
 
 
-          <div id="content-pane-todd"></div>
+          <div id="content-pane"></div>
 
 
           <div class="row-fluid">

@@ -95,7 +95,7 @@ sub process_object {
 	$first   = $rep->First_name;
 	$middle  = $rep->Middle_name;
 	$last    = $rep->Last_name;
-	$address = $self->street_address($rep);
+        $address = $self->street_address($rep);
 	$country = $self->country($rep);
 	$institution = $self->institution($rep);
 	$website = $self->web_page($rep);

@@ -42,7 +42,7 @@ sub process_object {
 	    outcrossed  => $obj->Outcrossed   || undef,
 	    received    => $obj->CGC_received || undef,
 	    made_by     => $made_by           || undef,
-	    laboratory_id => $self->lab_finder($lab ? $lab : 'not specified')->id,
+	    laboratory_id => $lab ? $self->lab_finder($lab)->id : undef,
 	    males       => $obj->Males        || undef,	    
 	    inbreeding_state_selfed      => $obj->Selfed      || undef,
 	    inbreeding_state_isofemale   => $obj->Isofemale   || undef,
@@ -50,9 +50,9 @@ sub process_object {
 	    inbreeding_state_inbred      => $obj->Inbred      || undef,
 #	    reference_strain => $finder->($obj->Reference_strain,'Strain','name'),
 	    sample_history   => $obj->Sample_history || undef,
-	    mutagen_id       => $self->mutagen_finder($obj->Mutagen ? $obj->Mutagen : 'not specified')->id,
-	    genotype    => $obj->Genotype || undef,
-	    species     => $self->species_finder($obj->Species || 'not specified'),
+	    mutagen_id       => $obj->Mutagen ? $self->mutagen_finder($obj->Mutagen)->id : undef,
+	    genotype         => $obj->Genotype || undef,
+	    species_id       => $obj->Species ? $self->species_finder($obj->Species) : undef,
 	},
 	{ key => 'strain_name_unique' }
         );

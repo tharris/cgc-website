@@ -30,27 +30,53 @@
 
 
 
+[%#
 
+    Build a JQuery dataTable.
+    Parameters:
+        order  : array of columns
+        columns: hash ref associating columns to labels
+        key    : data key for accessing the stash        
+        passed_data : in lieu of passing a key for accessing data,
+                      pass in pre-structured data as passed_data;
+                      useful in cases when you want to change the processing heuristic.
 
-[%# We SHOULD be able to build data tables from arrays which would be faster
-     than taking a data strucutre from the db, building a second data structure,
-     dumping to a table and then styling it.      
+   Note: build_data_table is no longer wrapped in a field BLOCK. This was too
+   restrictive for formatting, for example, in cases where it was
+   necessary to include multiple tables in a single field.
 %]
 
-[% MACRO dataTable_list(header,data,table,style) BLOCK %]
-  The dataTable_list macro is nearly deprecated.  See instead:
-  build_data_table() and jquery_data_table_html(). -- TH
+[% MACRO build_data_table BLOCK;
 
-  [% IF data && data.size > 0;  
-       # Set up some suitable defaults
-       IF data.size < 11;
+      local_data = passed_data ? passed_data : fields.$key.data;
+
+      headers = [];
+      FOREACH o IN order; headers.push(columns.$o); END;
+
+      # generate table
+      jquery_data_table_html(headers, local_data, "table_${key}_by" _ colorbox, style, table_build, order);   
+
+    END; # END of MACRO
+%]
+
+[%# jquery_data_table_html:
+     
+     It might be better to build the table directly from the data
+     structure instead of formatting it into a html table and then
+     styling via javascript.
+%]
+     
+[% MACRO jquery_data_table_html(table_headers, rows,table_name,style,table_build, columns) BLOCK %]
+  [% IF rows && rows.size > 0;
+      # Set up some suitable defaults
+       IF rows.size < 11 || (rows.size < 31 && table_headers.size < 3);
           paginate        = 'false';
           pagination_type = 'false';
-          length          = 'false';
-          lengthMenu      = 'false';
+      	  length          = 'false';
+      	  lengthMenu      = 'false';
           filter          = 'false';
           info            = 'false';
-       ELSIF data.size < 51;
+       ELSIF rows.size < 31;
           paginate        = 'false';
           pagination_type = 'false';
       	  length          = 'false';
@@ -66,59 +92,58 @@
       	  info            = 'true'; 
       END;
 
+     UNLESS table_build;
+
    %]
 
-
-    <script type="text/javascript" >
-    $jq(document).ready(function() {
-        $jq('#[% table %]').dataTable({
-                "bPaginate"        : [% paginate %],
-        "bLengthChange"    : [% length   %],
-//                "bJQueryUI"        : true,
-                "sPaginationType"  : "[% pagination_type %]",
-        "bFilter"          : [% filter %],      
-        "bInfo"            : [% info %],
-                [% style %]
-    } );
-      } );
-    </script>
-    <table cellpadding="0" cellspacing="0" border="0" class="display" id="[% table %]">
+    <table id="[% table_name %]" class="table table-striped">
     <thead>
         <tr>
-            [% FOREACH item IN header %]  
-            <th>[% item %]</th>
+            [% FOREACH header IN table_headers %]  
+            <th>[% header %]</th>
             [% END %]
         </tr>
     </thead>
     <tbody>
-        [% FOREACH row IN data %]
-        <tr>
-              [% FOREACH item IN row %]   
-              <td> 
-                [% IF item.species.defined %]
-                  <span class="species">[% item.genus.chunk(1).0 %]. [% item.species %]</span>
-                [% ELSIF item.class.defined %]
-                  [% tag2link(item) %]
-                [% ELSE %][% item %]
-                [% END %]
-              </td>
-              [% END %]
-        </tr>
-        [% END %]
+        [%
+          FOREACH row IN rows;
+            '<tr>';
+		FOREACH col IN columns;
+		   '<td>';
+                     row.$col;		   		    
+		  '</td>';
+	        END;
+            '</tr>';
+          END;
+             %]
     </tbody>
+  </table>
+    [% END %]
+<!--
+    <script type="text/javascript" >
+        WB.getPlugin("dataTables", function(){
+          $jq('#[% table_name %]').dataTable({
+            "bPaginate"        : [% paginate %],
+            "bLengthChange"    : [% length   %],
+            "sPaginationType"  : "[% pagination_type %]",
+            "bFilter"          : [% filter %],
+            "bInfo"            : [% info %],
+            [% style %]
+          });
+        });
+    </script>
+-->
+   [% END %]
 
-    <tfoot>
-        <tr>
-             [% FOREACH item IN header %]  
-            <th>[% item %]</th>
-            [% END %]
-        </tr>
-    </tfoot>
+[% END %]
 
-      </table>
-   [% END %] 
 
-[% END %] 
+
+[% MACRO link_to_wormbase(class,target,text) BLOCK;
+    '<a target="_blank" href="http://www.wormbase.org/get?name=' _ target _ ';class=' _ class _ '">'  _ text _ '</a>';
+
+END;
+%]
 
 
 
@@ -335,63 +360,6 @@ END;
 %]
 
 
-[% MACRO common_name GET name # an alias for name %]
-
-[% MACRO other_names BLOCK; 
-      WRAPPER $field_block title="Other names" key="other_names";
-           FOREACH name IN fields.other_names.data;
-              tag2link(name);
-              "<br /";
-           END;
-      END;
-END;
-%]
-
-[% MACRO best_blastp_matches BLOCK;
-
-   WRAPPER $field_block title="Best BLASTP matches" key="best_blastp_matches";
-
-      build_data_table(order=['taxonomy','hit','description','evalue','percent'],
-                              columns={ taxonomy => 'Species',
-                                hit      => 'Hit',
-                         description => 'Description',
-                        evalue   => 'BLAST e-value',
-                        percent  => '% Length' 
-                                 },
-                         key='best_blastp_matches');
-    END;
-
-   
-        WRAPPER $field_block title="";
-           '<div id="blast_details">';
-             '<a class="update blast_details"';
-              ' href="' _ c.uri_for('/rest','field','protein',object.name.data.id,'blast_details') _ '">';
-               '[View full BLASTP List]</a>';
-         '</div>';
-       END;
-
-
-END;
-%]
-
-
-
-[% MACRO expression_patterns BLOCK ;
-
-   WRAPPER $field_block title="Patterns" key="expression_patterns";
-
-       build_data_table(order=['expression_pattern','description','author'],
-                      columns={ expression_pattern => 'Pattern',
-                        description        => 'Description',
-                    author             => 'Author',
-                             },
-                    key='expression_patterns');
-    END;
-
-   END;
-%]
-
-
 [% MACRO genetic_position BLOCK ;
      WRAPPER $field_block title="Genetic position";
           IF fields.genetic_position.data.chromosome;
@@ -417,86 +385,6 @@ END;
 %]
 
 
-[% MACRO central_dogma BLOCK %]
-  
-  NOT DONE!
-  
-   <table border="1">
-      <tr><td colspan="4">Central Dogma</td></tr>
-
-      <tr>
-         <td rowspan="[% fields.central_dogma.data.gene_models.size + 1 %]">
-              [% tag2link(fields.central_dogma.data.gene) %]
-         </td>
-         <td>Transcript</td><td>Exons</td><td>Protein</td>
-      </tr>
-
-     [% FOREACH gene_model IN fields.central_dogma.data.gene_models %]
-      <tr>
-     <td>
-          [% tag2link(gene_model.cds) %]
-     </td>
-
-         <td>
-          <pre>
-          [% FOREACH exon IN gene_model.exons;
-                   'exon' _ loop.count _ ': ' _ exon.start _ '..' _ exon.stop  _ '<br />';
-               END;
-           %]
-           </pre>
-         </td>
-     
-     <td>
-          [% tag2link(gene_model.protein) %]
-     </td>
-      </tr>
-     [% END %]
-
-          </td>
-      </tr>
-</table>
-
-
-
-       <div class="inline-columns">
-          [% IF fields.central_dogma.data.gene %]
-           <div>
-              <b>Gene</b><br />
-              [%# FOREACH item IN fields.central_dogma.data.genes %]
-                 [% tag2link(gene) %]<br />
-              [%# END %]
-           </div>
-      [% END %]
-
-          [% IF fields.central_dogma.data.transcripts.size > 0 %]
-            <div>
-                 <img src="/img/arrows/right.gif">
-            </div>  
-            <div>
-                <b>Transcripts</b><br />
-                 [% FOREACH item IN fields.central_dogma.data.transcripts %]
-                   [% tag2link(item) %]<br />
-                 [% END %] 
-           </div>
-         [% END %]
-
-          [% IF fields.central_dogma.data.cds.size > 0 %]
-            <div>
-                 <img src="/img/arrows/right.gif">
-            </div>  
-            <div>
-                <b>CDS</b><br />
-                 [% FOREACH item IN fields.central_dogma.data.cds %]
-                   [% tag2link(item) %]<br />
-                 [% END %] 
-           </div>
-         [% END %]
-
-     </div>
-
-[% END %]
-
-
 [% MACRO laboratory BLOCK ;
      # The Laboratory field
      # Expects the stash to contain the "laboratory" key.
@@ -511,45 +399,6 @@ END;
          END;
      END;
   END;
-%]
-
-[%# 
-
-    Shared phenotypes and phenotypes_not_observed macros. These macros
-    could conceivably be folded into shared/widgets/phenotypes.tt2, although
-    there are some specific phenotype.tt2 widgets that have some additional
-    fields.
-%]
-
-[% MACRO phenotypes BLOCK ;
-
-   WRAPPER $field_block title="Phenotypes" key="phenotypes";
-
-       build_data_table(order=['phenotype','description','remarks'],
-                        columns={ 
-                        phenotype    => 'Phenotype',
-                description  => 'Description',
-            remarks       => 'Remarks',
-                    },
-                    key='phenotypes');
-    END;
-END;
-%]
-
-[% MACRO phenotypes_not_observed BLOCK ;
-
-   WRAPPER $field_block title="Phenotypes NOT Observed" key="phenotypes_not_observed";
-
-   build_data_table(order=['phenotype','description','remarks'],
-                    columns={ 
-                        phenotype      => 'Phenotype',
-                description    => 'Description',
-            remarks        => 'Remark',
-                    },
-                    key='phenotypes_not_observed');
-      END;            
-   
- END;
 %]
 
 

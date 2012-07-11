@@ -8,10 +8,17 @@
 
 
 [% IF c.user_exists %]
-   <h2>[% c.user.username %] </h2>
-<p>
-This is the public user profile. Should display lab information. Maybe number of strains ordered?
-</p>
+   <h1>[% c.user.username %] </h1>
+
+   <div class="well">
+   <strong>Attention!</strong><br />
+This is your public user profile. Should display lab information. Maybe number of strains ordered?
+</div>
+
+	
+      Your current privilege level:  <strong>[% c.user.roles %]</strong>
+
+
    
 [% ELSE %]
        <div class="alert">

@@ -56,22 +56,23 @@ sub process_object {
 	    name                    => eval { $obj->Public_name }  || $obj,
 	    chromosome              => $chromosome                 || undef,
 	    gmap                    => $gmap                       || undef,
-	    pmap_start    => $start               || undef,
-	    pmap_stop     => $stop                || undef,
-	    strand        => $strand              || undef,
+	    pmap_start              => $start                      || undef,
+	    pmap_stop               => $stop                       || undef,
+	    strand                  => $strand                     || undef,
 	    genic_location          => $location                   || undef,
 	    variation_type          => $self->variation_type($obj) || undef,
 	    type_of_dna_change      => $obj->Type_of_mutation ? lc($obj->Type_of_mutation) : undef,
 	    type_of_protein_change  => $protein_effects->{type_of_protein_change}  || undef,
 	    protein_change_position => $protein_effects->{protein_change_position} || undef,	    
-	    is_snp                  => $obj->SNP(0)             ? 1 : undef,
-	    is_rflp                 => $obj->RFLP               ? 1 : undef,
-	    is_natural_variant      => $obj->Natural_variant(0) ? 1 : undef,
+	    is_snp                  => $obj->SNP(0)                  ? 1 : undef,
+	    is_rflp                 => $obj->RFLP                    ? 1 : undef,
+	    is_natural_variant      => $obj->Natural_variant(0)      ? 1 : undef,
 	    is_transposon_insertion => $obj->Transposon_insertion(0) ? 1 : undef,
 	    is_ko_consortium_allele => $obj->KO_consortium_allele(0) ? 1 : undef,
-	    species       => $self->species_finder($obj->Species       || 'not specified; probably C. elegans'),
-	    gene_class    => $self->gene_class_finder($obj->Gene_class || 'not specified'),
-	    laboratory_id => $self->lab_finder($lab ? $lab : 'not specified')->id,	    
+	    species                 => $obj->Species                 ? $self->species_finder($obj->Species)       : undef,
+	    gene_class              => $obj->Gene_class              ? $self->gene_class_finder($obj->Gene_class) : undef,
+#	    laboratory_id           => $self->lab_finder($lab ? $lab : 'not specified')->id,
+	    laboratory_id           => $lab                          ? $self->lab_finder($lab)->id : undef,
 	},
 	{ key => 'variation_name_unique' }
 	);	
@@ -196,7 +197,7 @@ sub _get_genomic_position {
 
 
 sub _segments {
-    my ($self,$obj) = shift;
+    my ($self,$obj) = @_;
     my $gff_handle  = $self->gff_handle;
     return [$self->gff_handle->segment($obj->class => $obj)];    
 }

@@ -30,7 +30,7 @@ sub process_object {
     my $row = $rs->update_or_create(
 	{   name          => $obj->name        || undef,
 	    description   => $obj->Description || undef,
-	    laboratory_id => $self->lab_finder($obj->Designating_laboratory || 'not specified')->id,
+	    laboratory_id => $obj->Designating_laboratory ? $self->lab_finder($obj->Designating_laboratory)->id : undef,
 	},
 	{ key => 'gene_class_name_unique' }
         );

@@ -13,6 +13,11 @@ Scripts and related files for importing data from the old FoxPro database.
         the files are read in together. The script uses the DBIx::Schema model
         framework to interact (i.e., insert) the data into the database.
 
+    merge_cgc_data.pl
+        Merge (and add, when appropriate) CGC data into a database prepopulated
+	with data from WormBase.  Logs merged data to logs/import_logs/CLASS-cgc-merged.log
+	./util/import/import.pl --verbose 2 --dir $IMPORT_DIR
+
 
 Creating and populating the CGC Database
 ========================================

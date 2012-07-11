@@ -30,17 +30,21 @@ sub index : Private {
 
 
 
-sub registered_users :Path("registered_users") {
-    my ($self,$c) = @_;
-    $c->{stash}->{template} = 'auth/logout.tt2';
-}
 
-sub registered_users2 :Path("registered_users2") {
+###############################################################################
+#
+# User management
+#
+###############################################################################
+
+sub registered_users :Path("registered_users") {
     my ($self,$c) = @_;
     $c->stash->{noboiler} = 1;
     $c->stash->{template} = 'admin/registered_users.tt2';
     my @array;    
-    if ($c->check_user_roles('admin')) {
+
+    $c->assert_user_roles( qw/admin/ ); # only admins can see registered users.
+
 #       my $iter=$c->model('CGC::AppUser') ;
 #       while( my $user= $iter->next){
 # 	  my $hash = { username   => $user->username,
@@ -48,25 +52,45 @@ sub registered_users2 :Path("registered_users2") {
 # 		       id         => $user->user_id,
 # 	  };
 
-      my @users = $c->model('CGC::AppUser')->search();
-#      map { 
-#        my @roles = $_->roles;
-#        foreach my $role (@roles){
-#          $_->{$role->role} = 1;
-#        }
-#      } @users;
 
-
-# 	  
-# 	  my @roles =$user->roles;
-# 	  
-# 	  map{$hash->{$_->role}=1;} @roles if(@roles);
-# 	  push @array,$hash;
-#       }
-#       
-      $c->stash->{users} = \@users;
-    }  
+    if ($c->check_user_roles('admin')) {
+      $c->stash->{'template'} = 'admin/registered_users.tt2';
+      my @users;
+      if ($c->assert_user_roles( qw/admin/)) {
+	  foreach my $user ($c->model('CGC::AppUser')->search()) {
+	      map { $user->{$_->role} = 1; } $user->roles;
+	      push @users, $user;
+	  }
+	  $c->stash->{users}= @users ? \@users : undef;
+      }
+    }
 } 
+
+
+
+###############################################################################
+#
+# Strain management
+#
+###############################################################################
+
+sub enter_strain : PathPart('/admin/strain/enter') {
+    my ($self,$c) = @_;
+    $c->stash->{template} = 'admin/strain_entry';
+    
+}
+
+sub edit_strain : PathPart('/admin/strain/enter') {
+    my ($self,$c) = @_;
+    $c->stash->{template} = 'admin/strain_entry';
+    
+    
+    
+}
+
+
+
+
 
 sub system_status :Path("system_status") {
     my ( $self, $c ) = @_;

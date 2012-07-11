@@ -6,5 +6,16 @@
 <a href="/" class="btn btn-large">Place an Order</a>
 <a href="/" class="btn btn-large">Pay an Invoice</a>
 </p>
+
+
+<div class="well">
+<div class="page-header">
+     <h1>Various Lists
+     <small>Just a place holder, Shiran. Relax.</small></h1>
+
+     <ul>     
+    <li> <a href="[% c.uri_for('/species') %]">All species available at the CGC</a>
+    </ul>
+
 </div>
 </div>

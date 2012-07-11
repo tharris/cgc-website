@@ -2,8 +2,9 @@
 [%#- admin section -%]
 [% IF c.check_user_roles('admin') %]
  
-<fieldset >
- <legend>All Registered Users</legend> 
+ <div class="well">
+ <h2>All Registered Users</h2>
+
 
     [% 
       rows = [];
@@ -11,7 +12,8 @@
           admin = "<input type='checkbox' class='role-update' value='admin' id='" _ obj.id _ "'";
           IF (obj.user_id == c.user.user_id); admin = admin _ " disabled=1 "; END;
           admin = admin _ " />" ;
-      IF obj.admin ; admin=admin.replace('id=','checked id='); END ;
+
+          IF obj.admin ; admin=admin.replace('id=','checked id='); END ;
 
           manager = "<input type='checkbox' class='role-update' value='manager' id='" _ obj.id _ "' />" ;
           IF obj.manager ;manager=manager.replace('id=','checked id=') ; END;
@@ -30,18 +32,19 @@
       obj.employee  = employee;
       obj.user      = user;
       obj.activated = active;
-      obj.username = linkUser(obj);
-      obj.email = '<a href="mailto:' _ obj.primary_email.email _ '">' _ obj.primary_email.email _ '</a>';
+      obj.email = '<a href="mailto:' _ obj.email _ '">' _ obj.email _ '</a>';
       rows.push(obj);
+      obj.name      = obj.first_name _ ' ' _ obj.last_name;
       END 
     %]
 
 
     [% 
 
-       build_data_table(order=['username','email','admin','curator', 'editor', 'activated'],
-                        columns={ username          => 'Username',
-                                  email             => 'Primary Email',
+       build_data_table(order=['name', 'username','email','admin','manager', 'employee', 'user', 'activated'],
+                        columns={ name              => 'Name',
+				  username          => 'Username',				  
+                                  email             => 'Email',
                                   admin             => 'Admin',
                                   manager           => 'Manager',
                                   employee          => 'Employee',
@@ -51,7 +54,7 @@
 			 passed_data = rows,
                          key='user_list');
       %]
-</fieldset>
+</div>
 <script>
       $jq(".role-update").click(function() {
         var checked;

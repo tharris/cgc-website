@@ -44,6 +44,7 @@ sub strain_GET {
 			received   => $strain->received,
 			# lab_order  => $strain->lab_order,
 			made_by    => $strain->made_by,
+			laboratory => $strain->laboratory ? $strain->laboratory->name : 'laboratory of origin unknown',
 			history    => [] # TODO: Track history
 		};
 	}
@@ -74,9 +75,35 @@ sub list_GET {
 	);
 }
 
-=head1 AUTHOR
 
-Shiran Pasternak
+sub all_strains : Path('/strain') : ActionClass('REST') { }
+
+sub all_strains_GET {
+    my ($self, $c) = @_;
+    $c->stash->{template} = 'strain/all';
+    
+}
+
+sub recently_added : Path('/recently_added') : Args(0) {
+    my ($self, $c) = @_;
+    $c->detach('recently_added', ['all']);
+}
+
+sub wild_strains : Path('/wild_strains') : Args(0) {
+    my ($self, $c) = @_;
+    $c->detach('wild_strains', ['all']);
+    
+}
+
+sub non_celegans_strains : Path('/non_celegans_strains') : Args(0) {
+    my ($self, $c) = @_;
+    $c->detach('non_celegans_strains', ['all']);
+}
+
+
+=head1 AUTHORS
+
+Shiran Pasternak and Todd Harris
 
 =head1 LICENSE
 

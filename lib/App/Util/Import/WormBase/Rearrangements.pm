@@ -42,12 +42,12 @@ sub process_object {
 	    name          => $obj || undef,
 	    description   => $obj->Remark ? join("\n",$obj->Remark) : undef,
 	    type          => $obj->Type        || undef,
-	    mutagen_id     => $self->mutagen_finder($obj->Mutagen ? $obj->Mutagen : 'not specified')->id,
+	    mutagen_id    => $obj->Mutagen ? $self->mutagen_finder($obj->Mutagen)->id : undef,
 	    chromosome    => $chromosome             || undef,
 	    gmap          => $gmap                   || undef,
-	    reference_strain_id => @ref_strain ? $self->strain_finder($ref_strain[0]) : undef,
-	    laboratory_id => $self->lab_finder($lab ? $lab : 'not specified')->id,
-	    species       => $self->species_finder($obj->Species       || 'not specified; probably C. elegans'),
+	    reference_strain_id => @ref_strain ? $self->strain_finder($ref_strain[0])->id : undef,
+	    laboratory_id => $lab          ? $self->lab_finder($lab)->id : undef,
+	    species_id    => $obj->Species ? $self->species_finder($obj->Species)->id : undef,
 	},
 	{ key => 'rearrangement_name_unique' }
 	);	

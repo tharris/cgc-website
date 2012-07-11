@@ -28,7 +28,6 @@ DROP TABLE IF EXISTS `freezer`;
 CREATE TABLE `freezer` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT '',
-  `location` char(10) DEFAULT NULL COMMENT 'Not sure yet how to represent location',
   PRIMARY KEY (`id`),
   KEY `freezer_name_unique` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -47,6 +46,7 @@ CREATE TABLE `freezer_sample` (
   `vials` tinyint(11) unsigned DEFAULT NULL,
   `freeze_date` datetime DEFAULT NULL,
   `frozen_by` int(11) NOT NULL COMMENT 'Should probably be foreign key to app_user',
+  `location` char(10) DEFAULT NULL COMMENT 'Not sure yet how to represent location',
   PRIMARY KEY (`id`),
   KEY `freezer_sample_freezer_fk` (`freezer_id`),
   KEY `freezer_sample_strain_fk` (`strain_id`),
@@ -316,6 +316,7 @@ CREATE TABLE `app_user` (
 
 INSERT INTO `app_user` VALUES ('1','tharris','{SSHA}ZZ2/yHLi1OZ0G4fUMaN/T+NA7rm7Jy57','1','EG','Todd','William','Harris','todd@wormbase.org','1');
 INSERT INTO `app_user` VALUES ('2','shiran','{SSHA}ZZ2/yHLi1OZ0G4fUMaN/T+NA7rm7Jy57','1','EG','Shiran','','Pasternak','shiranpasternak@gmail.com','1');
+INSERT INTO `app_user` VALUES ('3','cgc-admin','{SSHA}bTzfBMj+pPwVBMBNYEl2HlMw5hyqGCs/','1','EG','CGC','','Admin','cgc-admin@todd.co','1');
 
 # Dump of table app_users_to_roles
 # ------------------------------------------------------------
@@ -330,6 +331,7 @@ CREATE TABLE `app_users_to_roles` (
 
 INSERT INTO `app_users_to_roles` VALUES ('1','1');
 INSERT INTO `app_users_to_roles` VALUES ('2','1');
+INSERT INTO `app_users_to_roles` VALUES ('3','1');
 
 
 
@@ -551,6 +553,7 @@ CREATE TABLE `laboratory` (
   `website` varchar(255) DEFAULT NULL,
   `contact_email` varchar(255) DEFAULT NULL,
   `date_assigned` varchar(255) DEFAULT NULL,
+  `date_updated` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_unique` (`name`)	
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -4,35 +4,47 @@ use strict;
 use warnings;
 use parent 'App::Web::Controller';
 
-
 ##############################################################
 #
-#   Species
-#   URL space : /species
-#
-#   /species -> a list of all species
-#   /species/CLASS -> an Index page of class
-#   /species/CLASS/OBJECT -> a report page
-#
-#   CUSTOM
-#   /species/guide   -> NOTHING
-#   /species/guide/SPECIES -> Species info page
-#   /species/guide/component
-# 
-##############################################################
-
-
-##############################################################
-#   
-#   /species
-# 
-#        --> Redirects to the species summary: /species/all
+# List all species.
 #
 ##############################################################
 
-sub species_summary :Path('/species') :Args(0)   {
+sub species :Path('/species') :Args(0)   {
     my ($self,$c) = @_;
-    $c->detach('species_index',['all']);
+
+    my $page = $c->request->param('page') || 2;
+    my $rows = $c->request->param('view') || 10;
+
+#    my $rs = $c->model('CGC::Species')->search(
+#	{
+#	    'strains.species_id' => { '!=', undef },
+#	},
+#	{
+#	    join => 'strains', # join the strain table
+#	}
+#	);
+
+    my @species = $c->model('CGC::Species')->search(
+	{
+	    'strains.species_id' => { '!=', undef },
+	},
+	{
+	    join     => 'strains', # join the strain table
+	    select   => [ 'name', 
+			  'ncbi_taxonomy_id',
+			  { count => 'strains.species_id' } ],
+	    group_by => [qw/strains.species_id/],
+	    as       => [qw/name ncbi_taxonomy_id strain_count/],
+	}
+	);
+    
+    
+#    my @results = $rs->all();
+
+    $c->stash->{results}  = \@species;
+#    $c->stash->{pager}    =  $rs->pager();
+    $c->stash->{template} = 'species/index.tt2';
 }
 
 
