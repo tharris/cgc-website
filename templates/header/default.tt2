@@ -3,6 +3,9 @@
 	.navbar-form input {
 		margin-top:auto;
 	}
+	.navbar ul.nav .btn {
+		line-height: 10px;
+	}
 </style>
 <div class="navbar navbar-fixed-top">
   <div class="navbar-inner">
@@ -35,8 +38,6 @@
 	       <div class="nav-collapse pull-right">
 		<ul class="nav">
 
-
-
                     <li class="dropdown">                   
                           <a href="#"
                                class="dropdown-toggle"
@@ -57,19 +58,11 @@
 
                           </ul>
                     </li>
-<!--                    <li><a class="btn btn-inverse" data-toggle="modal" href="#modal" data-uri="/logout">Logout</a></li> -->
-
-		  </ul>
+                  </ul>
                 </div>
           [% ELSE %]
 
 		<div class="navbar-form pull-right">
-	    <!--
-			<input class="input-small" name="email" type="email" placeholder="Email"/>
-			<input class="input-small" name="password" type="password" placeholder="Password" />
-			<button class="btn" type="submit">Sign in</button>
-			-->
-
 			<a class="btn btn-primary-inverse" data-toggle="modal"
 				data-uri="[% c.secure_uri_for("/login") %]"
 				href="#modal">Sign In</a>

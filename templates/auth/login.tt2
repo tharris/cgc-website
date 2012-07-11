@@ -5,7 +5,7 @@
 [% END %]
 
 <div class="modal-header">
-	<button type="button" class="close" data-dismiss="modal">×</button>
+	<button id="close-modal" type="button" class="close" data-dismiss="modal">×</button>
     <h3>Please sign in</h3>
 </div>
 <div class="modal-body">
@@ -22,8 +22,16 @@
 </div>
 <script>
 $(function () {
-	$("#submit-login").click(function () {
+	var submitForm = function () {
 		$("#login-form").submit();
+	};
+	$("#submit-login").click(function () {
+		submitForm();
+	});
+	$(".modal-body").keypress(function (e) {
+		if (e.which == 13) {
+			submitForm();
+		}
 	});
 	$("#login-form").submit(function () {
 		var email    = $(this).find('input.email').attr('value');
@@ -45,10 +53,10 @@ $(function () {
 				success: function (data) {
 					App.showAlert({
 						prependTo: $(".modal-body"),
-						title: "Login successful",
-						fadeOut: 2000
+						title: "Login successful"
 					});
-					window.setTimeout('location.reload()', 1000);
+					window.setTimeout('$("#close-modal").click()', 800);
+					window.setTimeout("location.reload()", 1200);
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
 					App.showAlert({
