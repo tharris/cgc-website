@@ -1,6 +1,45 @@
 <div class="page-header">
-  <h1><em>[% species %]</em> <small>strains available at the CGC</small></h1>
+  <h1>Species available at the CGC</h1>
 </div>
+
+[% IF c.check_user_roles('admin') %]
+<div class="alert alert-info">
+<p><strong>TODO</strong></p>
+<p><strong>Questions for CGC</strong></p>
+</div>
+[% END %]
+
+
+<div class="span6">
+    <h2>All Species</h2>
+    <p><a href="[% c.uri_for('/species-list') %]">View all species available at the CGC.</a></p>
+</div>
+
+
+
+[% DEFAULT species = rest %]
+<div class="span6">
+    <h2>Search</h2>
+<!--
+    <p>Search and view species.</p>
+-->
+    <div class="well">
+        <input id="search-species" type="text" class="span3"
+            [% IF species %] value="[% species.name %]"
+            [% ELSE %] placeholder="Start typing a species..."
+            [% END %]
+        />
+        <span class="help-inline" style="margin-bottom: 9px"><small>Example:
+        <a href="/species/Caenorhabditis%20elegans"><em>Caenorhabditis elegans</em></a>,
+        <a href="/species/Caenorhabditis%20remanei"><em>Caenorhabditis remanei</em></a>,
+        <a href="/species/Pristionchus%20pacificus"><em>Pristionchus_pacificus</em></a>
+        </small></span>
+    </div>
+</div>
+
+
+[% IF species %]
+<div class="well span6">
 
 
 <table class="table table-striped">
@@ -24,3 +63,50 @@
 	 [% END %]
     </tbody>
 </table>
+
+[% END %]
+
+
+<script>
+    $(function () {
+        $('#search-species').typeahead({
+            ajax: {
+            	uris: [
+            		'/species/list?distinct;columns=name',
+            	],
+				preprocess: function (item) {
+					return item[0];
+				}
+            },
+        });
+        
+        $('#search-species').on('change',
+            function (data) {
+                window.location.href = '/species/' + data.target.value
+                // If we want to get fancy and avoid page loads....
+                // window.location.hash = data.target.value;
+            }
+        );
+
+        /*
+        $(window).hashchange(function () {
+            // var speciesName = location.hash.replace(/^#/,'');
+            $.ajax({
+                url: '/species/' + speciesName,
+                dataType: 'json',
+                success: function (json) {
+                    console.log(json);
+                    var tableRow = function (key) {
+                        var row = $('<tr></tr>');
+                        row.append($('<th></th>').html(key))
+                            .append($('<td></td>').html(json[key]));
+                        return row;
+                    };
+                    $('#species-view').empty();
+                    $('#species-view').add(tableRow("name"));
+                }
+            });
+        });
+        */
+    });
+</script>
