@@ -1,0 +1,23 @@
+<h1>Species available through the CGC</h1>
+
+<em>Each species should be linked to a page that lists all strains</em>
+
+<table class="table table-striped">
+
+    <thead>
+        <tr>            
+            <th>Species</th>
+	    <th>NCBI Taxonomy ID</th>
+	    <th>Number of strains</th>
+        </tr>
+    </thead>
+    <tbody>
+        [% FOREACH row IN c.stash.results %]
+         <tr>
+            <td><em>[% row.name %]</em></td>
+            <td>[% row.ncbi_taxonomy_id %]</td>  
+	    <td>[% row.get_column('strain_count') %]</td>
+         </tr>
+	 [% END %]
+    </tbody>
+</table>
