@@ -1,37 +1,26 @@
-[%- # This is the generic report page for species-associated entitities at WormBase -%]
-
-[% 
-
-      breadcrumbs = [];
-
-      IF (species == 'all' && class=='all');
-        breadcrumbs.push('<span>All Species</span>');
-      ELSE;
-        breadcrumbs.push('<a href="' _ c.uri_for('/species','all') _ '">Species</a>');
-        IF class == 'all';
-          breadcrumbs.push('<span class="species">'
-                _ c.config.sections.species_list.$species.title
-                _ '</span>');
-        ELSE;
-          class_title = c.config.sections.species.$class.title || c.config.sections.resources.$class.title;
-          IF species != 'all';
-            breadcrumbs.push('<span class="species"><a href="' _ c.uri_for('/species',species) _ '">'
-                      _ c.config.sections.species_list.$species.title
-                      _ '</a></span>');
-          END;
-          UNLESS object;
-            breadcrumbs.push('<span>'_ class_title  _ '</span>');
-          ELSE;
-            breadcrumbs.push('<a href="' _ c.uri_for('/species',species,class) _ '">'
-                    _ class_title _ '</a>');
-            breadcrumbs.push('<span>' _ markup(object.name.data.label, 0, 1, 1, 1) _ '</span>');
-          END;
-        END;
-      END;
-
-      title = breadcrumbs.join(' &raquo; ');
-      report_page(title);
-%]
+<div class="page-header">
+  <h1><em>[% species %]</em> <small>strains available at the CGC</small></h1>
+</div>
 
 
+<table class="table table-striped">
 
+    <thead>
+        <tr>            
+            <th>Strain</th>
+	    <th>Genotype</th>
+	    <th>Made By</th>
+	    <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        [% FOREACH row IN c.stash.results %]
+         <tr>
+            <td><a href="[% c.uri_for('/strain/' _ row.id)%]">[% row.name %]</a></td> 
+            <td>[% row.genotype %]</td>  
+	    <td>[% row.made_by %]</td>
+	    <td>[% row.description %]</td>
+         </tr>
+	 [% END %]
+    </tbody>
+</table>
