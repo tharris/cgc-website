@@ -1,0 +1,40 @@
+<div class="page-header">
+  <h1>Gene Classes tracked by the CGC</h1>
+</div>
+
+[% IF c.check_user_roles('admin') %]
+<div class="alert alert-info">
+<strong>TODO:</strong>
+<ul>
+</ul>
+
+<p><strong>Questions for CGC</strong></p>
+</div>
+[% END %]
+
+<div class="well">Found: [% c.stash.count %]</div>
+
+<table class="table table-striped">
+
+    <thead>
+        <tr>            
+            <th>Gene Class</th>
+	    <th>Description</th>
+	    <th>Responsible Laboratory</th>
+        </tr>
+    </thead>
+    <tbody>
+        [% FOREACH row IN c.stash.results %]
+         <tr>
+            <td><a href="[% c.uri_for('/gene-class/' _ row.name)%]">[% row.name %]</a></td>
+            <td>[% row.description %]</td>  
+	    <td><a href="[% c.uri_for('/laboratory/' _ row.laboratory.name) %]">[% row.laboratory.head %] ([% row.laboratory.name %])</td>
+	    <td>
+	    [% row.genes.count %]
+	    
+	    </td>
+
+         </tr>
+	 [% END %]
+    </tbody>
+</table>

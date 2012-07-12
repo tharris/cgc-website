@@ -12,21 +12,22 @@
 
     <div class="row">
         <div class="span4 well">
-             <h3>Species</h3>
-             <em>Just a place holder, Shiran. Relax.</em>
-          <ul>     
-             <li> <a href="[% c.uri_for('/species') %]">All species available at the CGC</a>
-          </ul>
+             <h3>Available Species</h3>
+             <a href="[% c.uri_for('/species') %]">Search</a> or 
+             <a href="[% c.uri_for('/species-list') %]">View All</a>
+        </div>
+
+        <div class="span4 well">
+             <h3>Gene Classes</h3>
+             <a href="[% c.uri_for('/gene-class') %]">Search</a> or 
+             <a href="[% c.uri_for('/gene-classses') %]">View All</a>
         </div>
 
          <div class="span4 well">
-             <h3>Strains</h3>
-              <em>I know the layout is driving you crazy already.</em>
-          </div>
-         <div class="span4 well">
-             <h3>Strains</h3>
-              <em>Srsly. Relax.</em>
-          </div>
+             <h3>Laboratories</h3>
+             <a href="[% c.uri_for('/laboratory') %]">Search</a> or 
+             <a href="[% c.uri_for('/laboratories') %]">View All</a>
+         </div>
     </div>
 
 

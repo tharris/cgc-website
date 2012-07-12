@@ -1,0 +1,22 @@
+The templates in this directory are responsible for BOTH
+class report pages 
+
+    /species/c_elegans/gene/WBGene0000001
+
+and the species summary pages
+
+   /species/all and /species/c_elegans
+
+
+report.tt2: Sets up the page. You should NOT need to edit this.
+
+For the species summary pages:
+--------------------------------
+The directories like all/ and {SPECIES_NAME}/ contain custom
+widgets that are generated programmatically and/or that require
+Template::Toolkit code.  ALL OTHER WIDGETS ARE CREATED VIA THE WEB
+INTERFACE.
+
+Actions are found in W::W::Controller::Species.
+
+T. Harris (todd@wormbase.org)

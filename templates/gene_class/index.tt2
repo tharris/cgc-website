@@ -1,0 +1,131 @@
+<div class="page-header">
+  <h1>Gene classes tracked by the CGC</h1>
+</div>
+
+[% IF c.check_user_roles('admin') %]
+<div class="alert alert-info">
+<p><strong>TODO</strong>
+<ul>
+<li>Typeahead is brokena
+</ul>
+<p><strong>Questions for CGC</strong></p>
+</div>
+[% END %]
+
+
+
+<div class="span6">
+    <h2>All Gene Classes</h2>
+    <p><a href="[% c.uri_for('/gene-classes') %]">View all gene classes tracked by the CGC</a></p>
+</div>
+
+
+
+[% DEFAULT gene_class = rest %]
+<div class="span6">
+    <h2>Search</h2>
+<!--
+    <p>Search and view gene classes.</p>
+-->
+    <div class="well">
+        <input id="search-gene-class" type="text" class="span3"
+            [% IF gene_class %] value="[% gene_class.name %]"
+            [% ELSE %] placeholder="Start typing a gene class abbreviation..."
+            [% END %]
+        />
+        <span class="help-inline" style="margin-bottom: 9px"><small>Example:
+        <a href="/gene-class/unc"><em>uncoordinated</em></a>,
+        <a href="/gene-class/vab"><em>vab</em></a>,
+        <a href="/gene-class/let"><em>let</em></a>
+        </small></span>
+    </div>
+</div>
+
+
+[% IF gene_class %]
+<div class="well span6">
+    <table id="laboratory-view" class="table table-striped">
+    <thead><h3>Gene Class Information</h3></thead>
+    <tbody>
+        <tr><th>Name</th><td>[% gene_class.name %] ([% link_to_wormbase('Gene_class',gene_class.name,'view at WormBase') %])</td></tr>
+
+        <tr><th>Description</th><td>[% gene_class.description %]</td></tr>
+       <tr><th>Responsible Laboratory</th><td>
+           <a href="[% c.uri_for('/laboratory/' _ gene_class.laboratory.name) %]">[% gene_class.laboratory.head %] ([% gene_class.laboratory.name %])
+       </td></tr>
+    </tbody>
+    </table>
+</div>
+
+
+<div class="well span6">
+
+<table class="table table-striped">
+
+    <thead>
+        <tr>            
+            <th>Gene</th>
+	    <th>Sequence</th>
+	    <th>Species</th>
+	    <th>Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        [% FOREACH gene IN gene_class.genes %]
+         <tr>
+            <td><a href="[% c.uri_for('/strain/' _ gene.name) %]">[% gene.name %]</a></td> 
+	    <td>[% gene.sequence_name %]</td>
+            <td><em><a href="[% c.uri_for('species/' _ gene.species.name) %]">[% gene.species.name %]</a></em></td> 
+	    <td>[% gene.type %]</td>
+         </tr>
+	 [% END %]
+    </tbody>
+</table>
+</div>
+
+[% END %]
+
+
+<script>
+    $(function () {
+        $('#search-gene-class').typeahead({
+            ajax: {
+            	uris: [
+            		'/gene-class/list?distinct;columns=name',
+            	],
+				preprocess: function (item) {
+					return item[0];
+				}
+            },
+        });
+        
+        $('#search-gene-class').on('change',
+            function (data) {
+                window.location.href = '/gene-class/' + data.target.value
+                // If we want to get fancy and avoid page loads....
+                // window.location.hash = data.target.value;
+            }
+        );
+
+        /*
+        $(window).hashchange(function () {
+            // var geneclassName = location.hash.replace(/^#/,'');
+            $.ajax({
+                url: '/gene-class/' + geneclassName,
+                dataType: 'json',
+                success: function (json) {
+                    console.log(json);
+                    var tableRow = function (key) {
+                        var row = $('<tr></tr>');
+                        row.append($('<th></th>').html(key))
+                            .append($('<td></td>').html(json[key]));
+                        return row;
+                    };
+                    $('#gene-class-view').empty();
+                    $('#gene-class-view').add(tableRow("name"));
+                }
+            });
+        });
+        */
+    });
+</script>

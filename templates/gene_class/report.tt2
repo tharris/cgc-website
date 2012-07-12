@@ -1,0 +1,26 @@
+<div class="page-header">
+  <h1><em>[% species %]</em> <small>strains available at the CGC</small></h1>
+</div>
+
+
+<table class="table table-striped">
+
+    <thead>
+        <tr>            
+            <th>Strain</th>
+	    <th>Genotype</th>
+	    <th>Made By</th>
+	    <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        [% FOREACH row IN c.stash.results %]
+         <tr>
+            <td><a href="[% c.uri_for('/strain/' _ row.id)%]">[% row.name %]</a></td> 
+            <td>[% row.genotype %]</td>  
+	    <td>[% row.made_by %]</td>
+	    <td>[% row.description %]</td>
+         </tr>
+	 [% END %]
+    </tbody>
+</table>
