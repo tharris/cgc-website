@@ -76,6 +76,8 @@ sub list_GET {
 }
 
 
+=pod
+
 sub all_strains : Path('/strain') : ActionClass('REST') { }
 
 sub all_strains_GET {
@@ -99,6 +101,8 @@ sub non_celegans_strains : Path('/non_celegans_strains') : Args(0) {
     my ($self, $c) = @_;
     $c->detach('non_celegans_strains', ['all']);
 }
+
+=cut
 
 
 =head1 AUTHORS

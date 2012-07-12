@@ -1,3 +1,15 @@
+
+[% IF c.check_user_roles('admin') %]
+<div class="alert alert-info">
+<p><strong>TODO</strong></p>
+<ul>
+<li>whenever there is a strain "card" shown, it should have the add to cart. Maybe make this a macro?
+</ul>
+
+<p><strong>Questions for CGC</strong></p>
+</div>
+[% END %]
+
 [% DEFAULT strain = rest %]
 <div class="span6">
     <h2>Strain</h2>
@@ -22,14 +34,17 @@
     <thead><h3>Strain Information</h3></thead>
     <tbody>
         <tr><th>Name</th>       <td>[% strain.name %]</td></tr>
-        <tr><th>Species</th>    <td><em>[% strain.species %]</em></td></tr>
+        <tr><th>Species</th>    <td><em><a href="[% c.uri_for('/species/' _ strain.species) %]">[% strain.species %]</a></em></td></tr>
         <tr><th>Genotype</th>   <td>[% strain.genotype %]</td></tr>	
         <tr><th>Mutagen</th>    <td>[% strain.mutagen %]</td></tr>
         <tr><th>Outcrossed</th> <td>[% strain.outcrossed %]</td></tr>
         <tr><th>Received</th>   <td>[% strain.received %]</td></tr>
-        <tr><th>Made by</th>    <td>[% strain.made_by %]</td></tr>
-	<tr><th>Laboratory</th> <td>[% strain.laboratory %]</td></tr>
-	<tr><th>Made by</th>    <td>[% strain.made_by %] ([% link_to_wormbase('Person',strain.made_by,'view at WormBase') %])</td></tr>
+	[% IF strain.made_by %]
+         	<tr><th>Made by</th>    <td>[% strain.made_by %] ([% link_to_wormbase('Person',strain.made_by,'view at WormBase') %])</td></tr>
+	[% END %]
+	[% IF strain.laboratory %]
+   		<tr><th>Laboratory</th> <td><a href="[% c.uri_for('/laboratory/' _ strain.laboratory) %]">[% strain.laboratory %]</a></td></tr>
+	[% END %]
 
     </tbody>
     </table>
