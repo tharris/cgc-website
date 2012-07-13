@@ -15,6 +15,8 @@
 [% END %]
 
 
+
+
 <div class="span6">
     <h2>All Freezers</h2>
     <p><a href="[% c.uri_for('/freezers') %]">View all freezers at the CGC</a></p>
