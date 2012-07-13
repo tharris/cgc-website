@@ -1,16 +1,8 @@
 package App::Web::Controller::GeneClass;
 
-
 use Moose;
 
-BEGIN { extends 'Catalyst::Controller::REST'; }
-
-__PACKAGE__->config(
-	default => 'application/json',
-	map => {
-		'text/html' => [ qw/View TT/ ],
-	}
-);
+BEGIN { extends 'App::Web::Controller::REST'; }
 
 ##############################################################
 #

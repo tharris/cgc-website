@@ -41,15 +41,15 @@ sub gene_GET  :Path('/gene') :Args(1) {
     $c->stash->{template} = 'gene/index.tt2';
 
     # Hack! Assume that name entries do not begin with a number.
-#    my $column;
-#    if ($id =~ /^\d/) {
-#	$column = 'id';
-#    } else {
-#	$column = 'name';
-#    }
+    my $column;
+    if ($id =~ /^\d/) {
+	$column = 'id';
+    } else {
+	$column = 'name';
+    }
 
 #    my $row = $c->model('CGC::Gene')->single({ id => $id });
-    my $row = $c->model('CGC::Gene')->single({ id => $id });
+    my $row = $c->model('CGC::Gene')->single({ $column => $id });
     
     # Get some meta information about this gene.
     my $entity;
@@ -69,7 +69,8 @@ sub gene_GET  :Path('/gene') :Args(1) {
 	};
 	
 	my @strains = $row->atomized_genotypes;
-	$self->log->warn(@strains);
+	$entity->{strains} = \@strains;
+#	$self->log->warn(@strains);
 
     }
     

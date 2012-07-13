@@ -2,14 +2,7 @@ package App::Web::Controller::Freezer;
 
 use Moose;
 
-BEGIN { extends 'Catalyst::Controller::REST'; }
-
-__PACKAGE__->config(
-	default => 'application/json',
-	map => {
-		'text/html' => [ qw/View TT/ ],
-	}
-);
+BEGIN { extends 'App::Web::Controller::REST'; }
 
 ##############################################################
 #
@@ -21,8 +14,20 @@ sub freezers :Path('/freezers') :Args(0)   {
     my ($self,$c) = @_;
 
     my @rows = $c->model('CGC::Freezer')->search();
-    $c->stash->{results}  = \@rows;
+    
+    my $entity;
+    foreach my $row (@rows) {
+	my @samples = $row->freezer_samples;
+	push @{$entity->{freezers}},{
+	    name       => $row->name,
+	    id         => $row->id,
+	    type       => $row->type,
+	    samples    => scalar @samples,
+	};
+    }
+
     $c->stash->{template} = 'freezer/all.tt2';
+    $self->status_ok($c, entity => $entity);
 }
 
 

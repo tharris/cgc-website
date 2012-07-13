@@ -16,7 +16,7 @@
 [% END %]
 
 
-[% FOREACH freezer IN results %]
+[% FOREACH freezer IN rest.freezers %]
 
 <div class="well span6">
     <table id="strain-view" class="table table-striped">
@@ -24,7 +24,7 @@
     <tbody>
         <tr><th>Symbolic Name</th>    <td><a href="[% c.uri_for('/freezer/' _ freezer.id) %]">[% freezer.name %]</a></td></tr>
         <tr><th>Type</th>       <td>[% freezer.type %]</td></tr>
-	<tr><th>Number of samples</th><td>[% freezer.freezer_samples.size %]</td></tr>
+	<tr><th>Number of samples</th><td>[% freezer.samples %]</td></tr>
     </tbody>
  </table>
 </div>
