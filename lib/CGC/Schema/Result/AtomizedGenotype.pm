@@ -49,6 +49,7 @@ __PACKAGE__->table("atomized_genotype");
 
   data_type: 'integer'
   extra: {unsigned => 1}
+  is_foreign_key: 1
   is_nullable: 0
 
 =head2 variation_id
@@ -90,7 +91,12 @@ __PACKAGE__->add_columns(
     is_nullable => 0,
   },
   "strain_id",
-  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 0 },
+  {
+    data_type => "integer",
+    extra => { unsigned => 1 },
+    is_foreign_key => 1,
+    is_nullable => 0,
+  },
   "variation_id",
   {
     data_type => "integer",
@@ -175,6 +181,21 @@ __PACKAGE__->belongs_to(
   },
 );
 
+=head2 strain
+
+Type: belongs_to
+
+Related object: L<CGC::Schema::Result::Strain>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "strain",
+  "CGC::Schema::Result::Strain",
+  { id => "strain_id" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+);
+
 =head2 transgene
 
 Type: belongs_to
@@ -216,8 +237,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-05 22:10:16
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:l1Uao1WsyrzC0H3pHjPtYQ
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-13 20:16:46
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8QjvPw3ldF1NXdD+bmBzpA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

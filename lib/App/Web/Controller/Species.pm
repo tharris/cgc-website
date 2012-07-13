@@ -103,45 +103,5 @@ sub species_GET :Path('/species') :Args(1)   {
 
 
 
-=pod
-
-
-
-#    $c->stash->{pager}    =  $rs->pager();
-    $c->stash->{template} = 'species/report.tt2';
-}
-
-
-=cut
-
-
-
-sub list : Local : ActionClass('REST') { }
-
-sub list_GET {
-	my ($self, $c) = @_;
-
-	my $columns = $c->request->param('columns')
-		? [ split(',', $c->request->param('columns')) ]
-		: [ qw/name/ ];
-	my $transformer = sub {
-		my $row = shift;
-		return [ map { $row->get_column($_) } @$columns ];
-	};
-	my $select = exists $c->request->parameters->{distinct}
-		? { select => { distinct => $columns }, as => $columns }
-		: { columns => $columns };
-	my $rows = [ map { $transformer->($_) }
-		     $c->model('CGC::Species')->search(undef, $select) ];
-	$c->stash->{cachecontrol}{list} =  1800; # 30 minutes
-	$self->status_ok(
-	    $c,
-	    entity => $rows,
-	    );
-}
-
-
-
-
 
 1;

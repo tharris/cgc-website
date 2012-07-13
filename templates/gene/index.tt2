@@ -1,0 +1,92 @@
+<div class="page-header">
+  <h1>Gene Report</h1>
+</div>
+
+
+[% IF c.check_user_roles('admin') %]
+<div class="alert alert-info">
+<strong>TODO:</strong>
+<ul>
+<li>Typeahead is really slow on big lists.
+</ul>
+
+<p><strong>Questions for CGC</strong></p>
+</div>
+[% END %]
+
+
+<div class="span6">
+    <h2>All Genes</h2>
+    <p><a href="[% c.uri_for('/genes') %]">View all genes</a></p>
+</div>
+
+
+[% DEFAULT gene = rest %]
+<div class="span6">
+    <h2>Search</h2>
+    <!--
+    <p>Search and view laboratories.</p>
+-->
+    <div class="well">
+        <input id="search-gene" type="text" class="span3"
+            [% IF gene %] value="[% gene.name %]"
+            [% ELSE %] placeholder="Start typing a gene..."
+            [% END %]
+        />
+        <span class="help-inline" style="margin-bottom: 9px"><small>Example:
+        <a href="/gene/unc-26">unc-26</a>,
+        <a href="/gene/lin-29">lin-29</a>,
+        <a href="/gene/R13A5.9">R13A5.9</a>
+        </small></span>
+    </div>
+</div>
+
+[% IF gene %]
+<div class="well span6">
+    <table id="gene-view" class="table table-striped">
+    <thead><h3>Gene Information</h3></thead>
+    <tbody>
+        <tr><th>Name</th><td>[% gene.name %] ([% link_to_wormbase('Laboratory',gene.name,'view at WormBase') %])</td></tr>
+	<tr><th>Species</th><td>[% species_link(gene.species) %]</td></tr>
+    </tbody>
+    </table>
+</div>
+
+
+<div class="well span6">
+
+<h2>Strains carrying this gene</h2>
+
+    [% IF gene.strains %]
+    <table class="table table-striped">
+    <thead>
+        <tr>            
+            <th>Strain</th>
+	    <th>Genotype</th>
+	    <th>Species</th>
+	    <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        [% FOREACH strain IN gene.strains %]
+         <tr>
+            <td><a href="[% c.uri_for('/strain/' _ strain.name) %]">[% strain.name %]</a></td> 
+	    <td>[% strain.genotype %]</td>
+            <td>[% species_link(strain.species.name) %]</td>
+	    <td>[% strain.description %]</td>
+         </tr>
+	 [% END %]
+    </tbody>
+</table>
+[% ELSE %]
+   <em>This laboratory hasn't submitted any strains to the CGC.</em>
+[% END %]
+
+[% END %]
+
+
+
+
+
+[% typeahead_support('gene',['sequence_name','locus_name']) %]
+

@@ -73,47 +73,4 @@
 </div>
 [% END %]
 
-<script>
-    $(function () {
-        $('#search-strain').typeahead({
-            ajax: {
-            	uris: [
-            		'/strain/list?distinct;columns=genotype',
-            		'/strain/list?distinct;columns=name',
-            	],
-				preprocess: function (item) {
-					return item[0];
-				}
-            },
-        });
-        
-        $('#search-strain').on('change',
-            function (data) {
-                window.location.href = '/strain/' + data.target.value
-                // If we want to get fancy and avoid page loads....
-                // window.location.hash = data.target.value;
-            }
-        );
-
-        /*
-        $(window).hashchange(function () {
-            // var strainName = location.hash.replace(/^#/,'');
-            $.ajax({
-                url: '/strain/' + strainName,
-                dataType: 'json',
-                success: function (json) {
-                    console.log(json);
-                    var tableRow = function (key) {
-                        var row = $('<tr></tr>');
-                        row.append($('<th></th>').html(key))
-                            .append($('<td></td>').html(json[key]));
-                        return row;
-                    };
-                    $('#strain-view').empty();
-                    $('#strain-view').add(tableRow("name"));
-                }
-            });
-        });
-        */
-    });
-</script>
+[% typeahead_support('strain',['genotype','name']) %]

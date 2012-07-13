@@ -92,46 +92,5 @@
 
 
 
-<script>
-    $(function () {
-        $('#search-freezer').typeahead({
-            ajax: {
-            	uris: [
-            		'/freezer/list?distinct;columns=name',
-            	],
-				preprocess: function (item) {
-					return item[0];
-				}
-            },
-        });
-        
-        $('#search-freezer').on('change',
-            function (data) {
-                window.location.href = '/freezer/' + data.target.value
-                // If we want to get fancy and avoid page loads....
-                // window.location.hash = data.target.value;
-            }
-        );
 
-        /*
-        $(window).hashchange(function () {
-            // var laboratoryName = location.hash.replace(/^#/,'');
-            $.ajax({
-                url: '/freezer/' + freezerName,
-                dataType: 'json',
-                success: function (json) {
-                    console.log(json);
-                    var tableRow = function (key) {
-                        var row = $('<tr></tr>');
-                        row.append($('<th></th>').html(key))
-                            .append($('<td></td>').html(json[key]));
-                        return row;
-                    };
-                    $('#freezer-view').empty();
-                    $('#freezer-view').add(tableRow("name"));
-                }
-            });
-        });
-        */
-    });
-</script>
+[% typeahead_support('freezer',['name']) %]

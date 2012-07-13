@@ -37,6 +37,35 @@ Catalyst Controller.
 
 =cut
  
+# Typeahead support method
+
+sub list :Local : ActionClass('REST') :Args(1) { }
+
+sub list_GET {
+	my ($self, $c, $class) = @_;
+
+	$class = ($class eq 'geneclass') ? 'GeneClass' : ucfirst($class);
+
+	my $columns = $c->request->param('columns')
+		? [ split(',', $c->request->param('columns')) ]
+		: [ qw/name/ ];
+	my $transformer = sub {
+		my $row = shift;
+		return [ map { $row->get_column($_) } @$columns ];
+	};
+	my $select = exists $c->request->parameters->{distinct}
+		? { select => { distinct => $columns }, as => $columns }
+		: { columns => $columns };
+	my $rows = [ map { $transformer->($_) }
+		     $c->model("CGC::$class")->search(undef, $select) ];
+	$c->stash->{cachecontrol}{list} =  1800; # 30 minutes
+	$self->status_ok(
+	    $c,
+	    entity => $rows,
+	    );
+}
+
+
 sub print :Path('/rest/print') :Args(0) :ActionClass('REST') {}
 sub print_POST {
     my ( $self, $c) = @_;
