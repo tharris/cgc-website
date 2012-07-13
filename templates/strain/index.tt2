@@ -12,6 +12,12 @@
 </div>
 [% END %]
 
+[% IF rest.error %]
+<div class="alert alert-error">
+	<strong>Error:</strong> [% rest.error | html%]
+</div>
+[% END %]
+
 [% DEFAULT strain = rest %]
 <div class="span6">
     <h2>Strain</h2>

@@ -25,14 +25,26 @@ Catalyst Controller.
 
 sub strain : Path('/strain') : ActionClass('REST') { }
 
-sub strain_GET {
-	my ($self, $c, $stash_key) = @_;
+sub index : Private {
+	my ($self, $c) = @_;
 	
+	$c->log->debug("[SP] index page");
+	return "index";
+}
+
+sub strain_GET {
+	my ($self, $c, $key) = @_;
+	
+	if (!$key) {
+		$c->log->debug("[SP] Detaching to index\n");
+		$c->detach('index');
+	}
 	my $strain
-		= $c->model('CGC::Strain')->single({ name => $stash_key });
+		= $c->model('CGC::Strain')->single({ name => $key });
 	$c->stash->{template} = 'strain/index.tt2';
 	my $entity;
 	if (defined($strain)) {
+		$c->log->debug("[SP] Found strain $strain\n");
 		$entity = {
 			name       => $strain->name,
 			species    => $strain->species
@@ -47,8 +59,10 @@ sub strain_GET {
 			laboratory => $strain->laboratory ? $strain->laboratory->name : 'laboratory of origin unknown',
 			history    => [] # TODO: Track history
 		};
+		$self->status_ok($c, entity => $entity);
+	} else {
+		$self->status_not_found($c, message => "Cannot find strain '$key'");
 	}
-	$self->status_ok($c, entity => $entity);
 }
 
 sub list : Local : ActionClass('REST') { }
