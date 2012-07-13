@@ -1,5 +1,5 @@
 <div class="page-header">
-  <h1>All CGC-Registered Laboratories</h1>
+  <h1>CGC Freezers</h1>
 </div>
 
 [% IF c.check_user_roles('admin') %]
@@ -15,31 +15,19 @@
 </div>
 [% END %]
 
-<table class="table table-striped">
 
-    <thead>
-        <tr>            
-            <th>Lab Designation</th>
-	    <th>Allele Designation</th>
-	    <th>Lab Head</th>
-	    <th>Institution</th>
-	    <th>Gene Classes</th>
-        </tr>
-    </thead>
+[% FOREACH freezer IN results %]
+
+<div class="well span6">
+    <table id="strain-view" class="table table-striped">
+    <thead><h3>Freezer Information: [% freezer.name %]</h3></thead>
     <tbody>
-        [% FOREACH row IN c.stash.results %]
-         <tr>
-            <td><a href="[% c.uri_for('/laboratory/' _ row.name)%]">[% row.name %]</a></td>
-            <td>[% row.allele_designation %]</td>  
-	    <td>[% row.head %]</td>
-	    <td>[% row.institution %]</td>
-	    <td>
-               [% FOREACH gene_class IN row.gene_classes %]
-                   <a href="[% c.uri_for('/gene-class/' _ gene_class.name)%]">[% gene_class.name %]</a>
-               [% END %]          
-            </td>
-         </tr>
-	 [% END %]
+        <tr><th>Symbolic Name</th>    <td><a href="[% c.uri_for('/freezer/' _ freezer.id) %]">[% freezer.name %]</a></td></tr>
+        <tr><th>Type</th>       <td>[% freezer.type %]</td></tr>
+	<tr><th>Number of samples</th><td>[% freezer.freezer_samples.size %]</td></tr>
     </tbody>
-</table>
+ </table>
+</div>
 
+
+[% END %]

@@ -58,6 +58,7 @@ sub species_GET :Path('/species') :Args(1)   {
     $c->log->warn("stsh key: $id");
     $c->stash->{template} = 'species/index.tt2';
 
+    # Hack! Assume that name entries do not begin with a number.
     my $column;
     if ($id =~ /^\d/) {
 	$column = 'species.id';
