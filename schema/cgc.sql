@@ -27,14 +27,18 @@ DROP TABLE IF EXISTS `freezer`;
 
 CREATE TABLE `freezer` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) DEFAULT '',
+  `name` varchar(50) DEFAULT NULL,
+  `type` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `freezer_name_unique` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+INSERT INTO `freezer` VALUES ('1','Moos Tower','nitrogen tank');
+INSERT INTO `freezer` VALUES ('2','MCB','nitrogen tank');
+INSERT INTO `freezer` VALUES ('3','Minus 80','minus 80');
 
 
-# Dump of table freezer_sample
+# Dump of table sample - this is really a cohort of samples
 # ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `freezer_sample`;
@@ -43,17 +47,36 @@ CREATE TABLE `freezer_sample` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `freezer_id` int(11) unsigned DEFAULT NULL,
   `strain_id` int(11) unsigned DEFAULT NULL,
-  `vials` tinyint(11) unsigned DEFAULT NULL,
-  `freeze_date` datetime DEFAULT NULL,
-  `frozen_by` int(11) NOT NULL COMMENT 'Should probably be foreign key to app_user',
-  `location` char(10) DEFAULT NULL COMMENT 'Not sure yet how to represent location',
+  `sample_count` tinyint(11) unsigned DEFAULT NULL,
+  `freezer_location` char(10) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `freezer_sample_freezer_fk` (`freezer_id`),
-  KEY `freezer_sample_strain_fk` (`strain_id`),
-  CONSTRAINT `freezer_sample_freezer_fk` FOREIGN KEY (`freezer_id`) REFERENCES `freezer` (`id`),
-  CONSTRAINT `freezer_sample_strain_fk` FOREIGN KEY (`strain_id`) REFERENCES `strain` (`id`)
+  KEY `fs_freezer_fk` (`freezer_id`),
+  KEY `fs_strain_fk` (`strain_id`),
+  CONSTRAINT `fs_freezer_fk` FOREIGN KEY (`freezer_id`) REFERENCES `freezer` (`id`),
+  CONSTRAINT `fs_strain_fk` FOREIGN KEY (`strain_id`) REFERENCES `strain` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+
+DROP TABLE IF EXISTS `event`;
+
+CREATE TABLE `event` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `event_class` enum('freezer','strain manipulation','administration','laboratory'),
+  `event` varchar(255) DEFAULT NULL COMMENT 'a description of the event, eg initial freeze',
+  `sample_id` int(11) unsigned DEFAULT NULL COMMENT 'either/or sample_id or freezer_id',
+  `freezer_id` int(11) unsigned DEFAULT NULL COMMENT 'either/or sample_id or freezer_id',
+  `event_date` date DEFAULT NULL,
+  `user_id` int(11) NOT NULL COMMENT 'the user who ENTERED the event',
+  `remark` varchar(255) DEFAULT NULL COMMENT 'a brief comment describing the results of the event',
+  PRIMARY KEY (`id`),
+  KEY `event_sample_id_fk` (`sample_id`),
+  KEY `event_freezer_id_fk` (`freezer_id`),
+  KEY `event_user_id_fk` (`user_id`),
+  CONSTRAINT `event_sample_id_fk` FOREIGN KEY (`sample_id`) REFERENCES `freezer_sample` (`id`),
+  CONSTRAINT `event_freezer_id_fk` FOREIGN KEY (`freezer_id`) REFERENCES `freezer` (`id`),
+  CONSTRAINT `event_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `app_user` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 
@@ -612,9 +635,8 @@ CREATE TABLE `strain` (
   `name` varchar(20) NOT NULL DEFAULT '',
   `species_id` int(11) unsigned DEFAULT NULL,
   `description` mediumtext,
-  `outcrossed` char(2) DEFAULT NULL COMMENT 'Number of times outcrossed? Another table?',
+  `outcrossed` char(2) DEFAULT NULL,
   `mutagen_id` int(11) unsigned DEFAULT NULL,
-#  `genotype_id` int(11) unsigned DEFAULT NULL,
   `genotype` varchar(100) DEFAULT NULL,
   `received` varchar(50) DEFAULT NULL,
   `made_by` varchar(50) DEFAULT NULL,
@@ -625,14 +647,11 @@ CREATE TABLE `strain` (
   `inbreeding_state_multifemale` varchar(50) DEFAULT NULL,
   `inbreeding_state_inbred` varchar(50) DEFAULT NULL,
   `reference_strain` varchar(50) DEFAULT NULL,
-  `sample_history`  varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `strain_name_unique` (`name`),
-#  KEY `strain_genotype_fk` (`genotype_id`),
   KEY `strain_mutagen_fk` (`mutagen_id`),
   KEY `strain_species_fk` (`species_id`),
   KEY `made_in_laboratory_fk` (`laboratory_id`),
-#  CONSTRAINT `strain_genotype_fk`  FOREIGN KEY (`genotype_id`) REFERENCES `genotype` (`id`),
   CONSTRAINT `strain_mutagen_fk`    FOREIGN KEY (`mutagen_id`) REFERENCES `mutagen` (`id`),
   CONSTRAINT `strain_species_fk`    FOREIGN KEY (`species_id`) REFERENCES `species` (`id`),
   CONSTRAINT `strain_laboratory_fk` FOREIGN KEY (`laboratory_id`) REFERENCES `laboratory` (`id`)
