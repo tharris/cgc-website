@@ -16,7 +16,7 @@
 
 <div class="span6">
     <h2>All Gene Classes</h2>
-    <p><a href="[% c.uri_for('/gene-classes') %]">View all gene classes tracked by the CGC</a></p>
+    <p><a href="[% c.uri_for('/geneclasses') %]">View all gene classes tracked by the CGC</a></p>
 </div>
 
 
@@ -34,9 +34,9 @@
             [% END %]
         />
         <span class="help-inline" style="margin-bottom: 9px"><small>Example:
-        <a href="/gene-class/unc"><em>uncoordinated</em></a>,
-        <a href="/gene-class/vab"><em>vab</em></a>,
-        <a href="/gene-class/let"><em>let</em></a>
+        <a href="/geneclass/unc"><em>uncoordinated</em></a>,
+        <a href="/geneclass/vab"><em>vab</em></a>,
+        <a href="/geneclass/let"><em>let</em></a>
         </small></span>
     </div>
 </div>

@@ -18,7 +18,7 @@ __PACKAGE__->config(
 #
 ##############################################################
 
-sub gene_classes :Path('/gene-classes') :Args(0)   {
+sub gene_classes :Path('/geneclasses') :Args(0)   {
     my ($self,$c) = @_;
 
     my @rows = $c->model('CGC::GeneClass')->search();
@@ -34,7 +34,7 @@ sub gene_classes :Path('/gene-classes') :Args(0)   {
 #
 ##############################################################
 
-sub gene_class : Path('/gene-class') : ActionClass('REST') { }
+sub gene_class : Path('/geneclass') : ActionClass('REST') { }
 
 sub gene_class_GET :Path('/gene-class') :Args(1)   {
     my ($self,$c,$name) = @_;
