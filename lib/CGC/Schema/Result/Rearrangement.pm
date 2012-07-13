@@ -57,12 +57,6 @@ __PACKAGE__->table("rearrangement");
   is_nullable: 1
   size: 255
 
-=head2 description
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 255
-
 =head2 type
 
   data_type: 'varchar'
@@ -128,6 +122,11 @@ __PACKAGE__->table("rearrangement");
   data_type: 'integer'
   is_nullable: 1
 
+=head2 description
+
+  data_type: 'mediumtext'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -141,8 +140,6 @@ __PACKAGE__->add_columns(
   "wormbase_id",
   { data_type => "varchar", is_nullable => 1, size => 20 },
   "name",
-  { data_type => "varchar", is_nullable => 1, size => 255 },
-  "description",
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "type",
   { data_type => "varchar", is_nullable => 1, size => 100 },
@@ -176,6 +173,8 @@ __PACKAGE__->add_columns(
   { data_type => "char", is_nullable => 1, size => 1 },
   "reference_strain_id",
   { data_type => "integer", is_nullable => 1 },
+  "description",
+  { data_type => "mediumtext", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -262,8 +261,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-09 14:59:01
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:iVhJKiGIdbPzQoLBzM+Dpw
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-13 02:56:46
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8T8GeguLS8a99zFThOMD2w
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

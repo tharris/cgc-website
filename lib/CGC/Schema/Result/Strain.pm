@@ -140,12 +140,6 @@ Number of times outcrossed? Another table?
   is_nullable: 1
   size: 50
 
-=head2 sample_history
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 50
-
 =cut
 
 __PACKAGE__->add_columns(
@@ -200,8 +194,6 @@ __PACKAGE__->add_columns(
   "inbreeding_state_inbred",
   { data_type => "varchar", is_nullable => 1, size => 50 },
   "reference_strain",
-  { data_type => "varchar", is_nullable => 1, size => 50 },
-  "sample_history",
   { data_type => "varchar", is_nullable => 1, size => 50 },
 );
 
@@ -324,8 +316,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-05 22:10:16
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:aD0361I8Vf+7Tg0WvXlshA
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-13 02:56:46
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:bYLhrTj0lpIoLeTAUSI2+w
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

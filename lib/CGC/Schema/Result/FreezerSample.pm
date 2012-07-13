@@ -59,24 +59,17 @@ __PACKAGE__->table("freezer_sample");
   is_foreign_key: 1
   is_nullable: 1
 
-=head2 vials
+=head2 sample_count
 
   data_type: 'tinyint'
   extra: {unsigned => 1}
   is_nullable: 1
 
-=head2 freeze_date
+=head2 freezer_location
 
-  data_type: 'datetime'
-  datetime_undef_if_invalid: 1
+  data_type: 'char'
   is_nullable: 1
-
-=head2 frozen_by
-
-  data_type: 'integer'
-  is_nullable: 0
-
-Should probably be foreign key to app_user
+  size: 10
 
 =cut
 
@@ -102,16 +95,10 @@ __PACKAGE__->add_columns(
     is_foreign_key => 1,
     is_nullable => 1,
   },
-  "vials",
+  "sample_count",
   { data_type => "tinyint", extra => { unsigned => 1 }, is_nullable => 1 },
-  "freeze_date",
-  {
-    data_type => "datetime",
-    datetime_undef_if_invalid => 1,
-    is_nullable => 1,
-  },
-  "frozen_by",
-  { data_type => "integer", is_nullable => 0 },
+  "freezer_location",
+  { data_type => "char", is_nullable => 1, size => 10 },
 );
 
 =head1 PRIMARY KEY
@@ -127,6 +114,21 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
+
+=head2 events
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::Event>
+
+=cut
+
+__PACKAGE__->has_many(
+  "events",
+  "CGC::Schema::Result::Event",
+  { "foreign.sample_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 =head2 freezer
 
@@ -169,8 +171,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-05 22:10:16
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nmGL2Hst8BND2NmaJjhcDA
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-13 14:04:10
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ET7Depw7dbA06ZXjSkXCGg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

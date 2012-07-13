@@ -52,13 +52,11 @@ __PACKAGE__->table("freezer");
   is_nullable: 1
   size: 50
 
-=head2 location
+=head2 type
 
-  data_type: 'char'
+  data_type: 'varchar'
   is_nullable: 1
-  size: 10
-
-Not sure yet how to represent location
+  size: 50
 
 =cut
 
@@ -72,8 +70,8 @@ __PACKAGE__->add_columns(
   },
   "name",
   { data_type => "varchar", default_value => "", is_nullable => 1, size => 50 },
-  "location",
-  { data_type => "char", is_nullable => 1, size => 10 },
+  "type",
+  { data_type => "varchar", is_nullable => 1, size => 50 },
 );
 
 =head1 PRIMARY KEY
@@ -89,6 +87,21 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
+
+=head2 events
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::Event>
+
+=cut
+
+__PACKAGE__->has_many(
+  "events",
+  "CGC::Schema::Result::Event",
+  { "foreign.freezer_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 =head2 freezer_samples
 
@@ -121,8 +134,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-03 21:38:25
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:3bXyuhYNaYEKXos3fWFG9w
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-13 02:56:46
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:0AYZMmvq0cjHM0QP1lyYHg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
