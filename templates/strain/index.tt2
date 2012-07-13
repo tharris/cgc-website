@@ -3,6 +3,8 @@
 <div class="alert alert-info">
 <p><strong>TODO</strong></p>
 <ul>
+<li>what to do with frzloc entries that have no strains set?
+<li>need to handle empty or broekn fields in frzloc - check merge logs
 <li>whenever there is a strain "card" shown, it should have the add to cart. Maybe make this a macro?
 </ul>
 

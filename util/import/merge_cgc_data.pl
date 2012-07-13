@@ -98,9 +98,9 @@ Readonly my %IMPORTS => (
         fields => [
             qw(
                 strain     
-                big_liquid_location  liquid_location liquid_vials
-                rev_loc rev_vials
-                big_liquid_freezer_date  liquid_freezer_date     rev_freezer_data
+                moos_tower_location  mcb_tower_location liquid_vials
+                minus80_location minus80_vials
+                oldest_freeze_in_nitrogen  date_strain_was_refrozen     date_strain_was_frozen_for_minus80
                 )
         ],
         primary => 'strain',
@@ -428,6 +428,8 @@ sub populate_freezers {
     my $freezer_rs = $schema->resultset('Freezer');
     my $sample_rs  = $schema->resultset('FreezerSample');
     my $legacy_rs  = $schema->resultset('LegacyFrzloc');
+    my $strain_rs  = $schema->resultset('Strain');
+    my $event_rs   = $schema->resultset('Event');
 
     my $finder = sub {
         my ($input, $table, $column) = @_;
@@ -436,22 +438,157 @@ sub populate_freezers {
         return update_or_create($schema, $table, { name => $value });
     };
 
-    # Enter symbolic names of the freezers.
-    my $big_liquid_row = $freezer_rs->update_or_create(
-	{   name     => "big liquid nitrogen",
+    my $log  = join('/','/usr/local/wormbase/todd/cgc-website/logs/import_logs',"freezer-cgc-merge.log");
+    open OUT,">>$log";
+
+    # Get out rows corresponding to various freezers.
+    my $moos_tower_row = $freezer_rs->find_or_create(
+	{   name     => "Moos Tower",
 	},
 	{ primary => 'freezer_name_unique' }
 	);
     
+    my $mcb_tower_row = $freezer_rs->find_or_create(
+	{   name     => "MCB",
+	},
+	{ primary => 'freezer_name_unique' }
+	);
+    
+    my $minus80_row = $freezer_rs->find_or_create(
+	{   name     => "Minus 80",
+	},
+	{ primary => 'freezer_name_unique' }
+	);
+
+
+    # Let's skip some entries
+    # Those that have no strain.
+
+    
+    # Insert entries into freezer samples.
     for my $input (@{ $freezers->[0] }) {
-	my $row = $sample_rs->update_or_create(
-	    {   freezer_id => $freezer_row->id,
-		strain     => $finder->($input, 'Strain', 'strain'),		
-	    },
-	    { primary => 'freezer_name_unique' }
+	
+	my $strain_row = $strain_rs->find({ name => $input->strain });
+	
+	unless ($strain_row) {
+	    print OUT "No strain has yet been entered for : " . $input->strain . "\n";
+	    next;
+	}
+
+	# Do three inserts, one for each freezer type
+	# MCB nitrogen
+	my ($mcb_insert,$moos_insert,$minus80_insert);
+	if (my $location = $input->mcb_tower_location) {
+	    $location =~ s/^\s//;
+	    $mcb_insert = $sample_rs->update_or_create(
+		{   freezer_id       => $mcb_tower_row->id,
+		    strain_id        => $strain_row->id,
+		    sample_count     => $input->liquid_vials || 0,
+		    freezer_location => $location,
+		},	    
+		);
+	} else {
+	    print OUT $input->strain . " has no MCB tower location specified\n"; 
+	}	
+
+	# Moos tower nitrogen
+	if (my $location = $input->moos_tower_location) {
+	    $location =~ s/^\s//;
+	    $moos_insert = $sample_rs->update_or_create(
+	    {   freezer_id       => $moos_tower_row->id,
+		strain_id        => $strain_row->id,
+		sample_count     => $input->liquid_vials || 0,
+		freezer_location => $location,
+	    },	    
 	    );
+	} else {
+	    print OUT $input->strain . " has no Moos tower location specified\n"; 
+	}
+
+	# Moos tower nitrogen
+	if (my $location = $input->minus80_location) {
+	    $location =~ s/^\s//;
+	    $minus80_insert = $sample_rs->update_or_create(
+	    {   freezer_id       => $minus80_row->id,
+		strain_id        => $strain_row->id,
+		sample_count     => $input->minus80_vials || 0,
+		freezer_location => $location,
+	    },	    
+	    );
+	} else {
+	    print OUT $input->strain . " has no minus 80 location specified\n"; 
+	}	
+
+	# Now, create events for all three of these
+	if ($input->oldest_freeze_in_nitrogen =~ m|\d\d/\d\d/\d\d\d\d|) {
+	    my $date = reformat_date($input->oldest_freeze_in_nitrogen);
+	    my $oldest_row_moos = $event_rs->update_or_create({
+		event_class => 'strain manipulation',
+		event       => 'strain frozen in liquid nitrogen (originally: date of oldest freeze in liquid nitrogen)',
+		sample_id   => $mcb_insert->id,
+		event_date  => $date,
+		remark      => 'in original data, date was not broken out for both MCB and Moos as it is here',
+		user_id     => 1,
+							      });
+	    my $oldest_row_mcb = $event_rs->update_or_create({
+		event_class => 'strain manipulation',
+		event       => 'strain frozen in liquid nitrogen (originally: date of oldest freeze in liquid nitrogen)',
+		sample_id   => $mcb_insert->id,
+		event_date  => $date,
+		remark      => 'in original data, date was not broken out for both MCB and Moos as it is here',
+		user_id     => 1,
+							     });
+	} else {
+	    print OUT $input->strain . " has no original freeze date set\n"; 
+	}	
+	
+	if ($input->date_strain_was_refrozen =~ m|\d\d/\d\d/\d\d\d\d|) {
+	    my $date = reformat_date($input->date_strain_was_refrozen);
+	    my $refreeze_moos = $event_rs->update_or_create({
+		event_class => 'strain manipulation',
+		event       => 'strain frozen in liquid nitrogen (originally: date strain was refrozen in liquid nitrogen',
+		sample_id   => $mcb_insert->id,
+		event_date  => $date,
+		remark      => 'in original data, date was not broken out for both MCB and Moos as it is here',
+		user_id     => 1,
+							    });
+	    my $refreeze_mcb = $event_rs->update_or_create({
+		event_class => 'strain manipulation',
+		event       => 'strain frozen in liquid nitrogen (originally: date strain was refrozen in liquid nitrogen',
+		sample_id   => $mcb_insert->id,
+		event_date  => $date,
+		remark      => 'in original data, date was not broken out for both MCB and Moos as it is here',
+		user_id     => 1,
+							   });
+	} else {
+	    print OUT $input->strain . " has no refreeze date set\n"; 
+	}	
+	
+	if ($minus80_insert) {
+	    if ($input->date_strain_was_frozen_for_minus80 =~ m|\d\d/\d\d/\d\d\d\d|) {
+		my $date = reformat_date($input->date_strain_was_frozen_for_minus80);
+		my $row = $event_rs->update_or_create({
+		    event_class => 'strain manipulation',
+		    event       => 'strain frozen in minus 80',
+		    sample_id   => $minus80_insert->id,
+		    event_date  => $date,
+		    remark      => 'in original data, date was not broken out for both MCB and Moos as it is here',
+		    user_id     => 1,
+						      });
+	    } else {
+		print OUT $input->strain . " has no minus 80 date set\n"; 
+	    }	
+	}
+	    
     }
 }
+
+sub reformat_date {
+    my $date = shift;
+    $date =~ m|(\d\d)/(\d\d)/(\d\d\d\d)|;
+    return "$3-$1-$2";
+}
+
 
 =head2 populate_transactions
 

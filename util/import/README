@@ -1,3 +1,9 @@
+Import process begins by pulling data from WormBase (see util/import/wormbase/README)
+followed by merging CGC data.
+
+--
+
+
 Scripts and related files for importing data from the old FoxPro database.
 
     foxpro_parser.pl

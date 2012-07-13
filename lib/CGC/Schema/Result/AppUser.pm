@@ -150,9 +150,24 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 events
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-05 22:09:00
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:yapDStcNXOoKursFNGofaw
+Type: has_many
+
+Related object: L<CGC::Schema::Result::Event>
+
+=cut
+
+__PACKAGE__->has_many(
+  "events",
+  "CGC::Schema::Result::Event",
+  { "foreign.user_id" => "self.user_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-13 02:56:46
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:6zSJ25y8fitusB04MRi94Q
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
