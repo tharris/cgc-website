@@ -1,4 +1,4 @@
-B1;2cpackage App::Web::Controller::Freezer;
+package App::Web::Controller::Freezer;
 
 use Moose;
 
