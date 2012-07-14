@@ -26,9 +26,7 @@ Catalyst Controller.
 sub strain : Path('/strain') : ActionClass('REST') { }
 
 sub index : Private {
-	my ($self, $c) = @_;
-	
-	$c->log->debug("[SP] index page");
+	my ($self, $c) = @_;	
 	return "index";
 }
 
@@ -36,7 +34,6 @@ sub strain_GET {
 	my ($self, $c, $key) = @_;
 	
 	if (!$key) {
-		$c->log->debug("[SP] Detaching to index\n");
 		$c->detach('index');
 	}
 	my $strain
@@ -44,7 +41,6 @@ sub strain_GET {
 	$c->stash->{template} = 'strain/index.tt2';
 	my $entity;
 	if (defined($strain)) {
-		$c->log->debug("[SP] Found strain $strain\n");
 		$entity = {
 			name       => $strain->name,
 			species    => $strain->species

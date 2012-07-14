@@ -58,7 +58,7 @@ sub list_GET {
 	$self->status_ok(
 	    $c,
 	    entity => $rows,
-	    );
+    );
 }
 
 
