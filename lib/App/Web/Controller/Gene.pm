@@ -50,8 +50,12 @@ sub gene_GET  :Path('/gene') :Args(1) {
 
 #    my $row = $c->model('CGC::Gene')->single({ id => $id });
     my $row = $c->model('CGC::Gene')->single({ $column => $id });
+#    my $row = $c->model('CGC::Gene')->search(
+#	{ "gene.$column" => $id },
+#	{ join => { 'atomized_genotypes' => 'strain' } }
+#	);
     
-    # Get some meta information about this gene.
+    # Get meta information about this gene.
     my $entity;
     if ($row) {
 	$entity = {
@@ -68,40 +72,9 @@ sub gene_GET  :Path('/gene') :Args(1) {
 	    type       => $row->type,
 	};
 	
-	my @strains = $row->atomized_genotypes;
-	$entity->{strains} = \@strains;
-#	$self->log->warn(@strains);
-
+	my @ag = $row->atomized_genotypes;
+	$entity->{ag} = \@ag if @ag;
     }
-    
-=pod
-
-	my @strains = $c->model('CGC::AtomizedGenotype')->search(
-	    {
-		'gene_id' => $row->id,
-	    },
-	    {
-		join     => 'strain', # join the strain table
-#	    group_by => [qw/strains.species_id/],
-	    }
-	    );
-
-	
-
-	foreach my $strain ($row->freezer_samples) {
-	    push @{$entity->{samples}},{ id => $sample->id,
-					 genotype => $sample->strain->genotype,
-					 strain   => $sample->strain->name,
-					 location => $sample->freezer_location,
-					 sample_count => $sample->sample_count,
-					 date_first_frozen => 'pending',
-					 date_last_thawed  => 'pending',
-	    }
-	}	
-    }
-
-=cut
-
     $self->status_ok($c, entity => $entity);
 }
 

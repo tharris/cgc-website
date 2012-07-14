@@ -7,6 +7,7 @@
 <div class="alert alert-info">
 <strong>TODO:</strong>
 <ul>
+<li>Individual gene report data contains DBIx::Class objects; need to figure out mutliple joins.
 <li>Typeahead is really slow on big lists.
 </ul>
 
@@ -57,7 +58,7 @@
 
 <h2>Strains carrying this gene</h2>
 
-    [% IF gene.strains %]
+    [% IF gene.ag %]
     <table class="table table-striped">
     <thead>
         <tr>            
@@ -68,12 +69,12 @@
         </tr>
     </thead>
     <tbody>
-        [% FOREACH strain IN gene.strains %]
+        [% FOREACH ag IN gene.ag %]
          <tr>
-            <td><a href="[% c.uri_for('/strain/' _ strain.name) %]">[% strain.name %]</a></td> 
-	    <td>[% strain.strain.genotype %]</td>
-            <td>[% species_link(strain.species.name) %]</td>
-	    <td>[% strain.description %]</td>
+            <td><a href="[% c.uri_for('/strain/' _ ag.strain.name) %]">[% ag.strain.name %]</a></td> 
+	    <td>[% ag.strain.genotype %]</td>
+            <td>[% species_link(ag.strain.species.name) %]</td>
+	    <td>[% ag.strain.description %]</td>
          </tr>
 	 [% END %]
     </tbody>
