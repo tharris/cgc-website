@@ -34,43 +34,52 @@
 
 
 	  <span class="status-bar"></span>
-          [% IF c.user_exists %]
-	       <div class="nav-collapse pull-right">
+[% IF c.user_exists %]
+	<div class="nav-collapse pull-right">
 		<ul class="nav">
+			<li class="dropdown">                   
+				<a href="#"
+				   class="dropdown-toggle"
+				   data-toggle="dropdown">
+				   [% c.user.username %] <b class="caret"></b>
+				</a>
+				<ul class="dropdown-menu">
+					[% user_path = "${c.req.base}user/${c.user.user_id}" %]
+				    <li>
+						<a href="[% user_path %]/profile"
+						   id="section-user">Profile</a></li>
+				    <li><a href="[% user_path %]/account"
+						   id="section-user">Account</a></li>
+				    <li class="divider"></li>
+	[% IF c.check_user_roles('admin') %]
+				    <li class="nav-header">Adminstration</li>
+				    <li><a href="[% c.uri_for('/documentation') %]">
+						Developer Docs
+					</a></li>
+					<li class="divider"></li>
+	[% END %]
 
-                    <li class="dropdown">                   
-                          <a href="#"
-                               class="dropdown-toggle"
-                               data-toggle="dropdown">
-                               Welcome, [% c.user.username %]!<b class="caret"></b>
-                           </a>
-                           <ul class="dropdown-menu">
-                                <li><a href="[% c.req.base %]user/[% c.user.user_id %]/profile" id="section-user" %]">Profile</a></li>
-                                <li><a href="[% c.req.base %]user/[% c.user.user_id %]/account" id="section-user" %]">Account</a></li>
-                                <li class="divider"></li>
-                  		[% IF c.check_user_roles('admin') %]
-                                   <li class="nav-header">Adminstration</li>
-      		                   <li><a href="[% c.uri_for('/documentation') %]">Developer Docs</a></li>
-                                   <li class="divider"></li>
-                  		[% END %]
-
-                                <li><a data-toggle="modal" href="#modal" data-uri="/logout">Logout</a></li>
-
-                          </ul>
-                    </li>
-                  </ul>
-                </div>
-          [% ELSE %]
-
-		<div class="navbar-form pull-right">
-			<a class="btn btn-primary-inverse" data-toggle="modal"
-				data-uri="[% c.secure_uri_for("/login") %]"
-				href="#modal">Sign In</a>
-			<a class="btn btn-inverse" data-toggle="modal"
-				data-uri="[% c.secure_uri_for("/register") %]"
-				href="#modal">Sign up</a>
-		</div>
-          [% END %]
+				    <li><a data-toggle="modal" href="#modal" data-uri="/logout">
+						Logout
+					</a></li>
+				</ul>
+			</li>
+			<li class="divider-vertical"></li>
+			<li>
+				<a data-toggle="modal" href="#modal" data-uri="[% user_path %]/cart"><i class="icon-shopping-cart icon-white"></i> ([% c.user.cart.items OR 0 %])</a>
+			</li>
+		</ul>
+	</div>
+[% ELSE %]
+	<div class="navbar-form pull-right">
+		<a class="btn btn-primary-inverse" data-toggle="modal"
+			data-uri="[% c.secure_uri_for('/login') %]"
+			href="#modal">Sign In</a>
+		<a class="btn btn-inverse" data-toggle="modal"
+			data-uri="[% c.secure_uri_for('/register') %]"
+			href="#modal">Sign up</a>
+	</div>
+[% END %]
 	</div>
   </div>
 </div>
