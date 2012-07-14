@@ -1,16 +1,8 @@
 package App::Web::Controller::GeneClass;
 
-
 use Moose;
 
-BEGIN { extends 'Catalyst::Controller::REST'; }
-
-__PACKAGE__->config(
-	default => 'application/json',
-	map => {
-		'text/html' => [ qw/View TT/ ],
-	}
-);
+BEGIN { extends 'App::Web::Controller::REST'; }
 
 ##############################################################
 #
@@ -18,7 +10,7 @@ __PACKAGE__->config(
 #
 ##############################################################
 
-sub gene_classes :Path('/gene-classes') :Args(0)   {
+sub gene_classes :Path('/geneclasses') :Args(0)   {
     my ($self,$c) = @_;
 
     my @rows = $c->model('CGC::GeneClass')->search();
@@ -34,7 +26,7 @@ sub gene_classes :Path('/gene-classes') :Args(0)   {
 #
 ##############################################################
 
-sub gene_class : Path('/gene-class') : ActionClass('REST') { }
+sub gene_class : Path('/geneclass') : ActionClass('REST') { }
 
 sub gene_class_GET :Path('/gene-class') :Args(1)   {
     my ($self,$c,$name) = @_;
@@ -54,34 +46,6 @@ sub gene_class_GET :Path('/gene-class') :Args(1)   {
    };
     $self->status_ok($c, entity => $entity);
 }
-
-
-
-sub list : Local : ActionClass('REST') { }
-
-sub list_GET {
-	my ($self, $c) = @_;
-
-	my $columns = $c->request->param('columns')
-		? [ split(',', $c->request->param('columns')) ]
-		: [ qw/name/ ];
-	my $transformer = sub {
-		my $row = shift;
-		return [ map { $row->get_column($_) } @$columns ];
-	};
-	my $select = exists $c->request->parameters->{distinct}
-		? { select => { distinct => $columns }, as => $columns }
-		: { columns => $columns };
-	my $rows = [ map { $transformer->($_) }
-		     $c->model('CGC::GeneClass')->search(undef, $select) ];
-	$c->stash->{cachecontrol}{list} =  1800; # 30 minutes
-	$self->status_ok(
-	    $c,
-	    entity => $rows,
-	    );
-}
-
-
 
 
 

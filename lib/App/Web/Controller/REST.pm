@@ -1,21 +1,17 @@
 package App::Web::Controller::REST;
 
-use strict;
-use warnings;
-use parent 'Catalyst::Controller::REST';
+use Moose;
+BEGIN { extends 'Catalyst::Controller::REST'; }
+
 use Time::Duration;
 use XML::Simple;
 use Crypt::SaltedHash;
 use List::Util qw(shuffle);
-use Badge::GoogleTalk;
-use App::API::ModelMap;
 use URI::Escape;
-use Text::WikiText;
-use Text::WikiText::Output::HTML;
 use DateTime;
 
 __PACKAGE__->config(
-    'default'          => 'text/x-yaml',
+    'default'          => 'text/x-json',
     'stash_key'        => 'rest',
     'map'              => {
 		'text/x-yaml'      => 'YAML',
@@ -37,6 +33,35 @@ Catalyst Controller.
 
 =cut
  
+# Typeahead support method
+
+sub list :Local : ActionClass('REST') :Args(1) { }
+
+sub list_GET {
+	my ($self, $c, $class) = @_;
+
+	$class = ($class eq 'geneclass') ? 'GeneClass' : ucfirst($class);
+
+	my $columns = $c->request->param('columns')
+		? [ split(',', $c->request->param('columns')) ]
+		: [ qw/name/ ];
+	my $transformer = sub {
+		my $row = shift;
+		return [ map { $row->get_column($_) } @$columns ];
+	};
+	my $select = exists $c->request->parameters->{distinct}
+		? { select => { distinct => $columns }, as => $columns }
+		: { columns => $columns };
+	my $rows = [ map { $transformer->($_) }
+		     $c->model("CGC::$class")->search(undef, $select) ];
+	$c->stash->{cachecontrol}{list} =  1800; # 30 minutes
+	$self->status_ok(
+	    $c,
+	    entity => $rows,
+	    );
+}
+
+
 sub print :Path('/rest/print') :Args(0) :ActionClass('REST') {}
 sub print_POST {
     my ( $self, $c) = @_;
@@ -140,47 +165,6 @@ sub layout_POST {
   $c->user_session->{'layout'}->{$class}->{$i}->{'name'} = $layout;
 
   $c->user_session->{'layout'}->{$class}->{$i}->{'lstring'} = $lstring;
-}
-
-sub layout_GET {
-  my ( $self, $c, $class, $layout) = @_;
-  $c->stash->{noboiler} = 1;
-  if ($c->req->params->{delete}){
-    delete $c->user_session->{'layout'}->{$class}->{$layout};
-    return;
-  }
-  unless (defined $c->user_session->{'layout'}->{$class}->{$layout}){
-    $layout = 0;
-  }
-
-  my $name = $c->user_session->{'layout'}->{$class}->{$layout}->{'name'};
-  my $lstring = $c->user_session->{'layout'}->{$class}->{$layout}->{'lstring'};
-
-
-  $c->log->debug("lstring:" . $lstring);
-
-  $self->status_ok(
-      $c,
-      entity =>  {
-          name => $name,
-          lstring => $lstring,
-      },
-  );
-}
-
-sub layout_list :Path('/rest/layout_list') :Args(1) :ActionClass('REST') {}
-
-sub layout_list_GET {
-  my ( $self, $c, $class ) = @_;
-  my @layouts = keys(%{$c->user_session->{'layout'}->{$class}});
-  my %l;
-  map {$l{$_} = $c->user_session->{'layout'}->{$class}->{$_}->{'name'};} @layouts;
-  $c->log->debug("layout list:" . join(',',@layouts));
-  $c->stash->{layouts} = \%l;
-  $c->stash->{template} = "boilerplate/layouts.tt2";
-  $c->stash->{noboiler} = 1;
-$c->response->headers->expires(time);
-    $c->forward('App::Web::View::TT');
 }
 
 
@@ -433,171 +417,6 @@ sub rest_register_email {
 
 
 
-
-
-
-
-
-
-sub feed :Path('/rest/feed') :Args :ActionClass('REST') {}
-
-sub feed_GET {
-    my ($self,$c,@args) = @_;
-    $c->stash->{noboiler} = 1;
-    $c->stash->{current_time}=time();
-
-    my $type = shift @args;
-    
-    if($type eq "download"){
-      my $class = shift @args;
-      my $wbid = shift @args;
-      my $widget = shift @args;
-      my $name = shift @args;
-      if($widget=~m/^static-widget-([\d])/){
-        $c->stash->{url} = $c->uri_for('widget/static', $1);
-      }else{
-        $c->stash->{url} = $c->uri_for('widget', $class, $wbid, $widget);
-      }
-    }else{
-
-      my $url = $c->req->params->{url};
-      my $page = $c->model('Schema::Page')->find({url=>$url});
-      $c->stash->{url} = $url;
-
-      if($type eq "comment"){
-        my @comments = $page->comments;
-        if($c->req->params->{count}){
-          $c->response->body("(" . scalar(@comments) . ")");
-          return;
-        }
-        $c->stash->{comments} = \@comments if(@comments);  
-      }elsif($type eq "issue"){
-        my @issues;
-        if($page) {
-          @issues = $page->issues;
-          $c->stash->{issue_type} = 'page';
-        }else {
-          @issues= $c->user->issues_reported if $c->user;
-          push(@issues, $c->user->issues_responsible) if $c->user;
-          $c->stash->{issue_type} = 'user';
-        }
-        if($c->req->params->{count}){
-          $c->response->body(scalar(@issues));
-          return;
-        }
-        $c->stash->{issues} = \@issues if(@issues);  
-      }
-    }
-      
-     $c->stash->{template} = "feed/$type.tt2"; 
-     $c->forward('App::Web::View::TT') ;
-    
-     #$self->status_ok($c,entity => {});
-}
-
-sub feed_POST {
-    my ($self,$c,$type) = @_;
-    if($type eq 'comment'){
-      if($c->req->params->{method} eq 'delete'){
-        my $id = $c->req->params->{id};
-        if($id){
-          my $comment = $c->model('Schema::Comment')->find($id);
-          $c->log->debug("delete comment #",$comment->comment_id);
-          $comment->delete();
-          $comment->update();
-        }
-      }else{
-        my $content= $c->req->params->{content};
-
-        my $url = $c->req->params->{url};
-        my $page = $c->model('Schema::Page')->find({url=>$url});
-
-        my $user = $c->user;
-        unless($c->user_exists){
-          $user = $c->model('CGC::AppUser')->create({username=>$c->req->params->{name}, active=>0});
-          $c->model('Schema::Email')->find_or_create({email=>$c->req->params->{email}, user_id=>$user->user_id});
-        }
-
-        my $commment = $c->model('Schema::Comment')->find_or_create({user_id=>$user->user_id, page_id=>$page->page_id, content=>$content,'timestamp'=>time()});
-
-      }
-    }
-    elsif($type eq 'issue'){
-    if($c->req->params->{method} eq 'delete'){
-      my $id = $c->req->params->{issues};
-      if($id){
-        foreach (split('_',$id) ) {
-        my $issue = $c->model('Schema::Issue')->find($_);
-        $c->log->debug("delete issue #",$issue->issue_id);
-        $issue->delete();
-        $issue->update();
-        }
-      }
-    }else{
-      my $content    = $c->req->params->{content};
-      my $title      = $c->req->params->{title};
-      my $is_private = $c->req->params->{isprivate};
-      
-      my $url = $c->req->params->{url};
-      $c->log->debug(keys %{$c->req->params});
-      my $page = $c->model('Schema::Page')->find({url=>$url});
-      $c->log->debug("private: $is_private");
-      my $user = $self->check_user_info($c);
-      return unless $user;
-      $c->log->debug("create new issue $content ",$user->user_id);
-      my $issue = $c->model('Schema::Issue')->find_or_create({reporter_id=>$user->user_id,
-                                  title=>$title,
-                                  page_id=>$page->page_id,
-                                  content=>$content,
-                                  state      =>"new",
-                                  is_private => $is_private,
-                                  'timestamp'=>time()});
-      $self->issue_email($c,$issue,1,$content);
-    }
-    }elsif($type eq 'thread'){
-    my $content= $c->req->params->{content};
-    my $issue_id = $c->req->params->{issue};
-    my $state    = $c->req->params->{state};
-    my $severity = $c->req->params->{severity};
-    my $assigned_to= $c->req->params->{assigned_to};
-    if($issue_id) { 
-       my $hash;
-       my $issue = $c->model('Schema::Issue')->find($issue_id);
-       if ($state) {
-          $hash->{status}={old=>$issue->state,new=>$state};
-          $issue->state($state) ;
-       }
-       if ($severity) {
-          $hash->{severity}={old=>$issue->severity,new=>$severity};
-          $issue->severity($severity);
-       }
-       if($assigned_to) {
-          my $people=$c->model('CGC::AppUser')->find($assigned_to);
-          $hash->{assigned_to}={old=>$issue->responsible_id,new=>$people};
-          $issue->responsible_id($assigned_to);
-#         $c->model('Schema::UserIssue')->find_or_create({user_id=>$assigned_to,issue_id=>$issue_id}) ;
-       }
-       $issue->update();
-        
-       my $user = $self->check_user_info($c);
-       return unless $user;
-       my $thread  = { owner=>$user,
-              timestamp=>time(),
-       };
-       if($content){
-        $c->log->debug("create new thread for issue #$issue_id!");
-        my @threads= $issue->threads(undef,{order_by=>'thread_id DESC' } ); 
-        my $thread_id=1;
-        $thread_id = $threads[0]->thread_id +1 if(@threads);
-        $thread= $c->model('Schema::IssueThread')->find_or_create({issue_id=>$issue_id,thread_id=>$thread_id,content=>$content,timestamp=>$thread->{timestamp},user_id=>$user->user_id});
-      }  
-      if($state || $assigned_to || $content){
-          $self->issue_email($c,$issue,$thread,$content,$hash);
-      }
-    }
-    }
-}
-
 sub check_user_info {
   my ($self,$c) = @_;
   my $user;
@@ -618,348 +437,6 @@ sub check_user_info {
 
 
 
-######################################################
-#
-#   WIDGETS
-#
-######################################################
-
-# Request a widget by REST. Gathers all component fields
-# into a single data structure, passing it to a unified
-# widget template.
-
-=head widget(), widget_GET()
-
-Provided with a class, name, and field, return its content
-
-eg http://localhost/rest/widget/[CLASS]/[NAME]/[FIELD]
-
-=cut
-
-sub widget :Path('/rest/widget') :Args(3) :ActionClass('REST') {}
-
-sub widget_GET {
-    my ($self,$c,$class,$name,$widget) = @_; 
-    $c->log->debug("        ------> we're requesting the widget $widget");
-
-    # Small performance tweak.
-    # Is this a widget marked in config as one that should be precached?
-    # If so, set a flag to check for it's presence in the portable couchdb cache.
-#    my $cache_name = $c->_widget_is_precached($class,$widget) ? 'couchdb' : 'filecache';    
-
-    # Cache key something like "$class_$widget_$name"
-    my ($cached_data,$cache_source);
-    my $uuid = join('_',$class,$widget,$name);
-
-    # Check the cache only if this is a request for HTML.
-    # check_cache will check couch first.
-    my $headers = $c->req->headers;
-    my $content_type = $headers->content_type || $c->req->params->{'content-type'} || 'text/html';
-    if (($c->config->{installation_type} eq 'production') 
-	&& ($content_type eq 'text/html')) {
-	
-	# Shouldn't this be $self? Would break check_cache();
-	($cached_data,$cache_source) = $c->check_cache({cache_name => 'couchdb',
-							uuid       => $uuid,
-						       });
-	#hostname   => $c->req->base,
-    }    
-    
-    # We're only caching rendered HTML. If it's present, return it.
-    if ($cached_data) {
-	$c->response->status(200);
-	$c->response->header('Content-Type' => 'text/html');
-	$c->response->body($cached_data);
-	$c->detach();
-	return;
-    }
-    
-    # It seems silly to fetch an object if we are going to be pulling
-    # fields from the cache but I still need for various page formatting duties.
-    unless ($c->stash->{object}) {
-        # AD: this condition is an illusion -- the stash will never have an object
-        #     unless we were forwarded here by another action. since this is a
-        #     RESTful action, that likely isn't the case.
-	# TH: Yes, you're absolutely correct. Conditional from pre-REST implementation?
-      # Fetch our external model
-      my $api = $c->model('ExternalModel');
-      
-      # Fetch the object from our driver     
-      #$c->log->debug("AppAPI model is $api " . ref($api));
-      #$c->log->debug("The requested class is " . ucfirst($class));
-      #$c->log->debug("The request is " . $name);
-      
-      # Fetch a App::API::Object::* object
-      if ($name eq '*' || $name eq 'all') {
-          $c->stash->{object} = $api->instantiate_empty({class => ucfirst($class)});
-      } else {
-          $c->stash->{object} = $api->fetch({class => ucfirst($class),
-					     name  => $name,
-					    }) or die "Couldn't fetch an object: $!";
-      }
-      # $c->log->debug("Tried to instantiate: $class");
-    }
-
-    my $object = $c->stash->{object};
-
-    # Is this a request for the references widget?
-    # Return it (of course, this will ONLY be HTML).
-    if ($widget eq 'references') {
-      $c->stash->{class}    = $class;
-      $c->stash->{query}    = $name;
-      $c->stash->{noboiler} = 1;
-      
-      # Looking up the template is slow; hard-coded here.
-      $c->stash->{template} = 'shared/widgets/references.tt2';
-      $c->forward('App::Web::View::TT');
-      return;
-    
-      # If you have a tool that you want to display inline as a widget, be certain to add it here.
-      # Otherwise, it will try to load a template under class/action.tt2...
-    } elsif ($widget eq "nucleotide_aligner" || $widget eq "protein_aligner" || $widget eq 'tree') {
-      return $c->res->redirect("/tools/$widget/run?inline=1;name=$name;class=$class") if ($widget eq 'tree');
-      return $c->res->redirect("/tools/" . $widget . "/run?inline=1&sequence=$name");
-    }
-    
-    # Generate and cache the widget.       
-    # Load the stash with the field contents for this widget.
-    # The widget itself is loaded by REST; fields are not.
-    my @fields = $c->_get_widget_fields($class,$widget);
-    
-    my $fatal_non_compliance = 0;
-    foreach my $field (@fields) {
-	unless ($field) { next;}
-	# $c->log->debug("Processing field: $field");	
-	my $data = $object->$field; # $object->can($field) for a check
-	if ($c->config->{installation_type} eq 'development' and
-	    my ($fixed_data, @problems) = $object->_check_data($data, $class)) {
-	    $data = $fixed_data;
-	    $c->log->fatal("${class}::$field returns non-compliant data: ");
-	    $c->log->fatal("\t$_") foreach @problems;
-	    
-	    $fatal_non_compliance = $c->config->{fatal_non_compliance};
-	}
-	
-	# Conditionally load up the stash (for now) for HTML requests.	
-	$c->stash->{fields}->{$field} = $data; 
-    }
-	
-    if ($fatal_non_compliance) {
-	die "Non-compliant data. See log for fatal error.\n"
-    }
-    
-    # Save the name and class of the widget.
-    $c->stash->{class} = $class;
-    $c->stash->{widget} = $widget;
-
-    # No boiler since this is an XHR request.
-    $c->stash->{noboiler} = 1;
-
-    # Set the template
-    $c->stash->{template}       = 'shared/generic/rest_widget.tt2';
-    $c->stash->{child_template} = $c->_select_template($widget,$class,'widget');    
-
-    # Forward to the view to render HTML
-    if ($content_type eq 'text/html') {
-	my $html = $c->view('TT')->render($c,$c->{stash}->{template}); 
-
-	# If we have content, cache it.
-	if ($html) {
-	    
-	    # eval {$c->set_cache('filecache',$cache_id,$html);};
-	    # Or: couchdb or memcached	
-    
-	    $c->set_cache({cache_name => 'couchdb',
-			   uuid       => $uuid,
-			   data       => $html,			  
-#			   host       => $c->req->base,  # eg http://beta.wormbase.org/ or http://todd.wormbase.org/
-			  });
-	}
-
-	$c->response->status(200);
-	$c->response->header('Content-Type' => 'text/html');
-	$c->response->body($html);
-	$c->detach();
-	return;
-    }
-
-    
-    # TODO: AGAIN THIS IS THE REFERENCE OBJECT
-    # PERHAPS I SHOULD INCLUDE FIELDS?
-    # Include the full uri to the *requested* object.
-    # IE the page on App where this should go.
-    my $uri = $c->uri_for("/page",$class,$name);   # THIS IS NO LONGER THE CORRECT URI FOR THE PAGE!
-    $self->status_ok($c, 
-		     entity => {
-			 class   => $class,
-			 name    => $name,
-			 uri     => "$uri",
-			 fields => $c->stash->{fields},
-		     }
-	);
-    my $filename = join('_',$class,$name,$widget) . '.' . $c->config->{api}->{content_type}->{$content_type};
-    $c->log->debug("$filename download in the format: $content_type");
-    $c->response->header('Content-Type' => $content_type);
-    $c->response->header('Content-Disposition' => 'attachment; filename='.$filename);  
-}
-
-
-
-
-
-
-
-# For "static" pages
-# that do not need to handle objects. They have a different linking structure
-sub widget_static :Path('/rest/widget/static') :Args(1) :ActionClass('REST') {}
-
-sub widget_static_GET {
-    my ($self,$c,$widget_id) = @_; 
-    $c->log->debug("getting static widget");
-    if($c->req->params->{history}){ # just getting history of widget
-      my @revisions = $c->model('Schema::WidgetRevision')->search({widget_id=>$widget_id}, {order_by=>'timestamp DESC'});
-      map {
-        my $time = DateTime->from_epoch( epoch => $_->timestamp);
-        $_->{time_lapse} =  $time->hms(':') . ', ' . $time->day . ' ' . $time->month_name . ' ' . $time->year;
-      } @revisions;
-      $c->stash->{revisions} = \@revisions if @revisions;
-      $c->stash->{widget_id} = $widget_id;
-    } else { # getting actual widget
-      my $parser = Text::WikiText->new;
-      my $widget = $c->model('Schema::Widgets')->find({widget_id=>$widget_id});
-      $c->stash->{widget} = $widget;
-      if($c->req->params->{rev}){ # getting a certain revision of the widget
-        my $rev = $c->model('Schema::WidgetRevision')->find({widget_revision_id=>$c->req->params->{rev}});
-        unless($rev->widget_revision_id == $widget->content->widget_revision_id){
-          $c->stash->{rev} = $rev;
-          my $document = $parser->parse($rev->content);
-          $c->stash->{rev_content} = Text::WikiText::Output::HTML->new->dump($document);
-          my $time = DateTime->from_epoch( epoch => $rev->timestamp);
-          $c->stash->{rev_date} =  $time->hms(':') . ', ' . $time->day . ' ' . $time->month_name . ' ' . $time->year;
-        }
-      }
-      if(!($c->stash->{rev}) && $widget){
-        my $document = $parser->parse($widget->content->content);
-        $c->stash->{widget_content} = Text::WikiText::Output::HTML->new->dump($document);
-      }
-      $c->stash->{timestamp} = ago(time()-($c->stash->{widget}->content->timestamp), 1) if($widget_id > 0);
-      $c->stash->{path} = $c->request->params->{path};
-    }
-    $c->stash->{edit} = $c->req->params->{edit};
-    $c->stash->{noboiler} = 1;
-    $c->stash->{template} = "shared/widgets/static.tt2";
-
-
-
-    if($c->stash->{widget}){
-      my $widget = $c->stash->{widget};
-      my $headers = $c->req->headers;
-      # Forward to the view for rendering HTML.
-      my $format = $headers->header('Content-Type') || $c->req->params->{'content-type'};
-      $c->detach('App::Web::View::TT') unless($format) ;
-      
-      my $uri = $c->uri_for("/rest/widget",$widget_id);
-      $self->status_ok($c, entity => {
-      id   => $widget_id,
-      name    => $widget->widget_title,
-      content => $widget->content->content,
-      uri     => "$uri"
-              }
-      );
-
-    $format ||= 'text/html';
-    if ($format =~m/text\/html/) {
-      $c->forward('App::Web::View::TT');
-      return;
-    }
-    my $filename = "static-widget-" . $widget_id.".".$c->config->{api}->{content_type}->{$format};
-    $c->log->debug("$filename download in the format: $format");
-    $c->response->header('Content-Type' => $format);
-    $c->response->header('Content-Disposition' => 'attachment; filename='.$filename);
-   }else{$c->forward('App::Web::View::TT');}
-}
-
-sub widget_static_POST {
-    my ($self,$c,$widget_id) = @_; 
-
-    #only admins and curators can modify widgets
-    if($c->check_any_user_role(qw/admin curator/)){ 
-
-      #only admins can delete
-      if($c->req->params->{delete} && $c->check_user_roles("admin")){ 
-        my $widget = $c->model('Schema::Widgets')->find({widget_id=>$widget_id});
-        $widget->delete();
-        $widget->update();
-        return;
-      }
-      my $widget_title = $c->request->body_parameters->{widget_title};
-      my $widget_content = $c->request->body_parameters->{widget_content};
-      my $widget_order = $c->request->body_parameters->{widget_order};
-
-      my $widget_revision = $c->model('Schema::WidgetRevision')->create({
-                    content=>$widget_content, 
-                    user_id=>$c->user->user_id, 
-                    timestamp=>time()});
-
-      # modifying a widget
-      if($widget_id > 0){
-        my $widget = $c->model('Schema::Widgets')->find({widget_id=>$widget_id});
-        $widget->content($widget_revision);
-        $widget_revision->widget_id($widget_id);
-        $widget->widget_title($widget_title);
-        $widget->widget_order($widget_order);
-        $widget->update();
-
-      #creating a widget - only admin
-      }elsif($c->check_user_roles("admin")){ 
-          my $url = $c->request->body_parameters->{path};
-          my $page = $c->model('Schema::Page')->find({url=>$url});
-          $widget_revision->widget($c->model('Schema::Widgets')->create({ 
-                    page_id=>$page->page_id, 
-                    widget_title=>$widget_title, 
-                    widget_order=>$widget_order,
-                    current_revision_id=>$widget_revision->widget_revision_id}));
-          $widget_id = $widget_revision->widget->widget_id;
-      }else{
-        $self->status_bad_request(
-          $c,
-          message => "You do not have premissions to create a widget!",
-        );
-      }
-      $widget_revision->update();
-
-      $self->status_created(
-          $c,
-          location => $c->req->uri->as_string,
-          entity =>  {
-              widget_id => "$widget_id",
-          },
-      );
-    }
-}
-
-
-
-
-sub widget_home :Path('/rest/widget/home') :Args(1) :ActionClass('REST') {}
-
-sub widget_home_GET {
-    my ($self,$c,$widget) = @_; 
-    $c->log->debug("getting home page widget");
-    if($widget=~m/issues/){
-      $c->stash->{issues} = $self->issue_rss($c,2);
-    }
-    elsif($widget=~m/activity/){
-      $c->stash->{recent} = $self->recently_saved($c,3);
-      $c->stash->{popular} = $self->most_popular($c,3);
-    }   
-    elsif($widget=~m/discussion/){
-      $c->stash->{comments} = $self->comment_rss($c,2);
-    }
-    $c->stash->{template} = "classes/home/$widget.tt2";
-    $c->stash->{noboiler} = 1;
-    $c->forward('App::Web::View::TT');
-}
 
 sub recently_saved {
  my ($self,$c,$count) = @_;
@@ -1175,82 +652,6 @@ sub search_GET {
 
 
 
-
-######################################################
-#
-#   ADMIN WIDGETS 
-#
-######################################################
-
-sub widget_admin :Path('/rest/widget/admin') :Args(1) :ActionClass('REST') {}
-
-sub widget_admin_GET {
-    my ($self,$c,$widget) = @_; 
-    my $api = $c->model('AppAPI');
-    my $type;
-    $c->stash->{'bench'} = 1;
-    $c->res->redirect("/admin/$widget");
-    return;
-}
-
-
-
-
-
-
-
-
-
-######################################################
-#
-#   FIELDS
-#
-######################################################
-
-=head2 available_fields(), available_fields_GET()
-
-Fetch all available fields for a given WIDGET, PAGE, NAME
-
-eg  GET /rest/fields/[WIDGET]/[CLASS]/[NAME]
-
-
-# This makes more sense than what I have now:
-/rest/class/*/available_widgets  - all available widgets
-/rest/class/*/widget   - the content for a given widget
-
-/rest/class/*/widget/available_fields - all available fields for a widget
-/rest/class/*/widget/field
-
-=cut
-
-sub available_fields : Path('/rest/available_fields') :Args(3) :ActionClass('REST') {}
-
-sub available_fields_GET {
-    my ($self,$c,$widget,$class,$name) = @_;
-    
-    # Does the data for this widget already exist in the cache?
-    my ($data,$cache_server) = $c->check_cache({cache_name => 'filecache', uuid => 'available_fields'});
-    
-    unless ($data) {    
-	my @fields = eval { @{ $c->config->{pages}->{$class}->{widgets}->{$widget} }; };
-	
-	foreach my $field (@fields) {
-	    my $uri = $c->uri_for('/rest/field',$class,$name,$field);
-	    $data->{$field} = "$uri";
-	}
-	$c->set_cache({cache_name => 'filecache',
-		       uuid       => 'available_fields',
-		       data       => $data });
-    }
-    
-    $self->status_ok( $c, entity => { data => $data,
-				      description => "All fields that comprise the $widget for $class:$name",
-		      }
-	);
-}
-
-
-
 sub logout :Path("/rest/logout") :Args(0) :ActionClass('REST') {}
 
 sub logout_GET {
@@ -1266,73 +667,7 @@ sub logout_GET {
 }
 
 
-=head field(), field_GET()
 
-Provided with a class, name, and field, return its content
-
-eg http://localhost/rest/field/[CLASS]/[NAME]/[FIELD]
-
-=cut
-
-sub field :Path('/rest/field') :Args(3) :ActionClass('REST') {}
-
-sub field_GET {
-    my ($self,$c,$class,$name,$field) = @_;
-
-    my $headers = $c->req->headers;
-    $c->log->debug($headers->header('Content-Type'));
-    $c->log->debug($headers);
-
-    unless ($c->stash->{object}) {
-    # Fetch our external model
-    my $api = $c->model('AppAPI');
- 
-    # Fetch the object from our driver   
-    $c->log->debug("AppAPI model is $api " . ref($api));
-    $c->log->debug("The requested class is " . ucfirst($class));
-    $c->log->debug("The request is " . $name);
-    
-    # Fetch a App::API::Object::* object
-    # * and all are placeholders to match the /species/class/object structure for species/class index pages
-    if ($name eq '*' || $name eq 'all') {
-        $c->stash->{object} = $api->instantiate_empty({class => ucfirst($class)});
-    } else {
-        $c->stash->{object} = $api->fetch({class => ucfirst($class),
-                           name  => $name,
-                          }) or die "$!";
-    }
-    }
-    
-    # Did we request the widget by ajax?
-    # Supress boilerplate wrapping.
-    if ( $c->is_ajax() ) {
-    $c->stash->{noboiler} = 1;
-    }
-
-    my $object = $c->stash->{object};
-    my $data = $object->$field();
-
-    # Should be conditional based on content type (only need to populate the stash for HTML)
-     $c->stash->{$field} = $data;
-
-    # Anything in $c->stash->{rest} will automatically be serialized
-    #  $c->stash->{rest} = $data;
-    
-    # Include the full uri to the *requested* object.
-    # IE the page on App where this should go.
-    # TODO: 2011.03.20 TH: THIS NEEDS TO BE UPDATED, TESTED, VERIFIED
-    my $uri = $c->uri_for("/species",$class,$name);
-
-    $c->stash->{template} = $c->_select_template($field,$class,'field'); 
-
-    $self->status_ok($c, entity => {
-                     class  => $class,
-             name   => $name,
-                     uri    => "$uri",
-             $field => $data
-             }
-    );
-}
 
 sub cart :Path('/cart') :Args(1) :ActionClass('REST') {}
 

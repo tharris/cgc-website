@@ -26,7 +26,7 @@
     <tbody>
         [% FOREACH row IN c.stash.results %]
          <tr>
-            <td><a href="[% c.uri_for('/gene-class/' _ row.name)%]">[% row.name %]</a></td>
+            <td><a href="[% c.uri_for('/geneclass/' _ row.name)%]">[% row.name %]</a></td>
             <td>[% row.description %]</td>  
 	    <td><a href="[% c.uri_for('/laboratory/' _ row.laboratory.name) %]">[% row.laboratory.head %] ([% row.laboratory.name %])</td>
 	    <td>

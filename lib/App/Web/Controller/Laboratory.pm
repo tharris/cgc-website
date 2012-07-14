@@ -91,37 +91,6 @@ sub laboratory_GET :Path('/laboratory') :Args(1)   {
 }
 
 
-
-
-
-sub list : Local : ActionClass('REST') { }
-
-sub list_GET {
-	my ($self, $c) = @_;
-
-	my $columns = $c->request->param('columns')
-		? [ split(',', $c->request->param('columns')) ]
-		: [ qw/name/ ];
-	my $transformer = sub {
-		my $row = shift;
-		return [ map { $row->get_column($_) } @$columns ];
-	};
-	my $select = exists $c->request->parameters->{distinct}
-		? { select => { distinct => $columns }, as => $columns }
-		: { columns => $columns };
-	my $rows = [ map { $transformer->($_) }
-		     $c->model('CGC::Laboratory')->search(undef, $select) ];
-	$c->stash->{cachecontrol}{list} =  1800; # 30 minutes
-	$self->status_ok(
-	    $c,
-	    entity => $rows,
-	    );
-}
-
-
-
-
-
 __PACKAGE__->meta->make_immutable;
 
 1;

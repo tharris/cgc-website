@@ -92,7 +92,7 @@
          <tr>
             <td><a href="[% c.uri_for('/strain/' _ strain.name) %]">[% strain.name %]</a></td> 
 	    <td>[% strain.genotype %]</td>
-            <td><em><a href="[% c.uri_for('/species/' _ strain.species.name) %]">[% strain.species.name %]</a></em></td> 
+            <td>[% species_link(strain.species.name) %]</td>
 	    <td>[% strain.description %]</td>
          </tr>
 	 [% END %]
@@ -104,50 +104,6 @@
 
 [% END %]
 
+[% typeahead_support('laboratory',['name','allele_designation']) %]
 
 
-<script>
-    $(function () {
-        $('#search-laboratory').typeahead({
-            ajax: {
-            	uris: [
-            		'/laboratory/list?distinct;columns=name',
-            		'/laboratory/list?distinct;columns=allele_designation',
-            		'/laboratory/list?distinct;columns=head',
-            	],
-				preprocess: function (item) {
-					return item[0];
-				}
-            },
-        });
-        
-        $('#search-laboratory').on('change',
-            function (data) {
-                window.location.href = '/laboratory/' + data.target.value
-                // If we want to get fancy and avoid page loads....
-                // window.location.hash = data.target.value;
-            }
-        );
-
-        /*
-        $(window).hashchange(function () {
-            // var laboratoryName = location.hash.replace(/^#/,'');
-            $.ajax({
-                url: '/laboratory/' + laboratoryName,
-                dataType: 'json',
-                success: function (json) {
-                    console.log(json);
-                    var tableRow = function (key) {
-                        var row = $('<tr></tr>');
-                        row.append($('<th></th>').html(key))
-                            .append($('<td></td>').html(json[key]));
-                        return row;
-                    };
-                    $('#laboratory-view').empty();
-                    $('#laboratory-view').add(tableRow("name"));
-                }
-            });
-        });
-        */
-    });
-</script>

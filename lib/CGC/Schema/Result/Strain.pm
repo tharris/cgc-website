@@ -240,6 +240,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 atomized_genotypes
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::AtomizedGenotype>
+
+=cut
+
+__PACKAGE__->has_many(
+  "atomized_genotypes",
+  "CGC::Schema::Result::AtomizedGenotype",
+  { "foreign.strain_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 freezer_samples
 
 Type: has_many
@@ -316,8 +331,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-13 02:56:46
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:bYLhrTj0lpIoLeTAUSI2+w
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-13 20:16:46
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:d+CqqOfjreqwbyTU8AJbTQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

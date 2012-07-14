@@ -66,47 +66,4 @@
 
 [% END %]
 
-
-<script>
-    $(function () {
-        $('#search-species').typeahead({
-            ajax: {
-            	uris: [
-            		'/species/list?distinct;columns=name',
-            	],
-				preprocess: function (item) {
-					return item[0];
-				}
-            },
-        });
-        
-        $('#search-species').on('change',
-            function (data) {
-                window.location.href = '/species/' + data.target.value
-                // If we want to get fancy and avoid page loads....
-                // window.location.hash = data.target.value;
-            }
-        );
-
-        /*
-        $(window).hashchange(function () {
-            // var speciesName = location.hash.replace(/^#/,'');
-            $.ajax({
-                url: '/species/' + speciesName,
-                dataType: 'json',
-                success: function (json) {
-                    console.log(json);
-                    var tableRow = function (key) {
-                        var row = $('<tr></tr>');
-                        row.append($('<th></th>').html(key))
-                            .append($('<td></td>').html(json[key]));
-                        return row;
-                    };
-                    $('#species-view').empty();
-                    $('#species-view').add(tableRow("name"));
-                }
-            });
-        });
-        */
-    });
-</script>
+[% typeahead_support('species',['name']) %]

@@ -19,8 +19,8 @@
 
         <div class="span4 well">
              <h3>Gene Classes</h3>
-             <a href="[% c.uri_for('/gene-class') %]">Search</a> or 
-             <a href="[% c.uri_for('/gene-classses') %]">View All</a>
+             <a href="[% c.uri_for('/geneclass') %]">Search</a> or 
+             <a href="[% c.uri_for('/geneclassses') %]">View All</a>
         </div>
 
          <div class="span4 well">
@@ -28,6 +28,13 @@
              <a href="[% c.uri_for('/laboratory') %]">Search</a> or 
              <a href="[% c.uri_for('/laboratories') %]">View All</a>
          </div>
+
+         <div class="span4 well">
+             <h3>Freezers</h3>
+             <a href="[% c.uri_for('/freezer') %]">Search</a> or 
+             <a href="[% c.uri_for('/freezers') %]">View All</a>
+         </div>
+
     </div>
 
 

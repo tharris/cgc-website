@@ -26,7 +26,7 @@
     <tbody>
         [% FOREACH row IN c.stash.results %]
          <tr>
-            <td><em><a href="[% c.uri_for('/species/' _ row.name)%]">[% row.name %]</em></a></td>
+            <td>[% species_link(row.name) %]</td>
             <td>[% row.ncbi_taxonomy_id %]</td>  
 	    <td>[% row.get_column('strain_count') %]</td>
          </tr>

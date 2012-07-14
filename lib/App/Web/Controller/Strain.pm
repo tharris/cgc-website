@@ -65,56 +65,6 @@ sub strain_GET {
 	}
 }
 
-sub list : Local : ActionClass('REST') { }
-
-sub list_GET {
-	my ($self, $c) = @_;
-
-	my $columns = $c->request->param('columns')
-		? [ split(',', $c->request->param('columns')) ]
-		: [ qw/name/ ];
-	my $transformer = sub {
-		my $row = shift;
-		return [ map { $row->get_column($_) } @$columns ];
-	};
-	my $select = exists $c->request->parameters->{distinct}
-		? { select => { distinct => $columns }, as => $columns }
-		: { columns => $columns };
-	my $strains = [ map { $transformer->($_) }
-		$c->model('CGC::Strain')->search(undef, $select) ];
-	$c->stash->{cachecontrol}{list} =  1800; # 30 minutes
-	$self->status_ok(
-		$c,
-		entity => $strains
-	);
-}
-
-
-=pod
-
-sub all_strains : Path('/strain') : ActionClass('REST') { }
-
-sub all_strains_GET {
-    my ($self, $c) = @_;
-    $c->stash->{template} = 'strain/all';
-    
-}
-
-sub recently_added : Path('/recently_added') : Args(0) {
-    my ($self, $c) = @_;
-    $c->detach('recently_added', ['all']);
-}
-
-sub wild_strains : Path('/wild_strains') : Args(0) {
-    my ($self, $c) = @_;
-    $c->detach('wild_strains', ['all']);
-    
-}
-
-sub non_celegans_strains : Path('/non_celegans_strains') : Args(0) {
-    my ($self, $c) = @_;
-    $c->detach('non_celegans_strains', ['all']);
-}
 
 =cut
 

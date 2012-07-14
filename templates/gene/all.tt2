@@ -1,0 +1,45 @@
+<div class="page-header">
+  <h1>All CGC-Registered Laboratories</h1>
+</div>
+
+[% IF c.check_user_roles('admin') %]
+<div class="alert alert-info">
+<strong>TODO:</strong>
+<ul>
+<li>Sortable columns?
+<li>Serachable table?
+<li>bPagination or lazy load?
+</ul>
+
+<p><strong>Questions for CGC</strong></p>
+</div>
+[% END %]
+
+<table class="table table-striped">
+
+    <thead>
+        <tr>            
+            <th>Lab Designation</th>
+	    <th>Allele Designation</th>
+	    <th>Lab Head</th>
+	    <th>Institution</th>
+	    <th>Gene Classes</th>
+        </tr>
+    </thead>
+    <tbody>
+        [% FOREACH row IN c.stash.results %]
+         <tr>
+            <td><a href="[% c.uri_for('/laboratory/' _ row.name)%]">[% row.name %]</a></td>
+            <td>[% row.allele_designation %]</td>  
+	    <td>[% row.head %]</td>
+	    <td>[% row.institution %]</td>
+	    <td>
+               [% FOREACH gene_class IN row.gene_classes %]
+                   <a href="[% c.uri_for('/gene-class/' _ gene_class.name)%]">[% gene_class.name %]</a>
+               [% END %]          
+            </td>
+         </tr>
+	 [% END %]
+    </tbody>
+</table>
+
