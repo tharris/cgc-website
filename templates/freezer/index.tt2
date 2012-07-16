@@ -32,7 +32,7 @@
     <div class="well">
         <input id="search-freezer" type="text" class="span3"
             [% IF freezer %] value="[% freezer.name %]"
-            [% ELSE %] placeholder="Start typing a laboratory..."
+            [% ELSE %] placeholder="Start typing a freezer name..."
             [% END %]
         />
         <span class="help-inline" style="margin-bottom: 9px"><small>Example:
@@ -78,8 +78,8 @@
             <td><a href="[% c.uri_for('/strain/' _ sample.strain) %]">[% sample.strain %]</a></td> 
 	    <td>[% sample.genotype %]</td>
 	    <td>[% sample.sample_count %]</td>
-	    <td>[% sample.date_first_frozen %]</td>
-	    <td>[% sample.date_last_thawed %]</td>
+	    <td>[% sample %] THIS IS A JOIN TO EVENT TABLE</td>
+	    <td>[% sample %] THIS IS A JOIN TO EVENT TABLE</td>
          </tr>
 	 [% END %]
     </tbody>

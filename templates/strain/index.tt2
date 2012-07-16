@@ -81,3 +81,23 @@
 [% END %]
 
 [% typeahead_support('strain',['genotype','name']) %]
+
+
+
+[%# IF c.check_user_roles('admin') %]
+     <h3>Freezer Samples</h3>
+     [% FOREACH freezer IN strain.samples.keys %] 
+         [% freezer %]<br />
+	 [% strain.samples.$freezer.id %]<br />
+	 [% strain.samples.$freezer.type %]<br />
+	 
+      	 [% FOREACH sample IN strain.samples.$freezer.samples %]
+             [% sample.freezer_location %]<br />
+	     [% sample.vials %]<br />
+	     [% sample.sample_id %]</br />
+	     [% sample.history %]<br />
+      
+
+         [% END %]
+      [% END %]
+[%# END %]	

@@ -63,13 +63,16 @@ sub freezer_GET  :Path('/freezer') :Args(1) {
 	};
 
 	foreach my $sample ($row->freezer_samples) {
+
+	    # Get the event history for this sample.
+	    my $flattened_history = $self->get_history($c,'FreezerSampleEvent','freezer_sample_id',$sample->id);
+	    	    
 	    push @{$entity->{samples}},{ id => $sample->id,
 					 genotype => $sample->strain->genotype,
 					 strain   => $sample->strain->name,
 					 location => $sample->freezer_location,
-					 sample_count => $sample->sample_count,
-					 date_first_frozen => 'pending',
-					 date_last_thawed  => 'pending',
+					 sample_count => $sample->vials,
+					 history  => $flattened_history,
 	    }
 	}	
     }
