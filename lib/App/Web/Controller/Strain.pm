@@ -108,11 +108,11 @@ sub get_history {
     my @flattened_history;
     foreach my $history (@history_rows) {
 	my $event = $history->event;
-	push @flattened_history,[
-	    $event->event,
-	    $event->event_date,
-	    $event->remark
-	];
+	push @flattened_history,{
+	    event  => $event->event,
+	    date   => $event->event_date,
+	    remark => $event->remark,
+	};
     }
     return \@flattened_history;
 }

@@ -85,19 +85,43 @@
 
 
 [%# IF c.check_user_roles('admin') %]
+[% IF strain.samples.keys.count > 0 %]
+
      <h3>Freezer Samples</h3>
      [% FOREACH freezer IN strain.samples.keys %] 
-         [% freezer %]<br />
-	 [% strain.samples.$freezer.id %]<br />
-	 [% strain.samples.$freezer.type %]<br />
-	 
-      	 [% FOREACH sample IN strain.samples.$freezer.samples %]
-             [% sample.freezer_location %]<br />
-	     [% sample.vials %]<br />
-	     [% sample.sample_id %]</br />
-	     [% sample.history %]<br />
-      
+         <div class="well span6">
+               <table id="strain-view" class="table table-striped">
+                 <thead><h3><a href="[% c.uri_for('/freezer/' _ strain.samples.$freezer.id) %]">[% freezer %]</a></h3></thead>
+                 <tbody>
+                    <tr><th>Freezer Type</th>       <td>[% strain.samples.$freezer.type %]</td></tr>
+		 </tbody>
+                </table>
 
-         [% END %]
+               [% FOREACH sample IN strain.samples.$freezer.samples %]
+               <table id="strain-view" class="table table-striped">
+                 <thead><h3>[% sample.freezer_location</h3></thead>
+                 <tbody>
+                    <tr><th>Vials</th>       <td>[% sample.vials %]</td></tr>
+		 </tbody>
+                </table>
+		
+                     [% FOREACH history IN sample.history %]
+                         <table class="table table-striped">
+                           <thead>
+                           <tr>            
+                           <th>Event</th>
+			   <th>Date</th>
+			   <th>Remark</th>
+			   </tr>
+                           </thead>
+                           <tbody>
+                              <td>[% history.event %]</td> 
+ 	                      <td>[% history.date %]</td>
+                              <td>[% history.remark %]</td>
+		           </tbody>
+                         </table>
+                      [% END %]
+               [% END %]
       [% END %]
+  [% END %]
 [%# END %]	
