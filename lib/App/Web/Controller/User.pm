@@ -2,7 +2,7 @@ package App::Web::Controller::User;
 
 use strict;
 use warnings;
-use parent 'App::Web::Controller';
+use base 'App::Web::Controller';
  
 # Sets the actions in this controller to be registered with no prefix
 # so they function identically to actions created in App.pm
@@ -62,7 +62,9 @@ The user's cart.
 
 =cut
 
-sub cart : Chained('user') :PathPart('cart') :Args(0) {
+sub cart :Chained('user') :PathPart('cart') :Args(0) :ActionClass('REST') { }
+
+sub cart_GET {
     my ($self, $c) = @_;
     $c->stash->{template} = 'user/cart.tt2';
 }

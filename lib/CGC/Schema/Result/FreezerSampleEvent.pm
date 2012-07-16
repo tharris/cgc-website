@@ -1,36 +1,21 @@
-use utf8;
 package CGC::Schema::Result::FreezerSampleEvent;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
-
-=head1 NAME
-
-CGC::Schema::Result::FreezerSampleEvent
-
-=cut
 
 use strict;
 use warnings;
 
 use Moose;
 use MooseX::NonMoose;
-use MooseX::MarkAsMethods autoclean => 1;
+use namespace::autoclean;
 extends 'DBIx::Class::Core';
-
-=head1 COMPONENTS LOADED
-
-=over 4
-
-=item * L<DBIx::Class::InflateColumn::DateTime>
-
-=back
-
-=cut
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<freezer_sample_event>
+=head1 NAME
+
+CGC::Schema::Result::FreezerSampleEvent
 
 =cut
 
@@ -104,8 +89,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-14 17:33:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:92d2qUesV4WvdO9F4vOOWA
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 16:52:20
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:mH35KGd4/TIfJWxl9sOYRA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -1,36 +1,21 @@
-use utf8;
 package CGC::Schema::Result::LaboratoryEvent;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
-
-=head1 NAME
-
-CGC::Schema::Result::LaboratoryEvent
-
-=cut
 
 use strict;
 use warnings;
 
 use Moose;
 use MooseX::NonMoose;
-use MooseX::MarkAsMethods autoclean => 1;
+use namespace::autoclean;
 extends 'DBIx::Class::Core';
-
-=head1 COMPONENTS LOADED
-
-=over 4
-
-=item * L<DBIx::Class::InflateColumn::DateTime>
-
-=back
-
-=cut
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<laboratory_event>
+=head1 NAME
+
+CGC::Schema::Result::LaboratoryEvent
 
 =cut
 
@@ -104,8 +89,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-14 17:33:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:1YN7OwqKS8CwaQj7acfulg
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 16:52:20
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:w6UOlqizhEovJcIMLauzJA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

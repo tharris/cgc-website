@@ -58,25 +58,31 @@
     </tbody>
     </table>
 	[% IF c.user_exists %]
-	    <p><a class="btn" data-uri="/register" data-toggle="modal" href="#addToCart"><i class="icon-shopping-cart"></i> Add to Cart</a></p>
-	</div>
-	<div class="modal hide fade" id="addToCart">
-	    <div class="modal-header">
-	        <button type="button" class="close" data-dismiss="modal">×</button>
-	        <h3>Order strain [% strain.name %]</h3>
-	    </div>
-	    <div class="modal-body">
-	        <p>You are about to order the strain</p>
-	    </div>
-	    <div class="modal-footer">
-			<a href="#" class="btn" data-dismiss="modal">Cancel</a>
-			<a href="#" class="btn btn-primary">Add to Cart</a>
-	    </div>
+    <a class="btn" id="addToCartButton"><i class="icon-shopping-cart"></i> Add to Cart</a>
+	<div rel="popover" id="addToCart" data-title="Are you sure?" data-content="<button id='cartCancel' class='btn'>No, cancel</button> <button class='btn btn-primary'>Yes, please</button>"></div>
+		
+    </div>
+	<script type="text/javascript" charset="utf-8">
+	$(function () {
+		$("#addToCartButton").click(function () {
+			$("#addToCart").popover("show");
+			$("#cartCancel").click(function () {
+				console.log("closed, mofos");
+				$("#addToCart").popover("hide")
+			});
+			$("#doCartAdd").click(function () {
+				console.log("closed, mofos");
+				$("#addToCart").popover("hide")
+			});
+		});
+	})
+	</script>
 	[% ELSE %]
 		<div class="alert alert-info">
 			<a href="#modal" data-toggle="modal" data-uri="/login"><strong>Sign in</strong></a>
 			or
-			<a href="#modal" data-toggle="modal" data-uri="/register"><strong>register an account</strong></a> if you want to order this strain.</div>
+			<a href="#modal" data-toggle="modal" data-uri="/register"><strong>register an account</strong></a> if you want to order this strain.
+		</div>
 	[% END %]
 <!--</div> -->
 </div>
@@ -87,13 +93,13 @@
 
 
 [% IF c.check_user_roles('admin') %]
-    
+
      <div class="span6">     
      [% WRAPPER admin_content title="Freezer Samples" %]
      Samples of this strain housed at the CGC.
      [% END %]
  
-    [% FOREACH freezer IN strain.samples.keys %] 
+     [% FOREACH freezer IN strain.samples.keys %] 
 <!--         <div class="well span4 offset6"> -->
 	     <div class="well">
                <table id="strain-view" class="table table-striped">
@@ -107,35 +113,35 @@
                <table id="strain-view" class="table table-striped">
                  <thead><h3>Freezer location: [% sample.freezer_location %]</h3></thead>
                  <tbody>
-                    <tr><th>Vials</th>       <td>[% sample.vials %]</td></tr>
-		 </tbody>
+                    <tr><th>Vials</th><td>[% sample.vials %]</td></tr>
+				 </tbody>
                 </table>
-
-                <table class="table table-striped">
-                    <thead>
-                     <tr>            
-                         <th>Event</th>
-                         <th>Date</th>
-	                 <th>Remark</th>
-		     </tr>
-                     </thead>
-                     <tbody>		
+		
+                         <table class="table table-striped">
+                           <thead>
+                           <tr>            
+                           <th>Event</th>
+			   <th>Date</th>
+			   <th>Remark</th>
+			   </tr>
+                           </thead>
+                           <tbody>
                          [% FOREACH history IN sample.history %]
                              <tr>                             
-                                <td>[% history.event %]</td> 
- 	                        <td>[% history.date %]</td>
-                                <td>[% history.remark %]</td>
+                              <td>[% history.event %]</td> 
+ 	                      <td>[% history.date %]</td>
+                              <td>[% history.remark %]</td>
                              </tr>
                          [% END %]
-		       </tbody>
-                    </table>
+		           </tbody>
+                         </table>
 
-               [% END %]
+                      [% END %]
 	  </div>
-      [% END %]
+               [% END %]
       </div>
 </div><!-- close row -->
 </div><!-- close 12 span -->
 </div><!-- close 12 span row -->
 
-[% END %]	
+      [% END %]

@@ -1,36 +1,21 @@
-use utf8;
 package CGC::Schema::Result::AppUser;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
-
-=head1 NAME
-
-CGC::Schema::Result::AppUser
-
-=cut
 
 use strict;
 use warnings;
 
 use Moose;
 use MooseX::NonMoose;
-use MooseX::MarkAsMethods autoclean => 1;
+use namespace::autoclean;
 extends 'DBIx::Class::Core';
-
-=head1 COMPONENTS LOADED
-
-=over 4
-
-=item * L<DBIx::Class::InflateColumn::DateTime>
-
-=back
-
-=cut
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<app_user>
+=head1 NAME
+
+CGC::Schema::Result::AppUser
 
 =cut
 
@@ -41,6 +26,7 @@ __PACKAGE__->table("app_user");
 =head2 user_id
 
   data_type: 'integer'
+  extra: {unsigned => 1}
   is_auto_increment: 1
   is_nullable: 0
 
@@ -64,6 +50,7 @@ __PACKAGE__->table("app_user");
 =head2 laboratory_id
 
   data_type: 'integer'
+  extra: {unsigned => 1}
   is_nullable: 1
 
 =head2 first_name
@@ -100,7 +87,12 @@ __PACKAGE__->table("app_user");
 
 __PACKAGE__->add_columns(
   "user_id",
-  { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
+  {
+    data_type => "integer",
+    extra => { unsigned => 1 },
+    is_auto_increment => 1,
+    is_nullable => 0,
+  },
   "username",
   { data_type => "char", is_nullable => 1, size => 255 },
   "password",
@@ -108,7 +100,7 @@ __PACKAGE__->add_columns(
   "active",
   { data_type => "integer", is_nullable => 1 },
   "laboratory_id",
-  { data_type => "integer", is_nullable => 1 },
+  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
   "first_name",
   { data_type => "char", is_nullable => 1, size => 255 },
   "middle_name",
@@ -120,17 +112,6 @@ __PACKAGE__->add_columns(
   "validated",
   { data_type => "tinyint", is_nullable => 1 },
 );
-
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</user_id>
-
-=back
-
-=cut
-
 __PACKAGE__->set_primary_key("user_id");
 
 =head1 RELATIONS
@@ -166,8 +147,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-13 02:56:46
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:6zSJ25y8fitusB04MRi94Q
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 16:52:20
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:js7D/ERBEgnwBNHD0ePuUA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

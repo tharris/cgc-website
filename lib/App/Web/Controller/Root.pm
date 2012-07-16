@@ -62,7 +62,9 @@ sub default :Path {
 			$c->stash->{path} = $c->request->path;
 		}
     } else {
+		$c->log->debug("Detaching");
 		$c->detach('/soft_404');
+		$c->finalize();
     }
 }
 
@@ -70,7 +72,7 @@ sub soft_404 :Path('/soft_404') {
     my ($self,$c) = @_;
     # 404: Page not found...
     $c->stash->{template} = 'status/404.tt2';
-    $c->error('Page not found');
+    $c->log->error('Page not found');
     $c->response->status(404);
 }
     
