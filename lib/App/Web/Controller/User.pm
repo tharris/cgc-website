@@ -27,7 +27,7 @@ A private action that simply fetches the user.
 =cut
 
 sub user : Chained('/') PathPart('user') CaptureArgs(1) {
-    my ($self,$c,$user_id) = @_;
+    my ($self, $c, $user_id) = @_;
     my $user = $c->model('CGC::AppUser')->search({user_id => $user_id});
 }
 
@@ -40,7 +40,7 @@ The public user profile.
 
 
 sub profile : Chained('user') PathPart('profile')  Args(0) {
-    my ( $self, $c) = @_;
+    my ($self, $c) = @_;
     $c->stash->{template} = 'user/profile.tt2';
 }
 
@@ -52,9 +52,21 @@ The public user profile.
 
 
 sub account : Chained('user') PathPart('account')  Args(0) {
-    my ( $self, $c) = @_;
+    my ($self, $c) = @_;
     $c->stash->{template} = 'user/account.tt2';
 }
+
+=head2 /user/*/cart
+
+The user's cart.
+
+=cut
+
+sub cart : Chained('user') :PathPart('cart') :Args(0) {
+    my ($self, $c) = @_;
+    $c->stash->{template} = 'user/cart.tt2';
+}
+
 
 
 =head1 AUTHOR

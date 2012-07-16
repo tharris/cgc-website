@@ -77,7 +77,7 @@
     <tbody>
         [% FOREACH gene IN gene_class.genes %]
          <tr>
-            <td><a href="[% c.uri_for('/strain/' _ gene.name) %]">[% gene.name %]</a></td> 
+            <td><a href="[% c.uri_for('/gene/' _ gene.name) %]">[% gene.name %]</a></td> 
 	    <td>[% gene.sequence_name %]</td>
             <td>[% species_link(gene.species.name) %]</td>
 	    <td>[% gene.type %]</td>

@@ -1,18 +1,12 @@
-<div class="hero-unit span6 offset2" style="text-align:center">
-<div class="row">
-<p>Welcome to the Caenorhabditis Genetics Center.<br />
-<small>Providing nematode strains for biomedical research</small>
-</p>
-<p>
-<a href="/strain" class="btn btn-large">View Strains</a>
-<a href="/" class="btn btn-large">Place an Order</a>
-<a href="/" class="btn btn-large">Pay an Invoice</a>
-</p>
-
-</div>
+<div class="hero-unit span8 offset1" style="text-align:center">
+	<header class="jumbotron masthead">
+	<h1 style="font-size:81pt">CGC</h1>
+	<p style="font-size:24pt">The Caenorhabditis Genetics Center</p>
+	<p>All your strains are belong to us&trade;</p>
+	</header>
 </div>
 
-    <div class="row">
+    <div class="row offset1">
         <div class="span4 well">
              <h3><a href="#" id="available-species" rel="popover" data-content="Search or browse all available species with strains available from the CGC" data-original-title="Available Species">Available Species</a>
               </h3>
