@@ -2,6 +2,7 @@ package App::Util::Import::WormBase;
 
 use Moose;
 use Bio::DB::GFF;
+use Date::Parse;
 use Ace;
 
 extends 'App::Util::ImportNew';
@@ -349,8 +350,6 @@ sub run_with_iterator {
 
 
 
-
-
 sub genomic_position {
     my ($self,$segment) = @_;
     my ($ref, $start, $stop) = map { $segment->$_ } qw(abs_ref abs_start abs_stop);
@@ -359,7 +358,28 @@ sub genomic_position {
 }
 
 
-
+sub reformat_date {
+    my ($self,$date) = @_;
+    $date =~ m|(\d\d)\s(\w\w\w)\s(\d\d\d\d)\s(.*)|;
+ 
+    my %month2number = ( Jan => '01',
+			 Feb => '02',
+			 Mar => '03',
+			 Apr => '04',
+			 May => '05',
+			 Jun => '06',
+			 Jul => '07',
+			 Aug => '08',
+			 Sep => '09',
+			 Oct => '10',
+			 Nov => '11',
+			 Dec => '12' );
+			 
+    my $month = $month2number{$2};
+    
+    my $reformatted =  "$3-$month-$1 $4\n";
+    return $reformatted;
+}
 
 
 

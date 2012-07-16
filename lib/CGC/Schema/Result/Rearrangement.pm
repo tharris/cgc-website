@@ -57,6 +57,11 @@ __PACKAGE__->table("rearrangement");
   is_nullable: 1
   size: 255
 
+=head2 description
+
+  data_type: 'mediumtext'
+  is_nullable: 1
+
 =head2 type
 
   data_type: 'varchar'
@@ -81,6 +86,36 @@ __PACKAGE__->table("rearrangement");
   is_nullable: 1
   size: [7,5]
 
+=head2 pmap_start
+
+  data_type: 'integer'
+  extra: {unsigned => 1}
+  is_nullable: 1
+
+=head2 pmap_stop
+
+  data_type: 'integer'
+  extra: {unsigned => 1}
+  is_nullable: 1
+
+=head2 strand
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 1
+
+=head2 status
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 20
+
+=head2 reference_strain_id
+
+  data_type: 'integer'
+  extra: {unsigned => 1}
+  is_nullable: 1
+
 =head2 species_id
 
   data_type: 'integer'
@@ -93,38 +128,6 @@ __PACKAGE__->table("rearrangement");
   data_type: 'integer'
   extra: {unsigned => 1}
   is_foreign_key: 1
-  is_nullable: 1
-
-=head2 status
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 20
-
-=head2 pmap_start
-
-  data_type: 'integer'
-  is_nullable: 1
-
-=head2 pmap_stop
-
-  data_type: 'integer'
-  is_nullable: 1
-
-=head2 strand
-
-  data_type: 'char'
-  is_nullable: 1
-  size: 1
-
-=head2 reference_strain_id
-
-  data_type: 'integer'
-  is_nullable: 1
-
-=head2 description
-
-  data_type: 'mediumtext'
   is_nullable: 1
 
 =cut
@@ -141,6 +144,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 20 },
   "name",
   { data_type => "varchar", is_nullable => 1, size => 255 },
+  "description",
+  { data_type => "mediumtext", is_nullable => 1 },
   "type",
   { data_type => "varchar", is_nullable => 1, size => 100 },
   "mutagen_id",
@@ -149,6 +154,16 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 20 },
   "gmap",
   { data_type => "float", is_nullable => 1, size => [7, 5] },
+  "pmap_start",
+  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
+  "pmap_stop",
+  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
+  "strand",
+  { data_type => "char", is_nullable => 1, size => 1 },
+  "status",
+  { data_type => "varchar", is_nullable => 1, size => 20 },
+  "reference_strain_id",
+  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
   "species_id",
   {
     data_type => "integer",
@@ -163,18 +178,6 @@ __PACKAGE__->add_columns(
     is_foreign_key => 1,
     is_nullable => 1,
   },
-  "status",
-  { data_type => "varchar", is_nullable => 1, size => 20 },
-  "pmap_start",
-  { data_type => "integer", is_nullable => 1 },
-  "pmap_stop",
-  { data_type => "integer", is_nullable => 1 },
-  "strand",
-  { data_type => "char", is_nullable => 1, size => 1 },
-  "reference_strain_id",
-  { data_type => "integer", is_nullable => 1 },
-  "description",
-  { data_type => "mediumtext", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -261,8 +264,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-13 02:56:46
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8T8GeguLS8a99zFThOMD2w
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-14 17:33:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:R/bP3MC94haroAhi9RVBDw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

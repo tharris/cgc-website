@@ -69,8 +69,8 @@ sub process_object {
 	    is_natural_variant      => $obj->Natural_variant(0)      ? 1 : undef,
 	    is_transposon_insertion => $obj->Transposon_insertion(0) ? 1 : undef,
 	    is_ko_consortium_allele => $obj->KO_consortium_allele(0) ? 1 : undef,
-	    species                 => $obj->Species                 ? $self->species_finder($obj->Species)       : undef,
-	    gene_class              => $obj->Gene_class              ? $self->gene_class_finder($obj->Gene_class) : undef,
+	    species_id              => $obj->Species                 ? $self->species_finder($obj->Species)->id       : undef,
+	    gene_class_id           => $obj->Gene_class              ? $self->gene_class_finder($obj->Gene_class)->id : undef,
 #	    laboratory_id           => $self->lab_finder($lab ? $lab : 'not specified')->id,
 	    laboratory_id           => $lab                          ? $self->lab_finder($lab)->id : undef,
 	},
@@ -186,9 +186,9 @@ sub features_affected {
 
 sub _get_genomic_position {
     my ($self,$obj) = @_;
-    my @segments = $self->_segments($obj);
-    if (@segments) {
-	my @pos = $self->genomic_position($segments[0]);
+    my ($segment) = $self->_segments($obj);
+    if ($segment) {
+	my @pos = $self->genomic_position($segment);
 	return \@pos;
     } else {
 	return;
@@ -199,7 +199,7 @@ sub _get_genomic_position {
 sub _segments {
     my ($self,$obj) = @_;
     my $gff_handle  = $self->gff_handle;
-    return [$self->gff_handle->segment($obj->class => $obj)];    
+    return $gff_handle->segment($obj->class => $obj);
 }
 
 

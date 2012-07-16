@@ -40,7 +40,7 @@ sub process_object {
 	{   name        => $obj->name         || '',
 	    description => $obj->Remark       || undef,
 	    outcrossed  => $obj->Outcrossed   || undef,
-	    received    => $obj->CGC_received || undef,
+#	    received    => $obj->CGC_received || undef,
 	    made_by     => $made_by           || undef,
 	    laboratory_id => $lab ? $self->lab_finder($lab)->id : undef,
 	    males       => $obj->Males        || undef,	    
@@ -49,14 +49,32 @@ sub process_object {
 	    inbreeding_state_multifemale => $obj->Multifemale || undef,
 	    inbreeding_state_inbred      => $obj->Inbred      || undef,
 #	    reference_strain => $finder->($obj->Reference_strain,'Strain','name'),
-	    sample_history   => $obj->Sample_history || undef,
 	    mutagen_id       => $obj->Mutagen ? $self->mutagen_finder($obj->Mutagen)->id : undef,
 	    genotype         => $obj->Genotype || undef,
-	    species_id       => $obj->Species ? $self->species_finder($obj->Species) : undef,
+	    species_id       => $obj->Species ? $self->species_finder($obj->Species)->id : undef,
 	},
 	{ key => 'strain_name_unique' }
         );
 
+    # Add a strain event for the date it was updated.
+    my $event_rs   = $self->get_rs('Event');
+    if ($obj->CGC_received) {
+	my $date = $self->reformat_date($obj->CGC_received);
+	my $event_row  = $event_rs->update_or_create({
+	    event => 'strain received at CGC',
+	    event_date => $date,
+	    user_id    => 1,
+						     });
+	
+	# Create entry in the join table. Necessary?
+	# or my $author = $book->create_related('author', { name => 'Fred'});
+	my $event_join_rs  = $self->get_rs('StrainEvent');
+	my $event_join_row = $event_join_rs->create({
+	    event_id  => $event_row->id,
+	    strain_id => $strain_row->id,
+						    });
+    }
+	
     my $ag_rs = $self->get_rs('AtomizedGenotype');    
     foreach my $gene ($obj->Gene) {
 	my $gene_row = $self->gene_finder($gene->name,'wormbase_id');

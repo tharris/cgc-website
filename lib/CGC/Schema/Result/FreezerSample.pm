@@ -59,7 +59,7 @@ __PACKAGE__->table("freezer_sample");
   is_foreign_key: 1
   is_nullable: 1
 
-=head2 sample_count
+=head2 vials
 
   data_type: 'tinyint'
   extra: {unsigned => 1}
@@ -70,6 +70,8 @@ __PACKAGE__->table("freezer_sample");
   data_type: 'char'
   is_nullable: 1
   size: 10
+
+Not sure yet how to represent location
 
 =cut
 
@@ -95,7 +97,7 @@ __PACKAGE__->add_columns(
     is_foreign_key => 1,
     is_nullable => 1,
   },
-  "sample_count",
+  "vials",
   { data_type => "tinyint", extra => { unsigned => 1 }, is_nullable => 1 },
   "freezer_location",
   { data_type => "char", is_nullable => 1, size => 10 },
@@ -115,21 +117,6 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 events
-
-Type: has_many
-
-Related object: L<CGC::Schema::Result::Event>
-
-=cut
-
-__PACKAGE__->has_many(
-  "events",
-  "CGC::Schema::Result::Event",
-  { "foreign.sample_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
 =head2 freezer
 
 Type: belongs_to
@@ -148,6 +135,21 @@ __PACKAGE__->belongs_to(
     on_delete     => "CASCADE",
     on_update     => "CASCADE",
   },
+);
+
+=head2 freezer_sample_events
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::FreezerSampleEvent>
+
+=cut
+
+__PACKAGE__->has_many(
+  "freezer_sample_events",
+  "CGC::Schema::Result::FreezerSampleEvent",
+  { "foreign.freezer_sample_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
 );
 
 =head2 strain
@@ -171,8 +173,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-13 14:04:10
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ET7Depw7dbA06ZXjSkXCGg
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-14 17:33:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Y8fopVEOqZgabVGUrrDjkA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

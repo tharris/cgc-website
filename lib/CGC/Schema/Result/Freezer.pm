@@ -48,7 +48,6 @@ __PACKAGE__->table("freezer");
 =head2 name
 
   data_type: 'varchar'
-  default_value: (empty string)
   is_nullable: 1
   size: 50
 
@@ -69,7 +68,7 @@ __PACKAGE__->add_columns(
     is_nullable => 0,
   },
   "name",
-  { data_type => "varchar", default_value => "", is_nullable => 1, size => 50 },
+  { data_type => "varchar", is_nullable => 1, size => 50 },
   "type",
   { data_type => "varchar", is_nullable => 1, size => 50 },
 );
@@ -88,17 +87,17 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 events
+=head2 freezer_events
 
 Type: has_many
 
-Related object: L<CGC::Schema::Result::Event>
+Related object: L<CGC::Schema::Result::FreezerEvent>
 
 =cut
 
 __PACKAGE__->has_many(
-  "events",
-  "CGC::Schema::Result::Event",
+  "freezer_events",
+  "CGC::Schema::Result::FreezerEvent",
   { "foreign.freezer_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -134,8 +133,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-13 02:56:46
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:0AYZMmvq0cjHM0QP1lyYHg
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-14 17:33:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ZSeh0l//qkqCRYSnClBVkQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -1,6 +1,8 @@
 Import process begins by pulling data from WormBase (see util/import/wormbase/README)
 followed by merging CGC data.
 
+./merge_cgc_data.pl --dir $IMPORT_DIR
+
 --
 
 

@@ -105,6 +105,30 @@ __PACKAGE__->table("transgene");
   is_nullable: 1
   size: [7,5]
 
+=head2 pmap_start
+
+  data_type: 'integer'
+  extra: {unsigned => 1}
+  is_nullable: 1
+
+=head2 pmap_stop
+
+  data_type: 'integer'
+  extra: {unsigned => 1}
+  is_nullable: 1
+
+=head2 strand
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 1
+
+=head2 status
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 20
+
 =head2 species_id
 
   data_type: 'integer'
@@ -118,28 +142,6 @@ __PACKAGE__->table("transgene");
   extra: {unsigned => 1}
   is_foreign_key: 1
   is_nullable: 1
-
-=head2 status
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 20
-
-=head2 pmap_start
-
-  data_type: 'integer'
-  is_nullable: 1
-
-=head2 pmap_stop
-
-  data_type: 'integer'
-  is_nullable: 1
-
-=head2 strand
-
-  data_type: 'char'
-  is_nullable: 1
-  size: 1
 
 =cut
 
@@ -171,6 +173,14 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 20 },
   "gmap",
   { data_type => "float", is_nullable => 1, size => [7, 5] },
+  "pmap_start",
+  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
+  "pmap_stop",
+  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
+  "strand",
+  { data_type => "char", is_nullable => 1, size => 1 },
+  "status",
+  { data_type => "varchar", is_nullable => 1, size => 20 },
   "species_id",
   {
     data_type => "integer",
@@ -185,14 +195,6 @@ __PACKAGE__->add_columns(
     is_foreign_key => 1,
     is_nullable => 1,
   },
-  "status",
-  { data_type => "varchar", is_nullable => 1, size => 20 },
-  "pmap_start",
-  { data_type => "integer", is_nullable => 1 },
-  "pmap_stop",
-  { data_type => "integer", is_nullable => 1 },
-  "strand",
-  { data_type => "char", is_nullable => 1, size => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -279,8 +281,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-08 19:28:52
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:PU8/gwSvmiLDKazxmlv9oA
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-14 17:33:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wZrHXeuqtR02xsS/fdX52Q
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

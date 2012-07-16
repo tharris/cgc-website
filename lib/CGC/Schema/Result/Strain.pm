@@ -70,8 +70,6 @@ __PACKAGE__->table("strain");
   is_nullable: 1
   size: 2
 
-Number of times outcrossed? Another table?
-
 =head2 mutagen_id
 
   data_type: 'integer'
@@ -330,9 +328,24 @@ __PACKAGE__->belongs_to(
   },
 );
 
+=head2 strain_events
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-13 20:16:46
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:d+CqqOfjreqwbyTU8AJbTQ
+Type: has_many
+
+Related object: L<CGC::Schema::Result::StrainEvent>
+
+=cut
+
+__PACKAGE__->has_many(
+  "strain_events",
+  "CGC::Schema::Result::StrainEvent",
+  { "foreign.strain_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-14 17:46:14
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:DERog322+2K+16LS7TDpIw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

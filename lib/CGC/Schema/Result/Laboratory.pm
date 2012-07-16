@@ -153,6 +153,12 @@ __PACKAGE__->table("laboratory");
   is_nullable: 1
   size: 255
 
+=head2 date_updated
+
+  data_type: 'timestamp'
+  datetime_undef_if_invalid: 1
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -204,6 +210,12 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 255 },
   "date_assigned",
   { data_type => "varchar", is_nullable => 1, size => 255 },
+  "date_updated",
+  {
+    data_type => "timestamp",
+    datetime_undef_if_invalid => 1,
+    is_nullable => 1,
+  },
 );
 
 =head1 PRIMARY KEY
@@ -260,6 +272,21 @@ Related object: L<CGC::Schema::Result::GeneClass>
 __PACKAGE__->has_many(
   "gene_classes",
   "CGC::Schema::Result::GeneClass",
+  { "foreign.laboratory_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 laboratory_events
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::LaboratoryEvent>
+
+=cut
+
+__PACKAGE__->has_many(
+  "laboratory_events",
+  "CGC::Schema::Result::LaboratoryEvent",
   { "foreign.laboratory_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -340,8 +367,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-05 22:10:16
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:6wYXKxxR3k4n9Ok2zcqhyw
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-14 17:33:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:P4pdAM8DBG1gb4HBgfYMFg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

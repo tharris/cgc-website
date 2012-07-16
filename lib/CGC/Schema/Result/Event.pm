@@ -45,12 +45,6 @@ __PACKAGE__->table("event");
   is_auto_increment: 1
   is_nullable: 0
 
-=head2 event_class
-
-  data_type: 'enum'
-  extra: {list => ["freezer","strain manipulation","administration","laboratory"]}
-  is_nullable: 1
-
 =head2 event
 
   data_type: 'varchar'
@@ -59,27 +53,9 @@ __PACKAGE__->table("event");
 
 a description of the event, eg initial freeze
 
-=head2 sample_id
-
-  data_type: 'integer'
-  extra: {unsigned => 1}
-  is_foreign_key: 1
-  is_nullable: 1
-
-either/or sample_id or freezer_id
-
-=head2 freezer_id
-
-  data_type: 'integer'
-  extra: {unsigned => 1}
-  is_foreign_key: 1
-  is_nullable: 1
-
-either/or sample_id or freezer_id
-
 =head2 event_date
 
-  data_type: 'date'
+  data_type: 'datetime'
   datetime_undef_if_invalid: 1
   is_nullable: 1
 
@@ -109,37 +85,14 @@ __PACKAGE__->add_columns(
     is_auto_increment => 1,
     is_nullable => 0,
   },
-  "event_class",
-  {
-    data_type => "enum",
-    extra => {
-      list => [
-        "freezer",
-        "strain manipulation",
-        "administration",
-        "laboratory",
-      ],
-    },
-    is_nullable => 1,
-  },
   "event",
   { data_type => "varchar", is_nullable => 1, size => 255 },
-  "sample_id",
-  {
-    data_type => "integer",
-    extra => { unsigned => 1 },
-    is_foreign_key => 1,
-    is_nullable => 1,
-  },
-  "freezer_id",
-  {
-    data_type => "integer",
-    extra => { unsigned => 1 },
-    is_foreign_key => 1,
-    is_nullable => 1,
-  },
   "event_date",
-  { data_type => "date", datetime_undef_if_invalid => 1, is_nullable => 1 },
+  {
+    data_type => "datetime",
+    datetime_undef_if_invalid => 1,
+    is_nullable => 1,
+  },
   "user_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "remark",
@@ -160,44 +113,79 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 freezer
+=head2 admin_events
 
-Type: belongs_to
+Type: has_many
 
-Related object: L<CGC::Schema::Result::Freezer>
+Related object: L<CGC::Schema::Result::AdminEvent>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "freezer",
-  "CGC::Schema::Result::Freezer",
-  { id => "freezer_id" },
-  {
-    is_deferrable => 1,
-    join_type     => "LEFT",
-    on_delete     => "CASCADE",
-    on_update     => "CASCADE",
-  },
+__PACKAGE__->has_many(
+  "admin_events",
+  "CGC::Schema::Result::AdminEvent",
+  { "foreign.event_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 sample
+=head2 freezer_events
 
-Type: belongs_to
+Type: has_many
 
-Related object: L<CGC::Schema::Result::FreezerSample>
+Related object: L<CGC::Schema::Result::FreezerEvent>
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "sample",
-  "CGC::Schema::Result::FreezerSample",
-  { id => "sample_id" },
-  {
-    is_deferrable => 1,
-    join_type     => "LEFT",
-    on_delete     => "CASCADE",
-    on_update     => "CASCADE",
-  },
+__PACKAGE__->has_many(
+  "freezer_events",
+  "CGC::Schema::Result::FreezerEvent",
+  { "foreign.event_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 freezer_sample_events
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::FreezerSampleEvent>
+
+=cut
+
+__PACKAGE__->has_many(
+  "freezer_sample_events",
+  "CGC::Schema::Result::FreezerSampleEvent",
+  { "foreign.event_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 laboratory_events
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::LaboratoryEvent>
+
+=cut
+
+__PACKAGE__->has_many(
+  "laboratory_events",
+  "CGC::Schema::Result::LaboratoryEvent",
+  { "foreign.event_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 strain_events
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::StrainEvent>
+
+=cut
+
+__PACKAGE__->has_many(
+  "strain_events",
+  "CGC::Schema::Result::StrainEvent",
+  { "foreign.event_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
 );
 
 =head2 user
@@ -216,8 +204,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-13 14:04:10
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OP3UA76S4dts3iNs/kMjNA
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-14 20:05:49
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:pm5RrXcANgkuuKcOoGLJaQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

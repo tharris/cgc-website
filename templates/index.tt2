@@ -1,6 +1,8 @@
 <div class="hero-unit span6 offset2" style="text-align:center">
 <div class="row">
-<p>Welcome to the brand spankin' new CGC site.</p>
+<p>Welcome to the Caenorhabditis Genetics Center.<br />
+<small>Providing nematode strains for biomedical research</small>
+</p>
 <p>
 <a href="/strain" class="btn btn-large">View Strains</a>
 <a href="/" class="btn btn-large">Place an Order</a>
@@ -12,7 +14,8 @@
 
     <div class="row">
         <div class="span4 well">
-             <h3>Available Species</h3>
+             <h3><a href="#" id="available-species" rel="popover" data-content="Search or browse all available species with strains available from the CGC" data-original-title="Available Species">Available Species</a>
+              </h3>
              <a href="[% c.uri_for('/species') %]">Search</a> or 
              <a href="[% c.uri_for('/species-list') %]">View All</a>
         </div>
@@ -33,6 +36,12 @@
              <h3>Freezers</h3>
              <a href="[% c.uri_for('/freezer') %]">Search</a> or 
              <a href="[% c.uri_for('/freezers') %]">View All</a>
+         </div>
+
+         <div class="span4 well">
+             <h3>Genes</h3>
+             <a href="[% c.uri_for('/freezer') %]">Search</a> 
+<!--             or <a href="[% c.uri_for('/freezers') %]">View All</a> -->
          </div>
 
     </div>

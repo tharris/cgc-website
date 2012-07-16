@@ -62,7 +62,7 @@ DROP TABLE IF EXISTS `event`;
 
 CREATE TABLE `event` (
  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
- `event` varchar(20) DEFAULT NULL COMMENT 'a description of the event, eg initial freeze',
+ `event` varchar(255) DEFAULT NULL COMMENT 'a description of the event, eg initial freeze',
  `event_date` datetime DEFAULT NULL,
  `user_id` int(11) NOT NULL COMMENT 'the user who ENTERED the event',
  `remark` varchar(255) DEFAULT NULL COMMENT 'a brief comment describing the results of the event',
@@ -81,7 +81,7 @@ CREATE TABLE `freezer_event` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `freezer_sample_event`;
-CREATE TABLE `freezer_event` (
+CREATE TABLE `freezer_sample_event` (
 	`event_id`   int(11) unsigned NOT NULL,
 	`freezer_sample_id` int(11) unsigned NOT NULL,
 	 FOREIGN KEY (`event_id`)          REFERENCES `event`          (`id`),
@@ -98,10 +98,19 @@ CREATE TABLE `laboratory_event` (
 	 /* Any other specific columns? */
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `strain_event`;
+CREATE TABLE `strain_event` (
+	`event_id`   int(11) unsigned NOT NULL,
+	`strain_id` int(11) unsigned NOT NULL,
+	 FOREIGN KEY (`event_id`)      REFERENCES `event`      (`id`),
+	 FOREIGN KEY (`strain_id`) REFERENCES `strain` (`id`)
+	 /* Any other specific columns? */
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `admin_event`;
 CREATE TABLE `admin_event` (
 	`event_id` int(11) unsigned NOT NULL,
-	 FOREIGN KEY (`event_id`) REFERENCES `event` (`id`),
+	 FOREIGN KEY (`event_id`) REFERENCES `event` (`id`)
 	 /* Any other specific columns? */
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -603,25 +612,11 @@ CREATE TABLE `laboratory` (
   `city` varchar(255) DEFAULT NULL,
   `website` varchar(255) DEFAULT NULL,
   `contact_email` varchar(255) DEFAULT NULL,
-  `date_assigned` varchar(255) DEFAULT NULL,
+  `date_assigned` varchar(255) DEFAULT NULL COMMENT 'can be removed once event tables are in place',
   `date_updated` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_unique` (`name`)	
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-#DROP TABLE IF EXISTS `laboratory2gene_class`;
-
-#CREATE TABLE `laboratory2gene_class` (
-#  `laboratory_id` int(11) unsigned NOT NULL,
-#  `gene_class_id`      int(11) unsigned NOT NULL,
-#  PRIMARY KEY (`laboratory_id`,`gene_class_id`),
-#  KEY `laboratory2gene_class_gene_class_id_fk` (`gene_class_id`),
-#  KEY `laboratory2gene_class_laboratory_id_fk` (`laboratory_id`),
-#  CONSTRAINT `laboratory2gene_class_gene_class_id_fk` FOREIGN KEY (`gene_class_id#`) REFERENCES `gene_class` (`id`),
-#  CONSTRAINT `laboratory2gene_class_laboratory_id_fk` FOREIGN KEY (`laboratory_id#`) REFERENCES `laboratory` (`id`)
-#) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 
 # Dump of table mutagen
@@ -666,7 +661,6 @@ CREATE TABLE `strain` (
   `outcrossed` char(2) DEFAULT NULL,
   `mutagen_id` int(11) unsigned DEFAULT NULL,
   `genotype` varchar(100) DEFAULT NULL,
-  `received` varchar(50) DEFAULT NULL,
   `made_by` varchar(50) DEFAULT NULL,
   `laboratory_id` int(11) unsigned DEFAULT NULL,
   `males` varchar(50) DEFAULT NULL,

@@ -69,6 +69,69 @@ __PACKAGE__->table("variation");
   is_nullable: 1
   size: [7,5]
 
+=head2 pmap_start
+
+  data_type: 'integer'
+  extra: {unsigned => 1}
+  is_nullable: 1
+
+=head2 pmap_stop
+
+  data_type: 'integer'
+  extra: {unsigned => 1}
+  is_nullable: 1
+
+=head2 strand
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 1
+
+=head2 genic_location
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 30
+
+eg intron, exon, promoter
+
+=head2 variation_type
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 30
+
+synthesis of the is_* cols, eg Naturally occurring insertion
+
+=head2 type_of_dna_change
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 30
+
+eg substitution, insertion, deletion
+
+=head2 type_of_protein_change
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 30
+
+eg missense, nonsense, frameshift
+
+=head2 protein_change_position
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 30
+
+A212D
+
+=head2 is_ko_consortium_allele
+
+  data_type: 'integer'
+  is_nullable: 1
+
 =head2 is_reference_allele
 
   data_type: 'integer'
@@ -88,6 +151,17 @@ __PACKAGE__->table("variation");
 
   data_type: 'integer'
   is_nullable: 1
+
+=head2 is_transposon_insertion
+
+  data_type: 'integer'
+  is_nullable: 1
+
+=head2 status
+
+  data_type: 'varchar'
+  is_nullable: 1
+  size: 20
 
 =head2 species_id
 
@@ -110,68 +184,6 @@ __PACKAGE__->table("variation");
   is_foreign_key: 1
   is_nullable: 1
 
-=head2 is_transposon_insertion
-
-  data_type: 'integer'
-  is_nullable: 1
-
-=head2 genic_location
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 30
-
-=head2 variation_type
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 30
-
-=head2 protein_change_position
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 30
-
-=head2 is_ko_consortium_allele
-
-  data_type: 'integer'
-  is_nullable: 1
-
-=head2 type_of_dna_change
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 30
-
-=head2 type_of_protein_change
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 30
-
-=head2 pmap_stop
-
-  data_type: 'integer'
-  is_nullable: 1
-
-=head2 pmap_start
-
-  data_type: 'integer'
-  is_nullable: 1
-
-=head2 strand
-
-  data_type: 'char'
-  is_nullable: 1
-  size: 1
-
-=head2 status
-
-  data_type: 'varchar'
-  is_nullable: 1
-  size: 20
-
 =cut
 
 __PACKAGE__->add_columns(
@@ -190,6 +202,24 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 20 },
   "gmap",
   { data_type => "float", is_nullable => 1, size => [7, 5] },
+  "pmap_start",
+  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
+  "pmap_stop",
+  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
+  "strand",
+  { data_type => "char", is_nullable => 1, size => 1 },
+  "genic_location",
+  { data_type => "varchar", is_nullable => 1, size => 30 },
+  "variation_type",
+  { data_type => "varchar", is_nullable => 1, size => 30 },
+  "type_of_dna_change",
+  { data_type => "varchar", is_nullable => 1, size => 30 },
+  "type_of_protein_change",
+  { data_type => "varchar", is_nullable => 1, size => 30 },
+  "protein_change_position",
+  { data_type => "varchar", is_nullable => 1, size => 30 },
+  "is_ko_consortium_allele",
+  { data_type => "integer", is_nullable => 1 },
   "is_reference_allele",
   { data_type => "integer", is_nullable => 1 },
   "is_snp",
@@ -198,6 +228,10 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_nullable => 1 },
   "is_natural_variant",
   { data_type => "integer", is_nullable => 1 },
+  "is_transposon_insertion",
+  { data_type => "integer", is_nullable => 1 },
+  "status",
+  { data_type => "varchar", is_nullable => 1, size => 20 },
   "species_id",
   {
     data_type => "integer",
@@ -219,28 +253,6 @@ __PACKAGE__->add_columns(
     is_foreign_key => 1,
     is_nullable => 1,
   },
-  "is_transposon_insertion",
-  { data_type => "integer", is_nullable => 1 },
-  "genic_location",
-  { data_type => "varchar", is_nullable => 1, size => 30 },
-  "variation_type",
-  { data_type => "varchar", is_nullable => 1, size => 30 },
-  "protein_change_position",
-  { data_type => "varchar", is_nullable => 1, size => 30 },
-  "is_ko_consortium_allele",
-  { data_type => "integer", is_nullable => 1 },
-  "type_of_dna_change",
-  { data_type => "varchar", is_nullable => 1, size => 30 },
-  "type_of_protein_change",
-  { data_type => "varchar", is_nullable => 1, size => 30 },
-  "pmap_stop",
-  { data_type => "integer", is_nullable => 1 },
-  "pmap_start",
-  { data_type => "integer", is_nullable => 1 },
-  "strand",
-  { data_type => "char", is_nullable => 1, size => 1 },
-  "status",
-  { data_type => "varchar", is_nullable => 1, size => 20 },
 );
 
 =head1 PRIMARY KEY
@@ -372,8 +384,8 @@ Composing rels: L</variation2genes> -> gene
 __PACKAGE__->many_to_many("genes", "variation2genes", "gene");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-08 15:26:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:7WAUOc9D76aYm6URXffuEg
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-14 17:33:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:02e0LVjJZSO4+XHX0S5PdQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

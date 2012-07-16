@@ -81,6 +81,24 @@ __PACKAGE__->table("gene");
   is_nullable: 1
   size: [7,5]
 
+=head2 pmap_start
+
+  data_type: 'integer'
+  extra: {unsigned => 1}
+  is_nullable: 1
+
+=head2 pmap_stop
+
+  data_type: 'integer'
+  extra: {unsigned => 1}
+  is_nullable: 1
+
+=head2 strand
+
+  data_type: 'char'
+  is_nullable: 1
+  size: 1
+
 =head2 species_id
 
   data_type: 'integer'
@@ -94,22 +112,6 @@ __PACKAGE__->table("gene");
   extra: {unsigned => 1}
   is_foreign_key: 1
   is_nullable: 1
-
-=head2 pmap_start
-
-  data_type: 'integer'
-  is_nullable: 1
-
-=head2 pmap_stop
-
-  data_type: 'integer'
-  is_nullable: 1
-
-=head2 strand
-
-  data_type: 'char'
-  is_nullable: 1
-  size: 1
 
 =head2 status
 
@@ -151,6 +153,12 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 1, size => 20 },
   "gmap",
   { data_type => "float", is_nullable => 1, size => [7, 5] },
+  "pmap_start",
+  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
+  "pmap_stop",
+  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
+  "strand",
+  { data_type => "char", is_nullable => 1, size => 1 },
   "species_id",
   {
     data_type => "integer",
@@ -165,12 +173,6 @@ __PACKAGE__->add_columns(
     is_foreign_key => 1,
     is_nullable => 1,
   },
-  "pmap_start",
-  { data_type => "integer", is_nullable => 1 },
-  "pmap_stop",
-  { data_type => "integer", is_nullable => 1 },
-  "strand",
-  { data_type => "char", is_nullable => 1, size => 1 },
   "status",
   { data_type => "varchar", is_nullable => 1, size => 20 },
   "type",
@@ -300,8 +302,8 @@ Composing rels: L</variation2genes> -> variation
 __PACKAGE__->many_to_many("variations", "variation2genes", "variation");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-09 14:59:01
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:P9MkmalcvOIZRE9ge+AUaA
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-14 17:33:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:5sh9Q65f40RMuynKlCMOVg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -2,7 +2,7 @@
 #   !/usr/local/bin/perl
 
 use strict;
-use warnings;
+#use warnings;
 
 use feature 'switch';
 
@@ -306,9 +306,9 @@ sub populate_schema {
         qw/dsn user password/;
     DEBUG('Connecting to database');
     my $schema = CGC::Schema->connect(@connect_info);
-#    populate_strains($schema, $import->{strain});
+#    populate_strains($schema, $import->{strain});      # DONE
 #    populate_laboratories($schema, $import->{lablist});
-    populate_freezers($schema, $import->{frzloc});
+    populate_freezers($schema, $import->{frzloc});     # DONE
 #    populate_transactions($schema, $import->{transrec});
 }
 
@@ -381,31 +381,121 @@ sub populate_strains {
             { primary => 'strain_name_unique' }
 	    );
     }
+    close OUT;
 }
 
 sub populate_laboratories {
     my ($schema, $labs) = @_;
     my $resultset = $schema->resultset('Laboratory');
     my $legacy_rs = $schema->resultset('LegacyLablist');
+
+    my $log  = join('/','/usr/local/wormbase/todd/cgc-website/logs/import_logs',"laboratory-cgc-merge.log");
+    open OUT,">>$log";
+
     for my $input (@{ $labs->[0] }) {
         my $labdata = App::Util::Import::Parser::parse_lab_name($input);
-        my $is_commercial
-            = (    defined $input->commercial
+
+	my $is_commercial
+	    = ( defined $input->commercial
                 && $input->commercial ne 'N'
-                && $input->commercial ne '');
+                && $input->commercial ne '') ? 1 : '';
+
+	my $row = $resultset->find( { name    => $input->{code} },
+				    { primary => 'laboratory_name_unique' } );
+	if ($row) {
+	    print OUT "CGC laboratory " . $input->{code} . " found in database already: updating...\n";
+	    foreach my $field (@{ $IMPORTS{lablist}->{fields} }) {		
+
+		my ($input_val,$db_col);
+		if ($field eq 'updated') {
+		    $input_val = $input->updated;    # is this the date assigned or updated?
+		    $db_col    = 'date_assigned';
+		} elsif ($field eq 'flag') {
+		    next; # NOT USING.
+		} elsif ($field eq 'code') {
+		    my $code = $input->{code};
+		    $code =~ s/\s*//g;
+		    $input_val = $code;
+		    $db_col    = 'name';
+		} elsif ($field eq 'allele') {
+		    $input_val = $input->allele;
+		    $db_col    = 'allele_designation';
+		} elsif ($field eq 'name') {
+		    $input_val = $labdata->{name};
+		    $db_col    = 'head';
+		} elsif ($field eq 'country') {
+		    $input_val = $input->country;
+		    $db_col    = 'country';
+		} elsif ($field eq 'state') {
+		    $input_val = $labdata->{state};
+		    $db_col    = 'state';
+		} elsif ($field eq 'city') {
+		    $input_val = $labdata->{city};
+		    $db_col    = 'country';		    
+		} elsif ($field eq 'location') {
+		    $input_val = $input->{location};
+		    $db_col    = 'institution';
+		} elsif ($field eq 'namelocat') {
+		    next; # NOT USING.  (Parsed via lab data)
+		} elsif ($field eq 'annfeepd') {
+		    next; # NOT USING. NEED TO ACCOMODATE
+		} elsif ($field eq 'commercial') {
+		    $input_val = $is_commercial;
+		    $db_col    = 'commercial';
+		} else { print "field is $field\n"; next;  }
+
+		my $db_val = $row->$db_col;
+		if ($input_val ne $db_val) { print OUT "\t$db_col changed from " 
+						 . "\n\t\t" . $db_val 
+						 . "\n\t\t" . $input_val . "\n" }
+	    }
+	} else {
+	    print OUT "------> FOUND A LABORATORY NOT PRESENT IN WORMBASE: " . $labdata->{head} . ' - ' . $input->{code} . "\n";
+	}
+
+
+	# If the input code is numeric, this is an individual that DOES NOT have 
+	# a laboratory designation.  They were arbitrarily assigned an integer
+	# as a lab code.
+	# We don't really want to insert them. Not sure how to track them at this moment. 
+	if ($input->{code} =~ /^\d/) {
+	    next;
+	}
+	
+	next;
+
         my $laboratory = $resultset->update_or_create(
-            {   name         => $labdata->{name},
+            {   name         => $input->{code},
 		head         => $labdata->{head},
-                institution  => $labdata->{institution},
+                institution  => $input->{location},
                 city         => $labdata->{city},
                 state        => $labdata->{state},
                 commercial   => $is_commercial,
                 country      => $input->country,
-		date_updated => $input->updated,
+#		date_updated => $input->updated,
             },
 	    { primary => 'name_unique' }
         );
 
+	# Date a strain arrived comes via WormBase.
+
+	# Insert the date assigned into the laboratory_event table.
+	my $event_rs = $schema->resultset('Event');
+	my $event_row  = $event_rs->create({
+	    event => 'laboratory code assigned',      # Or is this simply the date it was updated?
+	    event_date => $input->updated ? reformat_date($input->updated) : undef,
+	    user_id    => 1,
+					   });
+    
+	# Create entry in the join table. Necessary?
+	# or my $author = $book->create_related('author', { name => 'Fred'});
+	my $event_join_rs = $schema->resultset('LaboratoryEvent');
+	my $event_join_row = $event_join_rs->create({
+	    event_id  => $event_row->id,
+	    laboratory_id => $laboratory->id,
+						    });
+	
+	
         # Add legacy data and associate with laboratory.
         my $rawdata = join("\t",
             map { $input->{$_} || q{} } @{ $IMPORTS{lablist}->{fields} });
@@ -483,7 +573,7 @@ sub populate_freezers {
 	    $mcb_insert = $sample_rs->update_or_create(
 		{   freezer_id       => $mcb_tower_row->id,
 		    strain_id        => $strain_row->id,
-		    sample_count     => $input->liquid_vials || 0,
+		    vials            => $input->liquid_vials || 0,
 		    freezer_location => $location,
 		},	    
 		);
@@ -497,7 +587,7 @@ sub populate_freezers {
 	    $moos_insert = $sample_rs->update_or_create(
 	    {   freezer_id       => $moos_tower_row->id,
 		strain_id        => $strain_row->id,
-		sample_count     => $input->liquid_vials || 0,
+		vials            => $input->liquid_vials || 0,
 		freezer_location => $location,
 	    },	    
 	    );
@@ -511,7 +601,7 @@ sub populate_freezers {
 	    $minus80_insert = $sample_rs->update_or_create(
 	    {   freezer_id       => $minus80_row->id,
 		strain_id        => $strain_row->id,
-		sample_count     => $input->minus80_vials || 0,
+		vials            => $input->minus80_vials || 0,
 		freezer_location => $location,
 	    },	    
 	    );
@@ -520,46 +610,75 @@ sub populate_freezers {
 	}	
 
 	# Now, create events for all three of these
+
+	# Insert the date assigned into the laboratory_event table.
+	my $event_rs = $schema->resultset('Event');
+    
+	# Create entry in the join table. Necessary?
+	# or my $author = $book->create_related('author', { name => 'Fred'});
+	my $event_join_rs = $schema->resultset('FreezerSampleEvent');
+	
 	if ($input->oldest_freeze_in_nitrogen =~ m|\d\d/\d\d/\d\d\d\d|) {
 	    my $date = reformat_date($input->oldest_freeze_in_nitrogen);
-	    my $oldest_row_moos = $event_rs->update_or_create({
-		event_class => 'strain manipulation',
-		event       => 'strain frozen in liquid nitrogen (originally: date of oldest freeze in liquid nitrogen)',
-		sample_id   => $mcb_insert->id,
-		event_date  => $date,
-		remark      => 'in original data, date was not broken out for both MCB and Moos as it is here',
-		user_id     => 1,
-							      });
-	    my $oldest_row_mcb = $event_rs->update_or_create({
-		event_class => 'strain manipulation',
-		event       => 'strain frozen in liquid nitrogen (originally: date of oldest freeze in liquid nitrogen)',
-		sample_id   => $mcb_insert->id,
-		event_date  => $date,
-		remark      => 'in original data, date was not broken out for both MCB and Moos as it is here',
-		user_id     => 1,
-							     });
+
+	    if ($moos_insert) {
+		my $moos_event_row  = $event_rs->create({
+		    event => 'strain frozen in liquid nitrogen',
+		    event_date => $date,
+		    remark      => 'originally: date strain was frozen in liquid nitrogen; date was not originally tracked for both MCB and Moos as it is here - date is simply duplicated.',
+		    user_id    => 1});
+		
+		my $moos_event_join_row = $event_join_rs->create({
+		    event_id  => $moos_event_row->id,
+		    freezer_sample_id => $moos_insert->id,
+								 });
+	    }
+	    
+	    if ($mcb_insert) {
+		# Duplicate for MCB (CGC doesn't currently track these separately)
+		my $mcb_event_row  = $event_rs->create({
+		    event => 'strain frozen in liquid nitrogen',
+		    event_date => $date,
+		    remark      => 'originally: date strain was frozen in liquid nitrogen; date was not originally tracked for both MCB and Moos as it is here - date is simply duplicated.',
+		    user_id    => 1});
+		
+		my $mcb_event_join_row = $event_join_rs->create({
+		    event_id  => $mcb_event_row->id,
+		    freezer_sample_id => $mcb_insert->id,
+								});	    
+	    }
 	} else {
 	    print OUT $input->strain . " has no original freeze date set\n"; 
 	}	
 	
 	if ($input->date_strain_was_refrozen =~ m|\d\d/\d\d/\d\d\d\d|) {
 	    my $date = reformat_date($input->date_strain_was_refrozen);
-	    my $refreeze_moos = $event_rs->update_or_create({
-		event_class => 'strain manipulation',
-		event       => 'strain frozen in liquid nitrogen (originally: date strain was refrozen in liquid nitrogen',
-		sample_id   => $mcb_insert->id,
-		event_date  => $date,
-		remark      => 'in original data, date was not broken out for both MCB and Moos as it is here',
-		user_id     => 1,
-							    });
-	    my $refreeze_mcb = $event_rs->update_or_create({
-		event_class => 'strain manipulation',
-		event       => 'strain frozen in liquid nitrogen (originally: date strain was refrozen in liquid nitrogen',
-		sample_id   => $mcb_insert->id,
-		event_date  => $date,
-		remark      => 'in original data, date was not broken out for both MCB and Moos as it is here',
-		user_id     => 1,
-							   });
+	    
+	    if ($moos_insert) {
+		my $moos_event_row  = $event_rs->create({
+		    event       => 'strain re-frozen in liquid nitrogen',
+		    event_date => $date,
+		    remark      => 'originally: date strain was refrozen in liquid nitrogen; date was not originally tracked for both MCB and Moos as it is here - date is simply duplicated.',
+		    user_id    => 1});
+	    my $moos_event_join_row = $event_join_rs->create({
+		event_id  => $moos_event_row->id,
+		freezer_sample_id => $moos_insert->id,
+							     });
+	    }
+	    
+	    if ($mcb_insert) {
+		my $mcb_event_row  = $event_rs->create({
+		    event       => 'strain re-frozen in liquid nitrogen',
+		    event_date => $date,
+		    remark      => 'originally: date strain was refrozen in liquid nitrogen; date was not originally tracked for both MCB and Moos as it is here - date is simply duplicated.',
+		    user_id    => 1});
+		
+		my $mcb_event_join_row = $event_join_rs->create({
+		    event_id  => $mcb_event_row->id,
+		    freezer_sample_id => $mcb_insert->id,
+								});
+	    }
+	    
 	} else {
 	    print OUT $input->strain . " has no refreeze date set\n"; 
 	}	
@@ -567,14 +686,16 @@ sub populate_freezers {
 	if ($minus80_insert) {
 	    if ($input->date_strain_was_frozen_for_minus80 =~ m|\d\d/\d\d/\d\d\d\d|) {
 		my $date = reformat_date($input->date_strain_was_frozen_for_minus80);
-		my $row = $event_rs->update_or_create({
-		    event_class => 'strain manipulation',
+		
+		my $event_row  = $event_rs->create({
 		    event       => 'strain frozen in minus 80',
-		    sample_id   => $minus80_insert->id,
-		    event_date  => $date,
-		    remark      => 'in original data, date was not broken out for both MCB and Moos as it is here',
-		    user_id     => 1,
-						      });
+		    event_date => $date,		
+		    user_id    => 1});
+		
+		my $event_join_row = $event_join_rs->create({
+		    event_id  => $event_row->id,
+		    freezer_sample_id => $minus80_insert->id,
+							    });
 	    } else {
 		print OUT $input->strain . " has no minus 80 date set\n"; 
 	    }	
@@ -586,7 +707,7 @@ sub populate_freezers {
 sub reformat_date {
     my $date = shift;
     $date =~ m|(\d\d)/(\d\d)/(\d\d\d\d)|;
-    return "$3-$1-$2";
+    return "$3-$1-$2 00:00:00";
 }
 
 
