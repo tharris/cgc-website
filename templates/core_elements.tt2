@@ -83,6 +83,23 @@
 
 
 
+[% BLOCK admin_content %]
+     <div class="alert alert-info"><h3>[% title %]</h3>
+          <p><span class="label label-important">Important</span> This content is only visible to administrators!</p>
+          <p>[% content %]</p>
+     </div>
+[% END %]
+
+
+
+
+
+
+
+
+
+[% # EVERYTHIGN BELOW HERE IS CRUFT %]
+
 
 [%#
 

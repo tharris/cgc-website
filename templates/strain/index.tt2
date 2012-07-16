@@ -1,7 +1,4 @@
-
-[% IF c.check_user_roles('admin') %]
-<div class="alert alert-info">
-<p><strong>TODO</strong></p>
+[% WRAPPER admin_content title="TODO" %]
 <ul>
 <li>what to do with frzloc entries that have no strains set?
 <li>need to handle empty or broekn fields in frzloc - check merge logs
@@ -9,8 +6,8 @@
 </ul>
 
 <p><strong>Questions for CGC</strong></p>
-</div>
 [% END %]
+
 
 [% IF rest.error %]
 <div class="alert alert-error">
@@ -37,12 +34,16 @@
 </div>
 
 [% IF strain %]
+<!--<div class="well span6"> -->
+<div class="row-fluid">
+<div class="span12">
+<div class="row-fluid">
 <div class="well span6">
     <table id="strain-view" class="table table-striped">
     <thead><h3>Strain Information</h3></thead>
     <tbody>
         <tr><th>Name</th>       <td>[% strain.name %]</td></tr>
-        <tr><th>Species</th>    <td><em><a href="[% c.uri_for('/species/' _ strain.species) %]">[% strain.species %]</a></em></td></tr>
+        <tr><th>Species</th>    <td>[% species_link(strain.species) %]</td></tr>
         <tr><th>Genotype</th>   <td>[% strain.genotype %]</td></tr>	
         <tr><th>Mutagen</th>    <td>[% strain.mutagen %]</td></tr>
         <tr><th>Outcrossed</th> <td>[% strain.outcrossed %]</td></tr>
@@ -77,6 +78,7 @@
 			or
 			<a href="#modal" data-toggle="modal" data-uri="/register"><strong>register an account</strong></a> if you want to order this strain.</div>
 	[% END %]
+<!--</div> -->
 </div>
 [% END %]
 
@@ -84,14 +86,18 @@
 
 
 
-[%# IF c.check_user_roles('admin') %]
-[% IF strain.samples.keys.count > 0 %]
-
-     <h3>Freezer Samples</h3>
-     [% FOREACH freezer IN strain.samples.keys %] 
-         <div class="well span6">
+[% IF c.check_user_roles('admin') %]
+    
+     <div class="span6">     
+     [% WRAPPER admin_content title="Freezer Samples" %]
+     Samples of this strain housed at the CGC.
+     [% END %]
+ 
+    [% FOREACH freezer IN strain.samples.keys %] 
+<!--         <div class="well span4 offset6"> -->
+	     <div class="well">
                <table id="strain-view" class="table table-striped">
-                 <thead><h3><a href="[% c.uri_for('/freezer/' _ strain.samples.$freezer.id) %]">[% freezer %]</a></h3></thead>
+                 <thead><h3>[% freezer %]<small><em><a href="[% c.uri_for('/freezer/' _ strain.samples.$freezer.id) %]"> (View all samples in this freezer)</a></em></small></h3></thead>
                  <tbody>
                     <tr><th>Freezer Type</th>       <td>[% strain.samples.$freezer.type %]</td></tr>
 		 </tbody>
@@ -99,29 +105,37 @@
 
                [% FOREACH sample IN strain.samples.$freezer.samples %]
                <table id="strain-view" class="table table-striped">
-                 <thead><h3>[% sample.freezer_location</h3></thead>
+                 <thead><h3>Freezer location: [% sample.freezer_location %]</h3></thead>
                  <tbody>
                     <tr><th>Vials</th>       <td>[% sample.vials %]</td></tr>
 		 </tbody>
                 </table>
-		
-                     [% FOREACH history IN sample.history %]
-                         <table class="table table-striped">
-                           <thead>
-                           <tr>            
-                           <th>Event</th>
-			   <th>Date</th>
-			   <th>Remark</th>
-			   </tr>
-                           </thead>
-                           <tbody>
-                              <td>[% history.event %]</td> 
- 	                      <td>[% history.date %]</td>
-                              <td>[% history.remark %]</td>
-		           </tbody>
-                         </table>
-                      [% END %]
+
+                <table class="table table-striped">
+                    <thead>
+                     <tr>            
+                         <th>Event</th>
+                         <th>Date</th>
+	                 <th>Remark</th>
+		     </tr>
+                     </thead>
+                     <tbody>		
+                         [% FOREACH history IN sample.history %]
+                             <tr>                             
+                                <td>[% history.event %]</td> 
+ 	                        <td>[% history.date %]</td>
+                                <td>[% history.remark %]</td>
+                             </tr>
+                         [% END %]
+		       </tbody>
+                    </table>
+
                [% END %]
+	  </div>
       [% END %]
-  [% END %]
-[%# END %]	
+      </div>
+</div><!-- close row -->
+</div><!-- close 12 span -->
+</div><!-- close 12 span row -->
+
+[% END %]	

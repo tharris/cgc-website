@@ -121,7 +121,7 @@ CREATE TABLE `admin_event` (
 DROP TABLE IF EXISTS `app_order`;
 
 CREATE TABLE `app_order` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
   `laboratory_id` int(11) unsigned DEFAULT NULL,  
   `remark`    mediumtext COMMENT 'Special order requests supplied by user',
@@ -131,6 +131,13 @@ CREATE TABLE `app_order` (
   CONSTRAINT `app_order_user_fk` FOREIGN KEY (`user_id`) REFERENCES `app_user` (`user_id`),
   CONSTRAINT `app_order_laboratory_fk` FOREIGN KEY (`laboratory_id`) REFERENCES `laboratory` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+INSERT INTO `app_order` VALUES ('1','1','1','Sample order 1 from user 1','','');
+INSERT INTO `app_order` VALUES ('2','3','10','Sample order 2 from user 3','','');
+INSERT INTO `app_order` VALUES ('3','2','100','Sample order 3 from user 2','','');
+
+
 
 DROP TABLE IF EXISTS `app_order_contents`;
 
@@ -144,12 +151,19 @@ CREATE TABLE `app_order_contents` (
   KEY `app_order_contents_strain_id_fk` (`strain_id`),
   KEY `app_order_contents_order_id_fk` (`order_id`),
   CONSTRAINT `app_order_contents_strain_id_fk` FOREIGN KEY (`strain_id`) REFERENCES `strain` (`id`),
-  CONSTRAINT `app_order_contents_order_id_fk` FOREIGN KEY (`order_id`) REFERENCES `strain_order` (`id`)
+  CONSTRAINT `app_order_contents_order_id_fk` FOREIGN KEY (`order_id`) REFERENCES `app_order` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-
-
+INSERT INTO `app_order_contents` VALUES ('1','5706','','success','these would be some curator comments on the state of thawing EG1000');
+INSERT INTO `app_order_contents` VALUES ('1','5707','','success','these would be some curator comments on the state of thawing this strain');
+INSERT INTO `app_order_contents` VALUES ('1','5708','','success','these would be some curator comments on the state of thawing this strain');
+INSERT INTO `app_order_contents` VALUES ('2','1000','','success','these would be some curator comments on the state of thawing this strain');
+INSERT INTO `app_order_contents` VALUES ('2','1010','','success','these would be some curator comments on the state of thawing this strain');
+INSERT INTO `app_order_contents` VALUES ('2','1030','','success','these would be some curator comments on the state of thawing this strain');
+INSERT INTO `app_order_contents` VALUES ('3','500','','success','these would be some curator comments on the state of thawing this strain');
+INSERT INTO `app_order_contents` VALUES ('3','600','','success','these would be some curator comments on the state of thawing this strain');
+INSERT INTO `app_order_contents` VALUES ('3','700','','success','these would be some curator comments on the state of thawing this strain');
 
 # Dump of table legacy_cgcmail
 # ------------------------------------------------------------
