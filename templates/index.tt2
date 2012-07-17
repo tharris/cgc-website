@@ -16,34 +16,43 @@
         </div>
 
         <div class="span4 well">
-             <h3>Strains</h3>
+           <h3><a href="#" id="strains" class="popover-link" rel="popover" data-content="Search or browse all strains available from the CGC" data-original-title="Strains">Strains</a></h3>
              <a href="[% c.uri_for('/strain') %]">Search</a> or 
              <a href="[% c.uri_for('/strains') %]">View All</a>
         </div>
 
         <div class="span4 well">
-             <h3>Gene Classes</h3>
+           <h3><a href="#" id="geneclasses" class="popover-link" rel="popover" data-content="The CGC tracks official gene class designations like <em>unc</em> for uncoordinated. Search and browse for strains by gene class." data-original-title="Gene Classes">Gene Classes</a></h3>
              <a href="[% c.uri_for('/geneclass') %]">Search</a> or 
              <a href="[% c.uri_for('/geneclasses') %]">View All</a>
         </div>
 
          <div class="span4 well">
-             <h3>Laboratories</h3>
+           <h3><a href="#" id="laboratories" class="popover-link" rel="popover" data-content="Search for laboratories and view the strains they have provided to the CGC" data-original-title="Laboratories">Laboratories</a></h3>
              <a href="[% c.uri_for('/laboratory') %]">Search</a> or 
              <a href="[% c.uri_for('/laboratories') %]">View All</a>
          </div>
 
+	 [% IF c.check_user_roles('admin') %]
          <div class="span4 well">
-             <h3>Freezers</h3>
+           <h3><a href="#" id="freezers" class="popover-link" rel="popover" data-content="Browse CGC freezers and the samples they contain." data-original-title="Freezers">Freezers</a></h3>
              <a href="[% c.uri_for('/freezer') %]">Search</a> or 
              <a href="[% c.uri_for('/freezers') %]">View All</a>
          </div>
+         [% END %]
 
          <div class="span4 well">
-             <h3>Genes</h3>
+           <h3><a href="#" id="genes" class="popover-link" rel="popover" data-content="Search for strains carrying specific variations." data-original-title="Genes">Genes</a></h3>
              <a href="[% c.uri_for('/gene') %]">Search</a> 
 <!--             or <a href="[% c.uri_for('/genes') %]">View All</a> -->
          </div>
+
+         <div class="span4 well">
+           <h3><a href="#" id="variation" class="popover-link" rel="popover" data-content="Search for strains carrying specific variations." data-original-title="Variations">Variations</a></h3>
+             <a href="[% c.uri_for('/variation') %]">Search</a> 
+<!--             or <a href="[% c.uri_for('/variations') %]">View All</a> -->
+         </div>
+
 
     </div>
 

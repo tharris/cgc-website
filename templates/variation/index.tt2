@@ -1,5 +1,5 @@
 <div class="page-header">
-  <h1>Gene Report</h1>
+  <h1>Variation Report</h1>
 </div>
 
 
@@ -17,41 +17,39 @@
 
 
 <div class="span6">
-    <h2>All Genes</h2>
-    <p><a href="[% c.uri_for('/genes') %]">View all genes</a></p>
+    <h2>All Variations</h2>
+    <p><a href="[% c.uri_for('/variations') %]">View all variations</a></p>
 </div>
 
 
-[% DEFAULT gene = rest %]
+[% DEFAULT variation = rest %]
 <div class="span6">
     <h2>Search</h2>
-    <!--
-    <p>Search and view laboratories.</p>
--->
+
     <div class="well">
-        <input id="search-gene" type="text" class="span3"
-            [% IF gene %] value="[% gene.name %]"
-            [% ELSE %] placeholder="Start typing a gene..."
+        <input id="search-variation" type="text" class="span3"
+            [% IF variation %] value="[% variation.name %]"
+            [% ELSE %] placeholder="Start typing a variation..."
             [% END %]
         />
         <span class="help-inline" style="margin-bottom: 9px"><small>Example:
-        <a href="/gene/unc-26">unc-26</a>,
-        <a href="/gene/lin-29">lin-29</a>,
-        <a href="/gene/R13A5.9">R13A5.9</a>
+        <a href="/variation/m2">m2</a>,
+        <a href="/variation/n1159">n1159</a>,
+        <a href="/variation/pkP1066">pkP1066</a>
         </small></span>
     </div>
 </div>
 
-[% IF gene %]
+[% IF variation %]
 <div class="well span6">
-    <table id="gene-view" class="table table-striped">
-    <thead><h3>Gene Information</h3></thead>
+    <table id="variation-view" class="table table-striped">
+    <thead><h3>Variation Information</h3></thead>
     <tbody>
-        <tr><th>Name</th><td>[% gene.name %] ([% link_to_wormbase('Laboratory',gene.name,'view at WormBase') %])</td></tr>
-	<tr><th>Species</th><td>[% species_link(gene.species) %]</td></tr>
-	<tr><th>Genetic position</th><td>[% genetic_position(gene) %]</td></tr>
-	<tr><th>Genomic position</th><td>[% genomic_position(gene) %]</td></tr>
-	<tr><th>Type</th><td>[% gene.type %]</td></tr>
+        <tr><th>Name</th><td>[% variation.name %] ([% link_to_wormbase('Variation',variation.name,'view at WormBase') %])</td></tr>
+	<tr><th>Species</th><td>[% species_link(variation.species) %]</td></tr>
+	<tr><th>Genetic position</th><td>[% genetic_position(variation) %]</td></tr>
+
+	<tr><th>Genomic position</th><td>[% genomic_position(variation) %]</td></tr>
     </tbody>
     </table>
 </div>
@@ -59,9 +57,9 @@
 
 <div class="well span6">
 
-<h2>Strains carrying this gene</h2>
+<h2>Strains carrying this variation</h2>
 
-    [% IF gene.ag %]
+    [% IF variation.ag %]
     <table class="table table-striped">
     <thead>
         <tr>            
@@ -72,7 +70,7 @@
         </tr>
     </thead>
     <tbody>
-        [% FOREACH ag IN gene.ag %]
+        [% FOREACH ag IN variation.ag %]
          <tr>
             <td><a href="[% c.uri_for('/strain/' _ ag.strain.name) %]">[% ag.strain.name %]</a></td> 
 	    <td>[% ag.strain.genotype %]</td>
@@ -83,7 +81,7 @@
     </tbody>
 </table>
 [% ELSE %]
-   <em>There are no strains at the CGC carrying this gene.</em>
+   <em>There are no strains at the CGC carrying this variation.</em>
 [% END %]
 
 
@@ -93,5 +91,5 @@
 
 
 
-[% typeahead_support('gene',['sequence_name','locus_name']) %]
+[% typeahead_support('variation',['name']) %]
 

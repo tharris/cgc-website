@@ -39,61 +39,118 @@ sub strain_GET {
     if (!$key) {
         $c->detach('index');
     }
+
+    $c->stash->{template} = 'strain/index.tt2';
+
     my $column = ($key =~ /^\d+$/) ? 'id' : 'name';
     my $strain = $c->model('CGC::Strain')->single({ $column => $key });
-    $c->stash->{template} = 'strain/index.tt2';
+
     my $entity;
     if (defined($strain)) {
-
-
         
         # Get the event history for this sample.
         my $strain_history = $self->get_history($c,'StrainEvent','strain_id',$strain->id);
         
         
-            # Pull out some admin level fields, mainly samples and their history.
-	    my $freezer_samples;
+	# Pull out some admin level fields, mainly samples and their history.
+	my $freezer_samples;
+	
+	# All freezer samples, and history for those samples.
+	my @sample_rows = $c->model('CGC::FreezerSample')->search(
+	    { strain_id => $strain->id }
+	    );
+	
+	foreach my $sample (@sample_rows) {
+	    my $freezer_history = $self->get_history($c,'FreezerSampleEvent','freezer_sample_id',$sample->id);
+	    my $freezer = $sample->freezer;
 
-	    # All freezer samples, and history for those samples.
-	    my @sample_rows = $c->model('CGC::FreezerSample')->search(
-		{ strain_id => $strain->id }
-		);
+	    # Kind of dumb. We reset this meta information each time around.
+	    $freezer_samples->{$freezer->name}->{id} = $freezer->id;
+	    $freezer_samples->{$freezer->name}->{type} = $freezer->type;
 	    
-	    foreach my $sample (@sample_rows) {
-		my $freezer_history = $self->get_history($c,'FreezerSampleEvent','freezer_sample_id',$sample->id);
-		my $freezer = $sample->freezer;
+	    push @{$freezer_samples->{$sample->freezer->name}->{samples}},
+	    { sample_id   => $sample->id,		  
+	      freezer_location => $sample->freezer_location,
+	      vials       => $sample->vials,
+	      history     => $freezer_history,
+	    }
+	}   
 
-		# Kind of dumb. We reset this meta information each time around.
-		$freezer_samples->{$freezer->name}->{id} = $freezer->id;
-		$freezer_samples->{$freezer->name}->{type} = $freezer->type;
+	my $atomized_genotype = $self->_build_atomized_genotype($c,$strain->id);
+	
+	$entity = {
+	    name       => $strain->name,
+	    species    => $strain->species
+		? $strain->species->name : 'No species',
+		outcrossed => $strain->outcrossed,
+		mutagen    => $strain->mutagen
+		? $strain->mutagen->name : 'No mutagen',
+		genotype   => $strain->genotype,
+		received   => $strain->received,
+		# lab_order  => $strain->lab_order,
+		made_by    => $strain->made_by,
+		laboratory => $strain->laboratory ? $strain->laboratory->name : 'laboratory of origin unknown',
+		samples    => $freezer_samples,
+		history    => $strain_history,  # This is already flattened.
+		atomized_genotype => $atomized_genotype,
+	};
+	$self->status_ok($c, entity => $entity);
+    } else {
+	$self->status_not_found($c, message => "Cannot find strain '$key'");
+    }
+}
+
+sub _build_atomized_genotype {
+    my ($self,$c,$strain_id) = @_;
+
+    my @rows = $c->model('CGC::AtomizedGenotype')->search(
+	{ strain_id => $strain_id },
+	{ join => [qw/gene variation rearrangement transgene/] });
+    
+    # Need to construct the string based on position, type, etc.
+    my $data = {};
+    my @types = qw/gene variation rearrangement transgene/;
+    foreach my $component (@rows) {	
+	foreach my $type (@types) {
+	    if ($component->$type) {
+		my $name = $component->$type->name;
+
+		my $id         = $component->$type->id;
+		my $chromosome = $component->$type->chromosome;
+		my $gmap       = $component->$type->gmap;
+		my $pmap_stop  = $component->$type->pmap_start;
+		my $pmap_start  = $component->$type->pmap_stop;
 		
-		push @{$freezer_samples->{$sample->freezer->name}->{samples}},
-		{ sample_id   => $sample->id,		  
-		  freezer_location => $sample->freezer_location,
-		  vials       => $sample->vials,
-		  history     => $freezer_history,
+		my $child;
+		if ($type eq 'variation') {
+		    my @vars = $c->model('CGC::Variation2gene')->search(
+			{ variation_id => $id },
+			{ join => [qw/gene/] });
+		    $c->log->warn("vars: " . join("-",@vars));
+		    if (@vars == 1) {
+			# Try to guess which gene it belongs to		    
+			$name = $vars[0]->gene->name;
+			$child = $component;
+		    }
 		}
-	    }   
 
-	    $entity = {
-			name       => $strain->name,
-			species    => $strain->species
-				? $strain->species->name : 'No species',
-			outcrossed => $strain->outcrossed,
-			mutagen    => $strain->mutagen
-				? $strain->mutagen->name : 'No mutagen',
-			genotype   => $strain->genotype,
-			received   => $strain->received,
-			# lab_order  => $strain->lab_order,
-			made_by    => $strain->made_by,
-			laboratory => $strain->laboratory ? $strain->laboratory->name : 'laboratory of origin unknown',
-			samples    => $freezer_samples,
-			history    => $strain_history,  # This is already flattened.
-		};
-		$self->status_ok($c, entity => $entity);
-	} else {
-		$self->status_not_found($c, message => "Cannot find strain '$key'");
+		if ($child) {		    
+		    push @{$data->{$chromosome}->{$name}->{has}},
+		    { name       => $child->$type->name,
+		      id         => $child->$type->id,
+		      type       => $type,
+		      gmap       => $gmap || 'unknown',
+		      pmap_stop  => $pmap_stop,
+		      pmap_start => $pmap_start,
+		    };
+		} else {
+		    $data->{$chromosome}->{$name}->{id}   = $component->$type->id;
+		    $data->{$chromosome}->{$name}->{type} = $type;
+		}
+	    }
 	}
+    }
+    return $data;
 }
 
 

@@ -17,8 +17,9 @@
 
               [% IF c.check_user_roles('admin') %]
                    <li class="nav-header">Strain Management</li>
-                   <li><a href="#">Add a new strain</a></li>
-                   <li><a href="#">Update a strain</a></li>
+                   <li><a href="#"><i class="icon-inbox"></i> Add a new strain</a></li>
+                   <li><a href="#"><i class="icon-inbox"></i> Update a strain</a></li>
+                   <li><a href="#"><i class="icon-inbox"></i> Thaw a strain</a></li>
 
                     <li class="nav-header">Orders</li>
                     <li><a href="#"><i class="icon-inbox"></i> New Orders</a></li>

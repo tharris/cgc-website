@@ -38,6 +38,26 @@
    <a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=[% species.ncbi_taxonomy_id %]">[% species.ncbi_taxonomy_id %]</a>
 [% END; %]
 
+[% MACRO genetic_position(object) BLOCK;
+   IF object.chromosome && object.gmap;
+      # Expects a hashref with keys of chromosome and gmap
+      object.chromosome _ ': ' _  object.gmap;
+   ELSE;
+       '<em>genetic position unknown or not listed</em>';
+   END;
+END;
+%]
+
+[% MACRO genomic_position(object) BLOCK;
+   IF object.chromosome && object.pmap_start && object.pmap_stop;
+       # Expects a hashref with keys of chromosome and gmap
+       object.chromosome _ ': ' _  object.pmap_start _ '..' _ object.pmap_stop;
+   ELSE;
+       '<em>genomic coordinates unknown or not listed</em>';
+   END;
+END;
+%]
+
 
 
 [%# Typeahead support, required on all index pages %]
