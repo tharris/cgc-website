@@ -61,9 +61,9 @@ sub species_GET :Path('/species') :Args(1)   {
     # Hack! Assume that name entries do not begin with a number.
     my $column;
     if ($id =~ /^\d/) {
-	$column = 'species.id';
+		$column = 'id';
     } else {
-	$column = 'species.name';
+		$column = 'name';
     }
 
     my @rows = $c->model('CGC::Strain')->search(
@@ -77,17 +77,16 @@ sub species_GET :Path('/species') :Args(1)   {
 	);
     
     if (@rows) {
-	$c->stash->{species} = $rows[0]->species->name;
+		$c->stash->{species} = $rows[0]->species->name;
     }
 
     $c->stash->{results}  = \@rows;
-    my $entity;
     if (@rows) { 
-	$entity = { 
-	    rows => \@rows,
+		my $entity = { rows => \@rows };
+	    $self->status_ok($c, entity => $entity);
+	} else {
+		$self->status_not_found($c, message => "Cannot find species");
 	}
-    };
-    $self->status_ok($c, entity => $entity);
 
 #    my $entity;
 #    if (defined($row)) {

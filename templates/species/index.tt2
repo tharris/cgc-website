@@ -2,10 +2,17 @@
   <h1>Species available at the CGC</h1>
 </div>
 
+[% IF rest.error %]
+<div class="alert alert-error">
+	<strong>Error:</strong> [% rest.error | html%]
+</div>
+[% END %]
+
+
 [% IF c.check_user_roles('admin') %]
 <div class="alert alert-info">
-<p><strong>TODO</strong></p>
-<p><strong>Questions for CGC</strong></p>
+	<p><strong>TODO</strong></p>
+	<p><strong>Questions for CGC</strong></p>
 </div>
 [% END %]
 
@@ -16,8 +23,8 @@
 </div>
 
 
-
 [% DEFAULT species = rest %]
+
 <div class="span6">
     <h2>Search</h2>
 <!--
@@ -36,7 +43,6 @@
         </small></span>
     </div>
 </div>
-
 
 [% IF species %]
 <div class="well span6">

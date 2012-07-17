@@ -528,20 +528,6 @@ overflow: visible;
 
 
 
-
-/* = DOCUMENT ========================== */
-
-h1,h2,h3,h4,h5,h6 { color:black; margin:0; font-weight:bold;}
-
-h1 { font-size:1.8em;   }  /* 24px   ; site title */
-h2 { font-size:1.4em; }  /* 21.6px ; page title */
-h3 { font-size:1.2em; }  /* 19.2px ; page subtitle (if applicable) */  
-h4 { font-size:1em; }  /* 16.8px ; widget titles */
-h5 { font-size:0.8em; }  /* 13.2px ; field names */
-h6 { font-size:0.8em;    /* 12px; subfield names */
-     font-weight:bold;
-}  
-
 /*********************************
    
    Headers
