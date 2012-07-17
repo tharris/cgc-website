@@ -286,27 +286,48 @@
 
 
 <script>
-$('#strain-submit').click(function (e) { 
-   // get all the inputs into an array.
-
-    // get all the inputs into an array.
-    var $inputs = $('#strain-forms :input');
-
-    // not sure if you wanted this, but I thought I'd add it.
-    // get an associative array of just the values.
-    var values = {};
-    $inputs.each(function() {
-        values[this.name] = $(this).val();
+$.fn.serializeObject = function() {
+    var o = {};
+    var a = this.serializeArray();
+    $.each(a, function() {
+        if (o[this.name] !== undefined) {
+            if (!o[this.name].push) {
+                o[this.name] = [o[this.name]];
+            }
+            o[this.name].push(this.value || '');
+        } else {
+            o[this.name] = this.value || '';
+        }
     });
+    return o;
+};
 
- var myvalues = $('#strain-forms').serialize();
- 	   $.ajax({ url: '/strain/new-strain',
-	   	    contentType: 'application/json',
-	   	    type: "POST", 
-		    data: { strain_name : 'todd' },
-		    });
+$('#strain-submit').click(function (e) {
+	e.preventDefault(); 
+
+	var parameters = [];
+	$("#strain-form").find('input[value!=""], select[value!=""]').each(
+		function (item) {
+			parameters.push({ item.attr('name'): item.val() });
+		}
+	);
+	console.log(parameters);
+	var myvalues = JSON.stringify(parameters);
+	// console.log("Serialized", myvalues);
+	$.ajax({
+	    url: '/strain/new-strain',
+	    dataType: 'json',
+	    type: "POST", 
+	    data: myvalues,
+		success: function (data) {
+			console.log("Successfully posted", data);
+		},
+		error: function (jqXHR, status, err) {
+			console.log("Error! " + err, jqXHR);
+		}
+	});
 	return false;
-	  });
+});
 </script>
 
 

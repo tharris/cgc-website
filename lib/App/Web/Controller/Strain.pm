@@ -2,6 +2,8 @@ package App::Web::Controller::Strain;
 use Moose;
 use namespace::autoclean;
 
+use Data::Dumper;
+
 BEGIN { extends 'Catalyst::Controller::REST'; }
 
 __PACKAGE__->config(
@@ -37,7 +39,8 @@ sub strain_GET {
 	if (!$key) {
 		$c->detach('index');
 	}
-	my $strain = $c->model('CGC::Strain')->single({ name => $key });
+	my $column = ($key =~ /^\d+$/) ? 'id' : 'name';
+	my $strain = $c->model('CGC::Strain')->single({ $column => $key });
 	$c->stash->{template} = 'strain/index.tt2';
 	my $entity;
 	if (defined($strain)) {
@@ -147,22 +150,19 @@ sub new_strain_GET {
 
 
 sub new_strain_POST {
-    my ($self,$c) = @_;    
+    my ($self, $c) = @_;    
 
     $c->log->warn("processing new submission");
 
     # Pass some messages for form processing.
     $c->stash->{event} = 'strain submitted for inclusion in the collection';
 
-#    my $body_params = $c->req->body_parameters();
-
-   my $params = $c->request->data;
-    $c->log->warn($c->request->data->{strain_name});
+	my $params = $c->req->parameters;
     my $name = $self->_process_form($c);
     
     if ($name) {
-	$c->stash->{message}  = "New strain submitted successfully.";	
-	$c->detach($c->uri_for("/strain/" . $name));
+		$c->stash->{message}  = "New strain submitted successfully.";	
+		$c->detach($c->uri_for("/strain/" . $name));
     }
     
 #    $self->status_ok($c, entity => $entity);
@@ -171,12 +171,10 @@ sub new_strain_POST {
 
 
 
-sub _process_form {
-    my ($self,$c) = @_;
-    
- 
-#    my $params = $c->req->body_parameters();
-   my $params = $c->req->data;
+sub _process_form :Private {
+    my ($self, $c) = @_;
+
+	my $params = $c->req->parameters;
     my $strain_rs = $c->model('CGC::Strain');
     
     # Does the strain already exist?  Should be part of form validation?

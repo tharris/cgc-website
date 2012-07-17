@@ -1092,15 +1092,6 @@ h3 span.ui-icon:hover {
 
 
 
-/* Fieldsets : used on profile and admin pages */
-fieldset { 
-    display: block;
-    border: 2px groove threedface;
-    margin-bottom:1em;
-  padding:1em;
-}
-
-
 /*********************************
    
    Per-Page styling
