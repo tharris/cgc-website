@@ -6,10 +6,7 @@ package CGC::Schema::Result::Rearrangement;
 use strict;
 use warnings;
 
-use Moose;
-use MooseX::NonMoose;
-use namespace::autoclean;
-extends 'DBIx::Class::Core';
+use base 'DBIx::Class::Core';
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
@@ -225,10 +222,9 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 20:47:05
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OtnLcvNcO1m+9QNf/DsYyQ
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 21:09:15
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:pMigonRM5Xq8XmCu0f+hOg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
-__PACKAGE__->meta->make_immutable;
 1;
