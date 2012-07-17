@@ -1,0 +1,33 @@
+<div class="page-header">
+  <h1>Add a new strain to the collection</h1>
+</div>
+
+[% WRAPPER admin_content title="TODO" %]
+
+     <ul>
+          <li> Preview submission.
+          <li> Add timestamps.
+	  <li> Add automatic calculation of freezer positions.
+	  <li>Submitted by: (tracked in strain).
+	  <li>Entered By: tracked in event
+	  <li>Made By: string entered by user.
+     </ul>
+
+     <p><strong>Questions for CGC</strong></p>
+     <ul>
+     <li>Can we standardize the mutagen data</li>
+
+     </ul>
+[% END %]
+
+
+[% IF c.check_user_roles('admin') || c.check_user_roles('manager') || c.check_user_roles('employee') %]
+
+
+    [% INCLUDE strain_submission_form %]
+
+[% ELSE %]
+   <div class="alert alert-error">You must be an administrator to add a new strain</div>
+[% END %]
+
+

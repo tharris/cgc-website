@@ -95,6 +95,218 @@
 
 
 
+[% BLOCK strain_submission_form %]
+
+   [%# Dynamically select action - PUT or POST %]
+      <form class="form-horizontal" method="POST" id="strain-form" action="/strain/new-strain">
+<!--      <form class="form-horizontal" id="strain-form" action="#"> -->
+        <fieldset>
+          <legend>Origin</legend>
+
+          <div class="control-group">
+            <label class="control-label" for="submitted_by">Made By</label>
+            <div class="controls">
+              <input type="text" class="input-xlarge" id="made_by">
+              <p class="help-block">The person who made the strain if different than the person submitting.</p>
+            </div>
+          </div>
+
+
+          <div class="control-group">
+            <label class="control-label" for="laboratory">Laboratory</label>
+            <div class="controls">
+                  <select id="laboratory">
+                     <option></option>
+	      [% FOREACH lab IN labs.keys.sort %]
+                     <option value="[% labs.$lab.id %]">[% lab %] ([% labs.$lab.head %])</option>
+	      [% END %]
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Strain Information</legend>
+
+          <div class="control-group">
+            <label class="control-label" for="strain_name">Strain Name</label>
+            <div class="controls">
+              <input type="text" class="input-xlarge" id="strain_name">
+              <p class="help-block">Enter the strain designation, for example, EG1000, N2.</p>
+            </div>
+          </div>
+
+
+          <div class="control-group">
+            <label class="control-label" for="species">Species</label>
+            <div class="controls">
+                  <select id="species">
+                     <option></option>
+	      [% FOREACH this_species IN species.keys.sort %]
+                     <option value="[% species.$this_species %]">[% this_species %]</option>
+	      [% END %]
+              </select>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="genotype">Genotype</label>
+            <div class="controls">
+              <input type="text" class="input-xlarge" id="genotype">
+              <p class="help-block">The genotype of the strain.</p>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="laboratory">Outcrossed</label>
+            <div class="controls">
+              <select id="outcrossed">
+                <option></option>
+                <option>not outcrossed</option>
+                <option>1x</option>
+                <option>2x</option>
+                <option>3x</option>
+                <option>4x</option>
+                <option>5x</option>
+                <option>6x</option>
+                <option>7x</option>
+                <option>8x</option>
+                <option>9x</option>
+                <option>10x</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="mutagen">Mutagen</label>
+            <div class="controls">
+                  <select id="mutagen">
+                     <option></option>
+	      [% FOREACH mutagen IN mutagens.keys.sort %]
+                     <option value="[% mutagens.$mutagen %]">[% mutagen %]</option>
+	      [% END %]
+              </select>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="remark">Remarks</label>
+            <div class="controls">
+              <textarea class="input-xlarge" id="remark" rows="3"></textarea>
+            </div>
+          </div>
+	  </fieldset>
+
+
+	  <fieldset>
+	  <legend>Work Flow</legend>
+	  <em>This section tracks the workflow steps for adding a new strain to the collection. Each step should be unique and trackable by user and date. Right now just checkboxes.</em>
+
+
+          <div class="control-group">
+            <label class="control-label" for="receivedCheckbox">Strain Received</label>
+            <div class="controls">
+              <label class="checkbox">
+                <input type="checkbox" id="receivedCheckbox" value="option1">
+		Strain physically received at the CGC.
+              </label>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="genotypeCheckbox">Genotype verified</label>
+            <div class="controls">
+              <label class="checkbox">
+                <input type="checkbox" id="genotypeCheckbox" value="option1">
+		Genotype verified by the CGC.
+              </label>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="frozenCheckbox">Strain Frozen</label>
+            <div class="controls">
+              <label class="checkbox">
+                <input type="checkbox" id="frozenCheckbox" value="option1">
+		Strain frozen and placed in liquid N2 and at -80.
+              </label>
+            </div>
+          </div>
+
+
+          <div class="control-group">
+            <label class="control-label" for="freezeVerifiedCheckbox">Freeze verified</label>
+            <div class="controls">
+              <label class="checkbox">
+                <input type="checkbox" id="freezeVerifiedCheckbox" value="option1">
+		Test thaw of strain verified.
+              </label>
+            </div>
+          </div>
+
+	  <!--
+          <div class="control-group">
+            <label class="control-label" for="multiSelect">Multicon-select</label>
+            <div class="controls">
+              <select multiple="multiple" id="multiSelect">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+              </select>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="fileInput">File input</label>
+            <div class="controls">
+              <input class="input-file" id="fileInput" type="file">
+            </div>
+          </div>
+	  -->
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="strain-submit">Save changes</button>
+            <button class="btn">Cancel</button>
+          </div>
+        </fieldset>
+      </form>
+
+
+<script>
+$('#strain-submit').click(function (e) { 
+   // get all the inputs into an array.
+
+    // get all the inputs into an array.
+    var $inputs = $('#strain-forms :input');
+
+    // not sure if you wanted this, but I thought I'd add it.
+    // get an associative array of just the values.
+    var values = {};
+    $inputs.each(function() {
+        values[this.name] = $(this).val();
+    });
+
+ var myvalues = $('#strain-forms').serialize();
+ 	   $.ajax({ url: '/strain/new-strain',
+	   	    contentType: 'application/json',
+	   	    type: "POST", 
+		    data: { strain_name : 'todd' },
+		    });
+	return false;
+	  });
+</script>
+
+
+[% END %]
+
+
+
+
+
+
+
+
 
 
 
@@ -223,23 +435,6 @@ END;
 
 
 
-[% BLOCK status_bar %]
-<div style="float:right;padding:1em;"> | 
-<button id="my-cart"></button> <a href="/bench">([% c.user_session.bench.register.size %])</a>
-</div>
-[% END %]
-
-[% BLOCK links_block %]
-  [% FOREACH link IN external_links.data.keys %]
-    [% IF link == 'aceview' %]
-      <li>[% external_link(link,'AceView', external_links.data.$link) %]</li>
-    [% ELSIF link == 'ncbi_refseq'%]
-      [% FOREACH ref_link IN external_links.data.$link %]
-      <li>[% external_link(link, "NCBI<span id=\"fade\"> - " _ ref_link _ "</span>", ref_link) %]</li>
-      [% END %]
-    [% END %]
-  [% END %]
-[% END %]
 
 
 
@@ -247,47 +442,6 @@ END;
 
 
 
-
-[% BLOCK widget_sortable_block %]
- 
-   <!-- start [% id %] widget -->
-          <div id="widget-[% type %]" class="widget-container ui-corner-all">
-                <header> 
-                <div class="ui-corner-top widget-header">
-                    <div class="module-close" wname="[% id %]" title="close"></div>
-[% IF 0 %]                     <div class="module-max" wname="[% id %]" title="pop out"></div>
-[% END %]              
-                    <h3><div class="module-min" wname="[% id %]"></div><span class="widget-title">[% title %]</span>
-        [% IF (type == 'me') %]<span wname="[% id %]" class="reload ui-icon ui-icon-arrowrefresh-1-s" title="reload"></span>[% END %]
-                        <span class="ui-icon ui-icon-arrow-4 hide" title="move"></span>
-                    </h3>
-                </div>
-                </header>
-
-                <div id="[%- id -%]-content" class="content">
-                [% content %]
-                </div>
-         
-                <div id="widget-footer">
-[%# UNLESS c.req.action == '/' %]
-[% UNLESS type.match('(tool)|(me)') %]
-                    <a  tip="download" onClick='$jq(this).toggleClass("ui-state-highlight");' class="button tip-simple tr feed ui-corner-all"  rel="[% c.uri_for('/rest','feed','download',class,this_object_id,w.id,this_object_label) %]"><span class="ui-icon ui-icon-arrowthickstop-1-s ui-button"></span></a>
-[% END %] 
-[% IF id.match('(static-widget)') && (id != 'static-widget--1')  %]
-    [% IF c.check_any_user_role("admin", "curator") %]
-                    <a  tip="edit" id="edit-button"  onClick='WB.StaticWidgets.edit("[% id %]");' class="button tip-simple tr ui-corner-all"><span class="ui-icon ui-icon-pencil ui-button"></span></a>
-    [% END %]
-                    <a  tip="view history" id="history-button" onClick='WB.StaticWidgets.history("[% id %]");' class="button tip-simple tr ui-corner-all"><span class="ui-icon ui-icon-clock ui-button"></span></a>
-[% END %]
-                    
-
-                </div>
-        <div id="widget-feed"></div>  
-
-      </div> 
-   <!-- end [% id %] widget -->
-
-[% END %]
 
 
 [%#
@@ -328,446 +482,6 @@ END;
 
 
 
-
-
-
-[% MACRO genetic_position BLOCK ;
-     WRAPPER $field_block title="Genetic position";
-          IF fields.genetic_position.data.chromosome;
-            fields.genetic_position.data.formatted _ ' (' _ fields.genetic_position.data.method _ ')';
-
-#     fields.genetic_position.data.chromosome _ ': ' _ fields.genetic_position.data.position;
-#       IF fields.genetic_position.data.error;
-#          "+/-";
-#          fields.genetic_position.data.error;
-#       END;
-#    if ($position == 0) {
-#            $label = $link_group . sprintf(":%2.2f +/- %2.3f cM %s","0",$error) ;
-#        } else {
-#            $label = $link_group . ($position ? sprintf(":%2.2f +/- %2.3f cM %s",$position,$error): '');
-
-
-      ELSE;       
-         '<div class="caveat-emptor">This gene has not been placed on the genetic map or its coordinates are unknown.</div>';
-      END;
-
-    END;
-END;
-%]
-
-
-
-
-
-[% MACRO remarks BLOCK;
-   # Expects the remarks key to be defined in the data stash
-   # Presents field in a toggle by default; pass "no_toggle=1" to conceal.
-   IF no_toggle == 1;  
-      '<div class="text-width">';
-       WRAPPER $field_block title="Remarks" key="remarks";
-          markup(fields.remarks.data.join('<br>'),0);
-       END;
-      '</div>';
-   ELSE;
-      WRAPPER $field_block title="" key="remarks";
-         '<div class="toggle">Curatorial remarks</div>';
-         '<div class="returned">';
-              markup(fields.remarks.data.join('<br />'),0);
-         '</div>';
-      END;
-   END;
-END;
-%]
-
-[% MACRO summary BLOCK;
-    # Currently only includes Summary but could encompass other tags
-    WRAPPER $field_block title="Summary" key="summary";
-            IF fields.summary.data.defined; fields.summary.data; END;
-    END;
-END;
-%]
-
-[% MACRO status BLOCK; 
-      WRAPPER $field_block title="Status" key="status";
-           IF fields.status.data.defined; fields.status.data; END;
-      END;
-END;
-%]
-
-[% MACRO taxonomy BLOCK; 
-   # Don't display unless we have a genus and species
-   IF fields.taxonomy.data.genus;
-      WRAPPER $field_block title="Species" key="taxonomy";
-          '<span class="species">';
-          fields.taxonomy.data.genus _ ' ' _ fields.taxonomy.data.species;
-          '</span>';
-      END;
-   END;
-END;
-%]
-
-
-
-[% MACRO xrefs BLOCK;
-
- USE Dumper;
- '<pre>';
- Dumper.dump(fields.xrefs.data);
- '</pre>';
-
-  hash = fields.xrefs.data;
-  FOREACH db IN hash.keys.sort;
-       db;
-       hash.$db.url;
-  END;
-END;
-%]
-
-
-
-
-
-
-
-
-[%# 
-    #######################################################
-
-      Class-specific MACROS, used only by a single class 
-
-    #######################################################
-%]
-
-[% # gene_list_by_species: custom dataTable processing for the Gene Class summary %]
-
-[% MACRO gene_list_by_species BLOCK;
-
-   WRAPPER $field_block title="$title";
-
-       # loop through each element in <subroutine>.<return_data_key>.<... to array data> array
-       # One table for each species
-       # Force C. elegans to the top of the list
-       species_list = fields.$key.data.keys.sort;
-       species_list.unshift('Caenorhabditis elegans');
-       species_list = species_list.unique;
-
-       FOREACH species IN species_list;
-            IF fields.$key.data.$species > 0;
-                WRAPPER $field_block title="" key="$key";
-
-                   # declare array of columns named via keys in the data structure
-               IF key == 'current_genes';
-                    order = ['species','locus', 'sequence'];
-            
-                 # declare hash for column headers, keyed as above
-                     headers = {   species  => 'Species',
-                                       locus    => 'Locus',
-                                       sequence => 'Sequence' };
-                  ELSE;
-                     order = ['species','former_name', 'new_name','sequence'];
-               
-                 # declare hash for column headers, keyed as above
-                     headers = {   species     => 'Species',
-                                       former_name => 'Former name',
-                       new_name    => 'New name',
-                                       sequence    => 'Sequence' };   
-                  END;
-
-                 # declare rows array
-                 rows = [];
-  
-                 FOREACH r IN fields.$key.data.$species;
-                       row = [];
-                   # loop through each element in order array (for columns) , declared above
-                   FOREACH o IN order;          
-                     # get value (val) from the row r
-                             val = r.$o;
-                     # enter data in row
-                             row.push(val);
-                       END;
-                   # enter data row array into rows
-                           rows.push(row);
-                 END;
-                      
-                 # populate name array;
-             names = [];
-             FOREACH o IN order; names.push(headers.$o); END;
-                 table_count = table_count + 1;               
-
-                  # generate table
-                 '<div class="toggle">';
-                         '<span class="species">' 
-                          _ species 
-                          _ '</span> (' 
-                          _ fields.$key.data.$species.size 
-                          _ ' members)'
-                          _ '</div>';
-                 '<div class="returned">';
-#                    dataTable_list(names, rows, "table_${species}_${key}");
-                    jquery_data_table_html(names, rows, "table_${species}_${key}_${table_count}");
-                '</div>';         
-         END; # END of nested WRAPPER
-           END; # END IF species contains data
-         END; # END of SPECIES
-     END; # END of primary WRAPPER 
-  END; # END of MACRO
-%]
-
-
-
-
-[%# 
-
-   gene_ontology; custom data table processing used on the Gene Summary.
-
-   This is essentially generic processing for a nested data structure
-   intended to be multiple tables.
-   
-   eg. data contains a hash.array.hashrefs (instead of single tier array.hashrefs)
-
-%]
-
-[% MACRO gene_ontology BLOCK;
-
-       # One table for each key (here, a GO facet)
-       facets = fields.$key.data.keys.sort;
-
-       FOREACH facet IN facets;
-            IF fields.$key.data.$facet > 0;
-                WRAPPER $field_block title="$facet" key="$key";
-                                  
-                   table_count = table_count + 1;                 
- 
-                  # generate table
-#                            '<span class="species">'
-#                          _ facet 
-#                          _ '</span> (' 
-#                          _ fields.$key.data.$facet.size 
-#                          _ ' assocations)';
-
-                  # Here we assume that the inner data structure as an array of hashes  
-                  build_data_table(order = ['method','term', 'evidence_code'],
-                             columns = {   method   => 'Method',
-                                                 term   => 'Term',
-                                        evidence_code   => 'Evidence' },
-                             passed_data = fields.$key.data.$facet,
-                         key     = "table_${table_count}_go");   
-
-                 END; # END of WRAPPER
-              END; # END IF facet contains data    
-         END; # END of facets
-  END; # END of MACRO
-%]
-
-[% MACRO add_static_widgets BLOCK %]
-
-  [% FOREACH widget IN static_widgets %]
-    [% widget_name = widget.widget_title %]
-    [% w = { id = 'static-widget-' _ widget.widget_id
-            title = widget.widget_title
-            href =  c.uri_for('/rest','widget','static',widget.widget_id)
-            type = section == 'species' ? class : (section ? section : 'static')
-            };
-    %]
-    [% IF widget.widget_order > 0 %]
-      [% widget_order = widget.widget_order %]
-
-      [% # I assign to ws just so that the result doesn't print %]
-      [% ws = widgets.splice(widget_order, 0, [w]) %]
-    [% ELSE %]
-      [% widgets.push(w) %]
-    [% END %]
-  [% END %]
-  [% IF c.check_user_roles('admin') %]
-    [% w = { id = 'static-widget-0'
-            title = 'Add new widget...'
-            href =  c.uri_for('/rest','widget','static','0') _ '?path=' _ c.req.uri.path  _ '&edit=1'
-            type = section == 'species' ? class : (section ? section : 'static')
-            };
-    %]
-
-      [% widgets.push(w) %]
-  [% END %]
-[% END %]
-
-
-[% # Report Page elements; shared for species, resources, and tools %]
-[% # Called from species/report.tt2 and resources.report.tt2        %]
-[% # Callers should pass an array of widgets and the page title     %]
-
-[% MACRO report_page BLOCK;
-  widgets = [];
-  widgets.push({ title="Page Content" type="title"});
-
-  SET base = '/rest/widget';
-
-  # Conditionally set up different types of pages.
-  IF is_class_index && ((!class || class == 'all') || (species && species != 'all'));
-    SET this_object_id    = class; 
-    SET this_object_label = species; 
-    base = base _ '/index';
-    arg1 = species;
-    IF species; 
-      section_fetch = 'species_list'; 
-      IF class == 'all';
-        section_fetch = c.config.sections.species_list.$species;
-      ELSE;
-        section_fetch = c.config.sections.species_list.$species.$class;
-      END;
-    ELSE;
-        section_fetch = c.config.sections.$section;
-    END;
-  ELSE;
-    SET this_object_id    = object.name.data.id || 'all';
-    SET this_object_label = object.name.data.label || 'all';
-    arg1 = class;
-    section_fetch = c.config.sections.$section.$class;
-  END;
-
-# Debug
-#    'section     : ' _ section      _ "<br />";
-#    'class       : ' _ class   _ "<br />";
-#    'species     : ' _ species   _ "<br />";
-
-  # Get the default (configuration provided) list of widgets.
-  widget_list = section_fetch.widgets.keys.sort;
-  ov_list = widget_list.grep('^overview$');
-  FOREACH ov_list;
-    widget_list.unshift('overview');
-  END;
-  IF ov_list.size > 0; overview = 1; END;
-  widget_list = widget_list.unique;
-
-  FOREACH widget_name IN widget_list;
-    IF widget_name;
-    # Fetch the actual widget configuration.
-    widget = section_fetch.widgets.$widget_name;
-
-    # What context should this widget be displayed in, and what type of page are we?
-    IF is_class_index;
-        NEXT IF widget.display == "report";
-    ELSE;
-        NEXT IF widget.display == "index";
-    END;
-
-    w = {  id    = widget_name
-            title = widget.title
-            href  = c.uri_for(base, arg1, this_object_id, widget_name)
-            type  = section == 'species' ? class : section
-          };
-
-    widgets.push(w);
-    END;
-  END;
-
-  # is_static refers to pages that don't handle objects (/resources/reagents)
-  IF is_class_index && !is_static;
-    index_widgets = ['browse', 'basic_search'];
-    IF((species == 'all')||(class == 'all'));
-      index_widgets.push('summary');
-    END;
-
-    FOREACH widget_name IN index_widgets;
-      t = widget_name FILTER ucfirst;
-      widgets.push({ id = widget_name
-                title = t.replace('_', ' ')
-                href  = c.uri_for('/rest','widget', 'index', species, class, widget_name),
-                type = section == 'species' ? class : section
-            });
-    END;
-  END;
-
-  add_static_widgets;
-
-  # Add tools.
-  tool_list = section_fetch.tools.keys.sort || [];
-
-  # object pages automatically get the tree display
-  IF object; tool_list.unshift('tree'); END;
-
-  widgets.push({ title="Tools" type="title"}); 
-  FOREACH widget_name IN tool_list;
-      widget = c.config.sections.tools.$widget_name;
-      # What context should this widget be displayed in ?
-      IF is_index;
-         NEXT IF widget.display == "report";
-      ELSE;
-         NEXT IF widget.display == "index";
-      END;
-      
-      w = { id = widget_name
-             title = widget.title
-             href =  c.uri_for('/rest','widget',class,this_object_id,widget.name)
-             type = 'tools'
-            };
-    
-      widgets.push(w);
-   END;
-
-
-  FOREACH widget_name IN ['comment', 'issue'];
-      t = widget_name FILTER ucfirst;
-      w = { id = widget_name
-            title = t _ 's ' _ '<a class="' _ widget_name _ '-count"></a>'
-            href =  c.uri_for('/rest','feed',widget_name,class,this_object_id,'',this_object_label) _ '?url=' _ c.req.uri.path
-            type = 'tools'
-          };
-      widgets.push(w);
-  END;
-
-  PROCESS "shared/sidebar_structure.tt2" widgets=widgets overview=overview;
-%]
-
-[% END; %]
-
-
-
-
-
-
-[%# This is an expedient replication of report_page to support the userguide. 
-    Instead of specifying in config a list of widgets, we just pass them in %]
-
-[% MACRO userguide_page BLOCK;
-  widgets = [];
-  widgets.push({ title="Page Content" type="title"});
-
-  SET base = '/rest/widget/userguide';
-
-  # The userguide has a two-tiered hierarchy. eg: /userguide/developer/api
-  # to make it easier to organize templates on the filesystem.
-  # We need to add a param for the top level category.
-  IF category == 'index'; subcategory = 'any'; END;
-
-  FOREACH widget IN widget_list;    
-     hash = widget.keys;
-     name = hash.0;
-     wtitle = widget.$name;
-      w = {  id     = name
-            title = wtitle,
-            href  = c.uri_for(base, category, subcategory, name)
-            type  = 'resources'
-          };
-
-    widgets.push(w);
-  END;
-
-  widgets.push({ title="Tools" type="title"}); 
-
-  FOREACH widget_name IN ['comment', 'issue'];
-      t = widget_name FILTER ucfirst;
-      w = { id = widget_name
-            title = t _ 's ' _ '<a class="' _ widget_name _ '-count"></a>'
-            href =  c.uri_for('/rest','feed',widget_name,class,this_object_id,'',this_object_label) _ '?url=' _ c.req.uri.path
-            type = 'tools'
-          };
-      widgets.push(w);
-  END;
-
-  PROCESS "shared/sidebar_structure.tt2" widgets=widgets overview=overview;
-%]
-
-[% END; %]
 
 
 
