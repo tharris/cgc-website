@@ -119,7 +119,7 @@ CREATE TABLE `order_event` (
 	`event_id` int(11) unsigned NOT NULL,
 	`order_id` int(11) unsigned NOT NULL,
 	FOREIGN KEY (`event_id`) REFERENCES `event` (`id`),
-	FOREIGN KEY (`order_id`) REFERENCES `order` (`id`)
+	FOREIGN KEY (`order_id`) REFERENCES `app_order` (`id`)
 	 /* Any other specific columns? */
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
