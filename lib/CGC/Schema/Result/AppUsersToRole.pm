@@ -48,4 +48,7 @@ __PACKAGE__->set_primary_key("user_id", "role_id");
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+__PACKAGE__->belongs_to(user=>'CGC::Schema::Result::AppUser','user_id');
+__PACKAGE__->belongs_to(role=>'CGC::Schema::Result::AppRole','role_id');
+
 1;

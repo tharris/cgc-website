@@ -1,11 +1,13 @@
 [% WRAPPER admin_content title="TODO" %]
 <ul>
-<li>what to do with frzloc entries that have no strains set?
 <li>need to handle empty or broekn fields in frzloc - check merge logs
 <li>whenever there is a strain "card" shown, it should have the add to cart. Maybe make this a macro?
 </ul>
 
 <p><strong>Questions for CGC</strong></p>
+<ul>
+<li>Some frzloc samples have no strain associated with them?
+</ul>
 [% END %]
 
 
@@ -47,12 +49,15 @@
         <tr><th>Genotype</th>   <td>[% strain.genotype %]</td></tr>	
         <tr><th>Mutagen</th>    <td>[% strain.mutagen %]</td></tr>
         <tr><th>Outcrossed</th> <td>[% strain.outcrossed %]</td></tr>
-        <tr><th>Received</th>   <td>[% strain.received %]</td></tr>
+        <tr><th>Received</th>   <td>[% strain.received %][% IF c.check_user_role('admin') %]
+	     <span class="label label-important"> Received by will be replaced by history in the StrainEvent table.</span>
+	     [% END %]
+</td></tr>
 	[% IF strain.made_by %]
          	<tr><th>Made by</th>    <td>[% strain.made_by %] ([% link_to_wormbase('Person',strain.made_by,'view at WormBase') %])</td></tr>
 	[% END %]
 	[% IF strain.laboratory %]
-   		<tr><th>Laboratory</th> <td><a href="[% c.uri_for('/laboratory/' _ strain.laboratory) %]">[% strain.laboratory %]</a></td></tr>
+   		<tr><th>Laboratory</th> <td><a href="[% c.uri_for('/laboratory',strain.laboratory) %]">[% strain.laboratory %]</a></td></tr>
 	[% END %]
 
     </tbody>

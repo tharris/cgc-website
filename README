@@ -15,6 +15,9 @@ Installation
  > mysql -u -p cgc < schema/cgc.sql
  > mysql -u -p cgc < util/sql/user_database.sql
 
+# Get bootstrap
+git submodule update --init
+
 Running the application
 -----------------------
 

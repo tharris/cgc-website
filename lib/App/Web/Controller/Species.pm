@@ -61,9 +61,9 @@ sub species_GET :Path('/species') :Args(1)   {
     # Hack! Assume that name entries do not begin with a number.
     my $column;
     if ($id =~ /^\d/) {
-		$column = 'id';
+		$column = 'species.id';
     } else {
-		$column = 'name';
+		$column = 'species.name';
     }
 
     my @rows = $c->model('CGC::Strain')->search(
