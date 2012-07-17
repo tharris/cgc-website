@@ -52,7 +52,6 @@ sub strain_GET {
         
         
             # Pull out some admin level fields, mainly samples and their history.
-<<<<<<< HEAD
 	    my $freezer_samples;
 
 	    # All freezer samples, and history for those samples.
