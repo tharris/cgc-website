@@ -103,6 +103,29 @@
 [% END %]
 
 
+[%# Format history for a given object; expects the flattened history data structure %]
+[% MACRO format_history BLOCK %]
+     <table class="table table-striped">
+           <thead>
+              <tr>            
+                 <th>Event</th>
+                 <th>Date</th>
+		 <th>Remark</th>
+	      </tr>
+              </thead>
+              <tbody>
+                 [% FOREACH item IN items %]
+                    <tr>                             
+                        <td>[% item.event %]</td> 
+ 	                <td>[% item.date %]</td>
+                        <td>[% item.remark %]</td>
+                    </tr>
+                 [% END %]
+	       </tbody>
+      </table>
+[% END %]
+
+
 
 
 

@@ -41,7 +41,7 @@
     </div>
 </div>
 
-[% IF results %]
+[% IF c.stash.species %]
 
 <div class="well span6">
    <table id="species-view" class="table table-striped">

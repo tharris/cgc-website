@@ -101,9 +101,43 @@
 [% ELSE %]
    <em>This laboratory hasn't submitted any strains to the CGC.</em>
 [% END %]
+</div>
+
+
+<div class="well span6">
+
+<h2>Alleles contributed by this laboratory</h2>
+
+    [% IF laboratory.alleles %]
+    <table class="table table-striped">
+    <thead>
+        <tr>            
+            <th>Allele</th>
+	    <th>Type</th>
+	    <th>DNA Change</th>
+	    <th>Protein Change</th>
+        </tr>
+    </thead>
+    <tbody>
+        [% FOREACH allele IN laboratory.alleles %]
+         <tr>
+            <td>[% allele.name %]</td> 
+            <td>[% allele.variation_type %]</td>
+	    <td>[% allele.type_of_dna_change %]</td>
+	    <td>[% allele.type_of_protein_change %]</td>
+         </tr>
+	 [% END %]
+    </tbody>
+</table>
+[% ELSE %]
+   <em>This laboratory hasn't submitted any alleles to the CGC.</em>
+[% END %]
+
+
+
 
 [% END %]
 
-[% typeahead_support('laboratory',['name','allele_designation']) %]
+[% typeahead_support('laboratory',['name','head']) %]
 
 

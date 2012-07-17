@@ -17,25 +17,28 @@
 
               [% IF c.check_user_roles('admin') %]
                    <li class="nav-header">Strain Management</li>
-                   <li><a href="#">Link</a></li>
-                   <li><a href="#">Link</a></li>
+                   <li><a href="#">Add a new strain</a></li>
+                   <li><a href="#">Update a strain</a></li>
 
                     <li class="nav-header">Orders</li>
+                    <li><a href="#"><i class="icon-inbox"></i> New Orders</a></li>
                     <li><a href="#"><i class="icon-inbox"></i> Pending Orders</a></li>
-                    <li><a href="#"><i class="icon-inbox"></i> Recently Shipped</a></li>
+<!--                    <li><a href="#"><i class="icon-inbox"></i> Recently Shipped</a></li> -->
 
                     <li class="nav-header">Users</li>
                     <li><a data-uri="[% c.uri_for('/admin/registered_users') %]" 
                            href="#content-pane"><i class="icon-user"></i> Registered users</a>
                     </li>
 
-
                     <li class="nav-header"> Reports</li>
+		    <li><a href="#"><i class="icon-eye-open"></i> Running order history</a></li>
+                    <li><a href="#"><i class="icon-eye-open"></i> Year-to-date statistics</a></li>
+                    <li><a href="#"><i class="icon-eye-open"></i> All-time statistics</a></li>
                     <li><a href="#"><i class="icon-eye-open"></i> Most popular strains</a></li>
                     <li><a href="#"><i class="icon-eye-open"></i> Most active labs</a></li>
                     <li><a href="#"><i class="icon-eye-open"></i> Most active users</a></li>
-                    <li><a href="#"><i class="icon-eye-open"></i> Year-to-date statistics</a></li>
-                    <li><a href="#"><i class="icon-eye-open"></i> All-time statistics</a></li>
+
+
               [% END %]
             </ul>
 
@@ -57,49 +60,14 @@
           <div id="content-pane"></div>
 
 
-          <div class="row-fluid">
-            <div class="span4">
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div><!--/span-->
-            <div class="span4">
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div><!--/span-->
-            <div class="span4">
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div><!--/span-->
-          </div><!--/row-->
-          <div class="row-fluid">
-            <div class="span4">
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div><!--/span-->
-            <div class="span4">
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div><!--/span-->
-            <div class="span4">
-              <h2>Heading</h2>
-              <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-              <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div><!--/span-->
-          </div><!--/row-->
-        </div><!--/span-->
-      </div><!--/row-->
-
       <hr>
 
       <footer>
-        <p>&copy; Company 2012</p>
+        <p>&copy; CGC 2012</p>
       </footer>
 
     </div><!--/.fluid-container-->
+
+
 
 

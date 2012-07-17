@@ -212,6 +212,12 @@ div.more .ui-icon {
 }
 
 
+.popover-link {
+    a:link: text-decoration:none;
+    color: black;
+}
+
+
 /* The search bar form */
 #searchResultForm {
   float:left;

@@ -63,28 +63,36 @@ sub laboratory_GET :Path('/laboratory') :Args(1)   {
 	($row) = $c->model('CGC::Laboratory')->search({
 	    -or => [
 		 name                 => $query,
-		 allele_designation   => $query,
+#		 allele_designation   => $query,
 		 head                 => $query,
 		],
+
+#	    -or => [
+#		 name                 => $query,
+#		 allele_designation   => $query,
+#		 head                 => $query,
+#		],
 						      });
     }
     
     my $entity;
     if (defined($row)) {
 	my (@strains)      = $row->strains;
+	my (@alleles)      = $row->variations;
 	my (@gene_classes) = $row->gene_classes;
 	$entity = {
-	    name       => $row->name,
-	    head       => $row->head,
+	    name           => $row->name,
+	    head           => $row->head,
 	    allele_designation => $row->allele_designation,
-	    address1   => $row->address1,
-	    state      => $row->state,
-	    country    => $row->country,
-	    institution=> $row->institution,
-	    commerical => $row->commercial,
-	    website    => $row->website,
-	    gene_classes => \@gene_classes,
-	    strains    => \@strains,
+	    address1       => $row->address1,
+	    state          => $row->state,
+	    country        => $row->country,
+	    institution    => $row->institution,
+	    commerical     => $row->commercial,
+	    website        => $row->website,
+	    gene_classes   => \@gene_classes,
+	    strains        => \@strains,
+	    alleles        => \@alleles,
 	};
     }
     $self->status_ok($c, entity => $entity);

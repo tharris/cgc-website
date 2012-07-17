@@ -85,6 +85,7 @@ sub strain_GET {
 			made_by    => $strain->made_by,
 			laboratory => $strain->laboratory ? $strain->laboratory->name : 'laboratory of origin unknown',
 			samples    => $freezer_samples,
+			history    => $strain_history,  # This is already flattened.
 		};
 		$self->status_ok($c, entity => $entity);
 	} else {

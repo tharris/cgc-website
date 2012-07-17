@@ -3,13 +3,13 @@
 	<header class="jumbotron masthead">
 	<h1 style="font-size:81pt">CGC</h1>
 	<p style="font-size:24pt">The Caenorhabditis Genetics Center</p>
-	<p>Providing strains to the <em>C. elegans</em> and nematode research community.</p>
+	<p>Providing strains to the nematode research community.</p>
 	</header>
 </div>
 
     <div class="row offset1">
         <div class="span4 well">
-             <h3><a href="#" id="available-species" rel="popover" data-content="Search or browse all available species with strains available from the CGC" data-original-title="Available Species">Available Species</a>
+             <h3><a href="#" id="available-species" class="popover-link" rel="popover" data-content="Search or browse all available species with strains available from the CGC" data-original-title="Available Species">Available Species</a>
               </h3>
              <a href="[% c.uri_for('/species') %]">Search</a> or 
              <a href="[% c.uri_for('/species-list') %]">View All</a>
@@ -41,8 +41,8 @@
 
          <div class="span4 well">
              <h3>Genes</h3>
-             <a href="[% c.uri_for('/freezer') %]">Search</a> 
-<!--             or <a href="[% c.uri_for('/freezers') %]">View All</a> -->
+             <a href="[% c.uri_for('/gene') %]">Search</a> 
+<!--             or <a href="[% c.uri_for('/genes') %]">View All</a> -->
          </div>
 
     </div>

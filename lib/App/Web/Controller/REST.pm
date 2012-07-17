@@ -147,26 +147,6 @@ $c->response->headers->expires(time);
     $c->forward('App::Web::View::TT');
 }
 
-sub layout :Path('/rest/layout') :Args(2) :ActionClass('REST') {}
-
-sub layout_POST {
-  my ( $self, $c, $class, $layout) = @_;
-  $layout = 'default' unless $layout;
-#   my %layoutHash = %{$c->user_session->{'layout'}->{$class}};
-  my $i = 0;
-  if($layout ne 'default'){
-    $c->log->debug("max: " . join(',', (sort {$b <=> $a} keys %{$c->user_session->{'layout'}->{$class}})));
-    
-    $i = ((sort {$b <=> $a} keys %{$c->user_session->{'layout'}->{$class}})[0]) + 1;
-    $c->log->debug("not default: $i");
-  }
-
-  my $lstring = $c->request->body_parameters->{'lstring'};
-  $c->user_session->{'layout'}->{$class}->{$i}->{'name'} = $layout;
-
-  $c->user_session->{'layout'}->{$class}->{$i}->{'lstring'} = $lstring;
-}
-
 
 
 sub auth :Path('/rest/auth') :Args(0) :ActionClass('REST') {}
@@ -189,6 +169,10 @@ sub get_session {
     }
 }
 
+
+=pod
+
+DEPRECATED?
 
 sub get_user_info :Path('/auth/info') :Args(1) :ActionClass('REST'){}
 
@@ -293,6 +277,7 @@ sub history_POST {
     $hist->update;
 }
 
+=cut
 
 sub update_role :Path('/rest/update/role') :Args :ActionClass('REST') {}
 

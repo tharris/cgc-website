@@ -93,4 +93,4 @@
 
 [% END %]
 
-[% typeahead_support('geneclass',['name']) %]
+[% typeahead_support('geneclass',['name','description']) %]
