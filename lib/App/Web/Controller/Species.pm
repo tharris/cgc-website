@@ -54,53 +54,95 @@ sub species : Path('/species') : ActionClass('REST') { }
 
 sub species_GET :Path('/species') :Args(1)   {
     my ($self,$c,$id) = @_;
-
-    $c->log->warn("stsh key: $id");
     $c->stash->{template} = 'species/index.tt2';
 
     # Hack! Assume that name entries do not begin with a number.
+    
+    # If returing DBIx::Class objects
+    my $entity = {};
     my $column;
     if ($id =~ /^\d/) {
-		$column = 'species.id';
+	$column = 'id';
     } else {
-		$column = 'species.name';
+	$column = 'name';
     }
-
-    my @rows = $c->model('CGC::Strain')->search(
-	{
-	    $column => $id,
-	},
-	{
-	    join     => 'species', # join the strain table
-#	    group_by => [qw/strains.species_id/],
-	}
-	);
     
-    if (@rows) {
-		$c->stash->{species} = $rows[0]->species->name;
-    }
-
-    $c->stash->{results}  = \@rows;
-    if (@rows) { 
-		my $entity = { rows => \@rows };
+    if ($id) {
+	my $row = $c->model('CGC::Species')->find(
+	    {
+		$column => $id,
+	    },
+	    );
+	
+	# If we found rows, get meta information about the species from the first row.
+	
+	if ($row) {	    
+	    my @strains = $row->strains;
+	    $c->stash->{species} = $row;
+	    $c->stash->{strains} = \@strains; 	
+	    
 	    $self->status_ok($c, entity => $entity);
 	} else {
-		$self->status_not_found($c, message => "Cannot find species");
+	    $self->status_not_found($c, message => "Cannot find species");
 	}
+    } else {
+	$self->status_ok($c, entity => { } );
+    }
+}
+        
 
-#    my $entity;
-#    if (defined($row)) {
-#	$entity = {
-#	    name       => $row->name,
-#	    id         => $row->id,
-#	    genotype   => $row->genotype,
-#	    description=> $row->description,
-#	};
-#    }
-#    $self->status_ok($c, entity => $entity);
+=pod
+
+    # If flattening
+sub species_GET :Path('/species') :Args(1)   {
+    my ($self,$c,$id) = @_;
+    $c->stash->{template} = 'species/index.tt2';
+    
+    my $column;
+    if ($id =~ /^\d/) {
+	$column = 'species.id';
+    } else {
+	$column = 'species.name';
+    }
+    
+    if ($id) {
+	
+	my @rows = $c->model('CGC::Strain')->search(
+	    {
+		$column => $id,
+	    },
+	    {
+		join     => 'species', # join the strain table
+##		group_by => [qw/strains.species_id/],
+	    }
+	    );
+	
+	
+	my $entity = {};
+	if (@rows) {
+	    $entity->{species}->{name} = $rows[0]->species->name;
+	    $entity->{species}->{id}   = $rows[0]->species->id;
+	    $entity->{species}->{ncbi} = $rows[0]->species->ncbi_taxonomy_id;
+	    
+	    foreach my $row (@rows) {
+		push @{$entity->{strains}},{
+		    name        => $row->name,
+		    id          => $row->id,
+		    genotype    => $row->genotype,
+		    description => $row->description
+		};
+	    }	    
+	        
+	    $self->status_ok($c, entity => $entity);
+	} else {
+	    $self->status_not_found($c, message => "Cannot find species");
+	}
+    }  else {	
+	$self->status_ok($c, entity => { } );
+    }
 }
 
-
+=cut
 
 
 1;

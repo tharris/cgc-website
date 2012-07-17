@@ -23,13 +23,10 @@
 </div>
 
 
-[% DEFAULT species = rest %]
+[% DEFAULT results = rest %]
 
 <div class="span6">
     <h2>Search</h2>
-<!--
-    <p>Search and view species.</p>
--->
     <div class="well">
         <input id="search-species" type="text" class="span3"
             [% IF species %] value="[% species.name %]"
@@ -37,19 +34,32 @@
             [% END %]
         />
         <span class="help-inline" style="margin-bottom: 9px"><small>Example:
-        <a href="/species/Caenorhabditis%20elegans"><em>Caenorhabditis elegans</em></a>,
-        <a href="/species/Caenorhabditis%20remanei"><em>Caenorhabditis remanei</em></a>,
-        <a href="/species/Pristionchus%20pacificus"><em>Pristionchus_pacificus</em></a>
+	[% species_link('Caenorhabditis elegans') %], 
+	[% species_link('Caenorhabditis remanei') %],
+	[% species_link('Pristionchus pacificus') %]  
         </small></span>
     </div>
 </div>
 
-[% IF species %]
+[% IF results %]
+
+<div class="well span6">
+   <table id="species-view" class="table table-striped">
+    <thead><h3>Species Information</h3></thead>
+    <tbody>
+        <tr><th>Name</th><td>[% species_link_dynamic(c.stash.species) %]</td></tr>
+	<tr><th>NCBI Taxonomy ID</th><td>[% ncbi_link(c.stash.species) %]</td></tr>
+    </tbody>
+    </table>
+</div>
+
 <div class="well span6">
 
 
-<table class="table table-striped">
+[% IF c.stash.strains.size > 0 %]
+<h3><em>[% species.name %]</em> strains available at the CGC</h3>
 
+  <table class="table table-striped">
     <thead>
         <tr>            
             <th>Strain</th>
@@ -59,16 +69,21 @@
         </tr>
     </thead>
     <tbody>
-        [% FOREACH row IN c.stash.results %]
+        [% FOREACH row IN c.stash.strains %]
          <tr>
+	 [% row.class %]
             <td><a href="[% c.uri_for('/strain/' _ row.id)%]">[% row.name %]</a></td> 
             <td>[% row.genotype %]</td>  
 	    <td>[% row.made_by %]</td>
 	    <td>[% row.description %]</td>
          </tr>
 	 [% END %]
-    </tbody>
-</table>
+        </tbody>
+   </table>
+
+[% ELSE %]
+   <em>No strains for this species available at the CGC.</em>
+[% END %]
 
 [% END %]
 

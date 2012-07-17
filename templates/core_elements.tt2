@@ -25,7 +25,17 @@
 
 [%# Link to a species %]
 [% MACRO species_link(species) BLOCK %]
-   <em><a href="/[% species %]">[% species %]</a></em>
+   <em><a href="/species/[% species %]">[% species %]</a></em>
+[% END; %]
+
+
+[%# Link to a species %]
+[% MACRO species_link_dynamic(species) BLOCK %]
+   <em><a href="/species/[% species.name %]">[% species.name %]</a></em>
+[% END; %]
+
+[% MACRO ncbi_link(species) BLOCK %]
+   <a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=[% species.ncbi_taxonomy_id %]">[% species.ncbi_taxonomy_id %]</a>
 [% END; %]
 
 
@@ -84,10 +94,12 @@
 
 
 [% BLOCK admin_content %]
+   [% IF c.check_user_roles('admin') %]
      <div class="alert alert-info"><h3>[% title %]</h3>
           <p><span class="label label-important">Important</span> This content is only visible to administrators!</p>
           <p>[% content %]</p>
      </div>
+   [% END %]
 [% END %]
 
 

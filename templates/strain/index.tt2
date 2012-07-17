@@ -49,7 +49,7 @@
         <tr><th>Genotype</th>   <td>[% strain.genotype %]</td></tr>	
         <tr><th>Mutagen</th>    <td>[% strain.mutagen %]</td></tr>
         <tr><th>Outcrossed</th> <td>[% strain.outcrossed %]</td></tr>
-        <tr><th>Received</th>   <td>[% strain.received %][% IF c.check_user_role('admin') %]
+        <tr><th>Received</th>   <td>[% strain.received %][% IF c.check_user_roles('admin') %]
 	     <span class="label label-important"> Received by will be replaced by history in the StrainEvent table.</span>
 	     [% END %]
 </td></tr>
@@ -90,7 +90,7 @@
 		</div>
 	[% END %]
 <!--</div> -->
-</div>
+<!-- </div> -->
 [% END %]
 
 [% typeahead_support('strain',['genotype','name']) %]
