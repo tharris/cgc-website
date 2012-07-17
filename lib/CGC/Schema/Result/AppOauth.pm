@@ -77,8 +77,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("oauth_id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 16:52:20
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:K8thBFBYVcKp7woDQpIebw
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 20:47:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Bb61Z7eRZbLIIzSJx6FYkw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

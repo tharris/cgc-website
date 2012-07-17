@@ -45,10 +45,9 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("role_id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 16:52:20
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JsjzAwaMEIG0QtJzDQO3MQ
-__PACKAGE__->has_many(users_to_roles=>'CGC::Schema::Result::AppUsersToRole', 'role_id');
-__PACKAGE__->many_to_many(users     => 'users_to_roles', 'user', ,{ where => { active => 1 }}); 
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 20:47:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dCSggT8JJ8JZHl1PXdG1pA
+
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;

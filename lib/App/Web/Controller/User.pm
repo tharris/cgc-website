@@ -62,9 +62,7 @@ The user's cart.
 
 =cut
 
-sub cart :Chained('user') :PathPart('cart') :Args(0) :ActionClass('REST') { }
-
-sub cart_GET {
+sub cart :Chained('user') :PathPart('cart') :Args(0) {
     my ($self, $c) = @_;
     $c->stash->{template} = 'user/cart.tt2';
 }

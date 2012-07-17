@@ -6,5 +6,5 @@ PASS=${3:-root}
 
 dbicdump -o dump_directory=./lib \
 	-o components='["InflateColumn::DateTime"]' \
-	-o debug=1
+	-o debug=1 \
     CGC::Schema "dbi:mysql:dbname=$DB" $USER $PASS

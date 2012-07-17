@@ -52,8 +52,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("session_id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 16:52:20
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:kLE9PEDpzGm+9YzxhO9r1g
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 20:47:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ji4jHMNGwExOBE/AeQR1GQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

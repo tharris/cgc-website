@@ -147,19 +147,10 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 16:52:20
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:js7D/ERBEgnwBNHD0ePuUA
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 20:47:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:NNDK4SdnKNq7TunrbZfTZg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
-
-__PACKAGE__->has_many(users_to_roles=>'CGC::Schema::Result::AppUsersToRole', 'user_id');
-__PACKAGE__->many_to_many(roles => 'users_to_roles', 'role');
-#__PACKAGE__->has_many(open_ids=>'CGC::Schema::Result::OpenID', 'user_id');
-
-
-#__PACKAGE__->has_many(issues_reported=>'CGC::Schema::Result::Issue', 'reporter_id');
-#__PACKAGE__->has_many(issues_responsible=>'CGC::Schema::Result::Issue', 'responsible_id');
-#__PACKAGE__->has_many(comments=>'CGC::Schema::Result::Comment', 'user_id');
 __PACKAGE__->meta->make_immutable;
 1;

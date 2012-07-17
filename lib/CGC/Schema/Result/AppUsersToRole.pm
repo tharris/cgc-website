@@ -46,12 +46,10 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("user_id", "role_id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 16:52:20
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JUf/qFd9UkoeaskJOPMSog
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 20:47:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:mkdR648/z5CyqE6BCX7rOw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
-__PACKAGE__->belongs_to(user=>'CGC::Schema::Result::AppUser','user_id');
-__PACKAGE__->belongs_to(role=>'CGC::Schema::Result::AppRole','role_id');
 __PACKAGE__->meta->make_immutable;
 1;

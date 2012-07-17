@@ -51,8 +51,8 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 16:52:20
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:01vB7V5j85H/WzXIZ8vL8A
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 20:47:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:uDZ7AcFGFgjagA0JtAxBKA
 # These lines were loaded from '/usr/local/lib/perl5/site_perl/5.14.1/CGC/Schema/Result/LegacyCgcmail.pm' found in @INC.
 # They are now part of the custom portion of this file
 # for you to hand-edit.  If you do not either delete
