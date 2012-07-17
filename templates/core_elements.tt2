@@ -309,27 +309,29 @@
 
 
 <script>
-$('#strain-submit').click(function (e) { 
-   // get all the inputs into an array.
+$('#strain-submit').click(function (e) {
+	e.preventDefault(); 
 
-    // get all the inputs into an array.
-    var $inputs = $('#strain-forms :input');
-
-    // not sure if you wanted this, but I thought I'd add it.
-    // get an associative array of just the values.
-    var values = {};
-    $inputs.each(function() {
-        values[this.name] = $(this).val();
-    });
-
- var myvalues = $('#strain-forms').serialize();
- 	   $.ajax({ url: '/strain/new-strain',
-	   	    contentType: 'application/json',
-	   	    type: "POST", 
-		    data: { strain_name : 'todd' },
-		    });
+	var parameters = {};
+	$("#strain-form").find('input[value!=""], select[value!=""]').each(
+		function () {
+			parameters[$(this).attr('id')] = $(this).val();
+		}
+	);
+	$.ajax({
+	    url: '/strain/new-strain',
+	    dataType: 'json',
+	    type: "POST", 
+	    data: parameters,
+		success: function (data) {
+			console.log("Successfully posted", data);
+		},
+		error: function (jqXHR, status, err) {
+			console.log("Error! " + err, jqXHR);
+		}
+	});
 	return false;
-	  });
+});
 </script>
 
 

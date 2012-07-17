@@ -100,26 +100,26 @@ sub species_GET :Path('/species') :Args(1)   {
     
     my $column;
     if ($id =~ /^\d/) {
-	$column = 'species.id';
+		$column = 'species.id';
     } else {
-	$column = 'species.name';
+		$column = 'species.name';
     }
-    
+
     if ($id) {
 	
-	my @rows = $c->model('CGC::Strain')->search(
+    my @rows = $c->model('CGC::Strain')->search(
 	    {
-		$column => $id,
-	    },
-	    {
-		join     => 'species', # join the strain table
+	    $column => $id,
+	},
+	{
+	    join     => 'species', # join the strain table
 ##		group_by => [qw/strains.species_id/],
-	    }
-	    );
-	
+	}
+	);
+    
 	
 	my $entity = {};
-	if (@rows) {
+    if (@rows) {
 	    $entity->{species}->{name} = $rows[0]->species->name;
 	    $entity->{species}->{id}   = $rows[0]->species->id;
 	    $entity->{species}->{ncbi} = $rows[0]->species->ncbi_taxonomy_id;
@@ -131,15 +131,15 @@ sub species_GET :Path('/species') :Args(1)   {
 		    genotype    => $row->genotype,
 		    description => $row->description
 		};
-	    }	    
-	        
+    }
+
 	    $self->status_ok($c, entity => $entity);
 	} else {
-	    $self->status_not_found($c, message => "Cannot find species");
+		$self->status_not_found($c, message => "Cannot find species");
 	}
     }  else {	
 	$self->status_ok($c, entity => { } );
-    }
+}
 }
 
 =cut
