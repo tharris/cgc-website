@@ -1,0 +1,25 @@
+[% DEFAULT order = rest.order %]
+
+<div class="page-header">
+  <h1>Strain Order</h1>
+</div>
+<p>This is really basic for now....</p>
+[% IF rest.error %]
+<div class="alert alert-error">
+	<strong>Error:</strong> [% rest.error | html%]
+</div>
+[% END %]
+
+[% IF order %]
+<div class="span6">
+	<table class="table table-striped">
+		<thead><h3>Order Information</h3></thead>
+		<tr><th>ID</th><td>[% order.id %]</td></tr>
+		<tr><th>User</th><td>[% order.user %]</td></tr>
+		<tr><th>Strains</th><td>[% order.strains %]</td></tr>
+		<tr><th>Date received</th><td>[% order.received %]</td></tr>
+		<tr><th>Date shipped</th><td>[% order.shipped %]</td></tr>
+		<tr><th>Remark</th><td>[% order.remark %]</td></tr>
+	</table>
+</div>
+[% END %]

@@ -15,9 +15,15 @@
         </div>
 
         <div class="span4 well">
+             <h3>Strains</h3>
+             <a href="[% c.uri_for('/strain') %]">Search</a> or 
+             <a href="[% c.uri_for('/strains') %]">View All</a>
+        </div>
+
+        <div class="span4 well">
              <h3>Gene Classes</h3>
              <a href="[% c.uri_for('/geneclass') %]">Search</a> or 
-             <a href="[% c.uri_for('/geneclassses') %]">View All</a>
+             <a href="[% c.uri_for('/geneclasses') %]">View All</a>
         </div>
 
          <div class="span4 well">

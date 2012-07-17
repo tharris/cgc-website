@@ -53,6 +53,9 @@
 				    <li class="divider"></li>
 	[% IF c.check_user_roles('admin') %]
 				    <li class="nav-header">Adminstration</li>
+				    <li><a href="[% c.uri_for('/orders') %]">
+						Stats &amp; Reports
+					</a></li>
 				    <li><a href="[% c.uri_for('/documentation') %]">
 						Developer Docs
 					</a></li>

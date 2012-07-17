@@ -41,7 +41,7 @@ $(function () {
 		);
 		if (errors && errors.length > 0) {
 			App.showAlert({
-				prependTo: $(".modal-body"),
+				prependTo: $("#modal .modal-body"),
 				title: "Please correct the following errors:",
 				items: errors
 			});
@@ -60,7 +60,7 @@ $(function () {
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
 					App.showAlert({
-						prependTo: $(".modal-body"),
+						prependTo: $("#modal .modal-body"),
 						title: "Login error",
 						items: [
 							jqXHR.getResponseHeader('Entity'),

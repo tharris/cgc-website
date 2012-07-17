@@ -1,36 +1,21 @@
-use utf8;
 package CGC::Schema::Result::AppRole;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
-
-=head1 NAME
-
-CGC::Schema::Result::AppRole
-
-=cut
 
 use strict;
 use warnings;
 
 use Moose;
 use MooseX::NonMoose;
-use MooseX::MarkAsMethods autoclean => 1;
+use namespace::autoclean;
 extends 'DBIx::Class::Core';
-
-=head1 COMPONENTS LOADED
-
-=over 4
-
-=item * L<DBIx::Class::InflateColumn::DateTime>
-
-=back
-
-=cut
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<app_roles>
+=head1 NAME
+
+CGC::Schema::Result::AppRole
 
 =cut
 
@@ -57,22 +42,11 @@ __PACKAGE__->add_columns(
   "role",
   { data_type => "char", is_nullable => 1, size => 255 },
 );
-
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</role_id>
-
-=back
-
-=cut
-
 __PACKAGE__->set_primary_key("role_id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-29 16:29:40
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JIEDPnlICvnOuvDBH6Xvsw
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 16:52:20
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JsjzAwaMEIG0QtJzDQO3MQ
 __PACKAGE__->has_many(users_to_roles=>'CGC::Schema::Result::AppUsersToRole', 'role_id');
 __PACKAGE__->many_to_many(users     => 'users_to_roles', 'user', ,{ where => { active => 1 }}); 
 

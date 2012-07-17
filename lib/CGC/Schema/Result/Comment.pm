@@ -1,36 +1,21 @@
-use utf8;
 package CGC::Schema::Result::Comment;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
-
-=head1 NAME
-
-CGC::Schema::Result::Comment
-
-=cut
 
 use strict;
 use warnings;
 
 use Moose;
 use MooseX::NonMoose;
-use MooseX::MarkAsMethods autoclean => 1;
+use namespace::autoclean;
 extends 'DBIx::Class::Core';
-
-=head1 COMPONENTS LOADED
-
-=over 4
-
-=item * L<DBIx::Class::InflateColumn::DateTime>
-
-=back
-
-=cut
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<comments>
+=head1 NAME
+
+CGC::Schema::Result::Comment
 
 =cut
 
@@ -85,22 +70,11 @@ __PACKAGE__->add_columns(
   "content",
   { data_type => "text", is_nullable => 1 },
 );
-
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</comment_id>
-
-=back
-
-=cut
-
 __PACKAGE__->set_primary_key("comment_id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-28 17:36:50
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:B0HMmPHPozeI53nZzFLTvg
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 16:52:20
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:rH/oGpYGIAl1+wc/ALTiBw
 
 __PACKAGE__->belongs_to(reporter=>'CGC::Schema::Result::AppUser','user_id');
 __PACKAGE__->belongs_to(parent=>'CGC::Schema::Result::Comment','parent_id');

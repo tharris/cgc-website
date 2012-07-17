@@ -1,36 +1,21 @@
-use utf8;
 package CGC::Schema::Result::AppOauth;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
-
-=head1 NAME
-
-CGC::Schema::Result::AppOauth
-
-=cut
 
 use strict;
 use warnings;
 
 use Moose;
 use MooseX::NonMoose;
-use MooseX::MarkAsMethods autoclean => 1;
+use namespace::autoclean;
 extends 'DBIx::Class::Core';
-
-=head1 COMPONENTS LOADED
-
-=over 4
-
-=item * L<DBIx::Class::InflateColumn::DateTime>
-
-=back
-
-=cut
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<app_oauth>
+=head1 NAME
+
+CGC::Schema::Result::AppOauth
 
 =cut
 
@@ -89,22 +74,11 @@ __PACKAGE__->add_columns(
   "username",
   { data_type => "char", is_nullable => 1, size => 255 },
 );
-
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</oauth_id>
-
-=back
-
-=cut
-
 __PACKAGE__->set_primary_key("oauth_id");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-06-29 16:29:40
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:quXsMw6PLahgY1q8HXD9OA
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 16:52:20
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:K8thBFBYVcKp7woDQpIebw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -1,36 +1,21 @@
-use utf8;
 package CGC::Schema::Result::AtomizedGenotype;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
-
-=head1 NAME
-
-CGC::Schema::Result::AtomizedGenotype
-
-=cut
 
 use strict;
 use warnings;
 
 use Moose;
 use MooseX::NonMoose;
-use MooseX::MarkAsMethods autoclean => 1;
+use namespace::autoclean;
 extends 'DBIx::Class::Core';
-
-=head1 COMPONENTS LOADED
-
-=over 4
-
-=item * L<DBIx::Class::InflateColumn::DateTime>
-
-=back
-
-=cut
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<atomized_genotype>
+=head1 NAME
+
+CGC::Schema::Result::AtomizedGenotype
 
 =cut
 
@@ -126,60 +111,9 @@ __PACKAGE__->add_columns(
     is_nullable => 1,
   },
 );
-
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</id>
-
-=back
-
-=cut
-
 __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
-
-=head2 gene
-
-Type: belongs_to
-
-Related object: L<CGC::Schema::Result::Gene>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "gene",
-  "CGC::Schema::Result::Gene",
-  { id => "gene_id" },
-  {
-    is_deferrable => 1,
-    join_type     => "LEFT",
-    on_delete     => "CASCADE",
-    on_update     => "CASCADE",
-  },
-);
-
-=head2 rearrangement
-
-Type: belongs_to
-
-Related object: L<CGC::Schema::Result::Rearrangement>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "rearrangement",
-  "CGC::Schema::Result::Rearrangement",
-  { id => "rearrangement_id" },
-  {
-    is_deferrable => 1,
-    join_type     => "LEFT",
-    on_delete     => "CASCADE",
-    on_update     => "CASCADE",
-  },
-);
 
 =head2 strain
 
@@ -196,18 +130,18 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 transgene
+=head2 gene
 
 Type: belongs_to
 
-Related object: L<CGC::Schema::Result::Transgene>
+Related object: L<CGC::Schema::Result::Gene>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "transgene",
-  "CGC::Schema::Result::Transgene",
-  { id => "transgene_id" },
+  "gene",
+  "CGC::Schema::Result::Gene",
+  { id => "gene_id" },
   {
     is_deferrable => 1,
     join_type     => "LEFT",
@@ -236,9 +170,49 @@ __PACKAGE__->belongs_to(
   },
 );
 
+=head2 transgene
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-13 20:16:46
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:8QjvPw3ldF1NXdD+bmBzpA
+Type: belongs_to
+
+Related object: L<CGC::Schema::Result::Transgene>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "transgene",
+  "CGC::Schema::Result::Transgene",
+  { id => "transgene_id" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE",
+  },
+);
+
+=head2 rearrangement
+
+Type: belongs_to
+
+Related object: L<CGC::Schema::Result::Rearrangement>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "rearrangement",
+  "CGC::Schema::Result::Rearrangement",
+  { id => "rearrangement_id" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE",
+  },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 16:52:20
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Pga8xIGIv1Rnqh8xtKVCbg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

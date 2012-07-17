@@ -1,36 +1,21 @@
-use utf8;
 package CGC::Schema::Result::Transgene;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
-
-=head1 NAME
-
-CGC::Schema::Result::Transgene
-
-=cut
 
 use strict;
 use warnings;
 
 use Moose;
 use MooseX::NonMoose;
-use MooseX::MarkAsMethods autoclean => 1;
+use namespace::autoclean;
 extends 'DBIx::Class::Core';
-
-=head1 COMPONENTS LOADED
-
-=over 4
-
-=item * L<DBIx::Class::InflateColumn::DateTime>
-
-=back
-
-=cut
 
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 TABLE: C<transgene>
+=head1 NAME
+
+CGC::Schema::Result::Transgene
 
 =cut
 
@@ -196,31 +181,7 @@ __PACKAGE__->add_columns(
     is_nullable => 1,
   },
 );
-
-=head1 PRIMARY KEY
-
-=over 4
-
-=item * L</id>
-
-=back
-
-=cut
-
 __PACKAGE__->set_primary_key("id");
-
-=head1 UNIQUE CONSTRAINTS
-
-=head2 C<transgene_name_unique>
-
-=over 4
-
-=item * L</name>
-
-=back
-
-=cut
-
 __PACKAGE__->add_unique_constraint("transgene_name_unique", ["name"]);
 
 =head1 RELATIONS
@@ -238,26 +199,6 @@ __PACKAGE__->has_many(
   "CGC::Schema::Result::AtomizedGenotype",
   { "foreign.transgene_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 laboratory
-
-Type: belongs_to
-
-Related object: L<CGC::Schema::Result::Laboratory>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "laboratory",
-  "CGC::Schema::Result::Laboratory",
-  { id => "laboratory_id" },
-  {
-    is_deferrable => 1,
-    join_type     => "LEFT",
-    on_delete     => "CASCADE",
-    on_update     => "CASCADE",
-  },
 );
 
 =head2 species
@@ -280,9 +221,29 @@ __PACKAGE__->belongs_to(
   },
 );
 
+=head2 laboratory
 
-# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-07-14 17:33:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wZrHXeuqtR02xsS/fdX52Q
+Type: belongs_to
+
+Related object: L<CGC::Schema::Result::Laboratory>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "laboratory",
+  "CGC::Schema::Result::Laboratory",
+  { id => "laboratory_id" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE",
+  },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 16:52:20
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nKWZF5fenoRtT1SgMXeSqg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

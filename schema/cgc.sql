@@ -64,7 +64,7 @@ CREATE TABLE `event` (
  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
  `event` varchar(255) DEFAULT NULL COMMENT 'a description of the event, eg initial freeze',
  `event_date` datetime DEFAULT NULL,
- `user_id` int(11) NOT NULL COMMENT 'the user who ENTERED the event',
+ `user_id` int(11) unsigned NOT NULL COMMENT 'the user who ENTERED the event',
  `remark` varchar(255) DEFAULT NULL COMMENT 'a brief comment describing the results of the event',
  PRIMARY KEY (`id`),
  KEY `fse_user_id_fk` (`user_id`),
@@ -102,7 +102,7 @@ DROP TABLE IF EXISTS `strain_event`;
 CREATE TABLE `strain_event` (
 	`event_id`   int(11) unsigned NOT NULL,
 	`strain_id` int(11) unsigned NOT NULL,
-	 FOREIGN KEY (`event_id`)      REFERENCES `event`      (`id`),
+	 FOREIGN KEY (`event_id`)  REFERENCES `event`  (`id`),
 	 FOREIGN KEY (`strain_id`) REFERENCES `strain` (`id`)
 	 /* Any other specific columns? */
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -114,6 +114,15 @@ CREATE TABLE `admin_event` (
 	 /* Any other specific columns? */
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `order_event`;
+CREATE TABLE `order_event` (
+	`event_id` int(11) unsigned NOT NULL,
+	`order_id` int(11) unsigned NOT NULL,
+	FOREIGN KEY (`event_id`) REFERENCES `event` (`id`),
+	FOREIGN KEY (`order_id`) REFERENCES `order` (`id`)
+	 /* Any other specific columns? */
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 # Dump of table order
 # ------------------------------------------------------------
@@ -122,7 +131,7 @@ DROP TABLE IF EXISTS `app_order`;
 
 CREATE TABLE `app_order` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) DEFAULT NULL,
+  `user_id` int(11) unsigned DEFAULT NULL,
   `laboratory_id` int(11) unsigned DEFAULT NULL,  
   `remark`    mediumtext COMMENT 'Special order requests supplied by user',
   `date_received` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
@@ -131,13 +140,6 @@ CREATE TABLE `app_order` (
   CONSTRAINT `app_order_user_fk` FOREIGN KEY (`user_id`) REFERENCES `app_user` (`user_id`),
   CONSTRAINT `app_order_laboratory_fk` FOREIGN KEY (`laboratory_id`) REFERENCES `laboratory` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-INSERT INTO `app_order` VALUES ('1','1','1','Sample order 1 from user 1','','');
-INSERT INTO `app_order` VALUES ('2','3','10','Sample order 2 from user 3','','');
-INSERT INTO `app_order` VALUES ('3','2','100','Sample order 3 from user 2','','');
-
-
 
 DROP TABLE IF EXISTS `app_order_contents`;
 
@@ -155,15 +157,6 @@ CREATE TABLE `app_order_contents` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-INSERT INTO `app_order_contents` VALUES ('1','5706','','success','these would be some curator comments on the state of thawing EG1000');
-INSERT INTO `app_order_contents` VALUES ('1','5707','','success','these would be some curator comments on the state of thawing this strain');
-INSERT INTO `app_order_contents` VALUES ('1','5708','','success','these would be some curator comments on the state of thawing this strain');
-INSERT INTO `app_order_contents` VALUES ('2','1000','','success','these would be some curator comments on the state of thawing this strain');
-INSERT INTO `app_order_contents` VALUES ('2','1010','','success','these would be some curator comments on the state of thawing this strain');
-INSERT INTO `app_order_contents` VALUES ('2','1030','','success','these would be some curator comments on the state of thawing this strain');
-INSERT INTO `app_order_contents` VALUES ('3','500','','success','these would be some curator comments on the state of thawing this strain');
-INSERT INTO `app_order_contents` VALUES ('3','600','','success','these would be some curator comments on the state of thawing this strain');
-INSERT INTO `app_order_contents` VALUES ('3','700','','success','these would be some curator comments on the state of thawing this strain');
 
 # Dump of table legacy_cgcmail
 # ------------------------------------------------------------
@@ -232,8 +225,8 @@ CREATE TABLE `legacy_transrec` (
 DROP TABLE IF EXISTS app_cart;
 
 CREATE TABLE app_cart (
-    `cart_id` int(11) NOT NULL,
-    `user_id` int(11) NOT NULL,
+    `cart_id` int(11) unsigned NOT NULL,
+    `user_id` int(11) unsigned NOT NULL,
      PRIMARY KEY (`cart_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -241,8 +234,8 @@ CREATE TABLE app_cart (
 DROP TABLE IF EXISTS app_cart_contents;
 
 CREATE TABLE app_cart_contents (
-    `cart_id` int(11) NOT NULL,
-    `strain_id` int(11) NOT NULL,
+    `cart_id` int(11) unsigned NOT NULL,
+    `strain_id` int(11) unsigned NOT NULL,
      PRIMARY KEY (`cart_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -254,11 +247,11 @@ CREATE TABLE app_cart_contents (
 DROP TABLE IF EXISTS `comments`;
 
 CREATE TABLE `comments` (
-  `comment_id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) DEFAULT NULL,
-  `page_id` int(11) DEFAULT NULL,
-  `timestamp` int(11) DEFAULT NULL,
-  `parent_id` int(11) DEFAULT NULL,
+  `comment_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) unsigned DEFAULT NULL,
+  `page_id` int(11) unsigned DEFAULT NULL,
+  `timestamp` int(11) unsigned DEFAULT NULL,
+  `parent_id` int(11) unsigned DEFAULT NULL,
   `content` text,
   PRIMARY KEY (`comment_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -272,9 +265,9 @@ DROP TABLE IF EXISTS `app_history`;
 
 CREATE TABLE `app_history` (
   `session_id` char(72) NOT NULL DEFAULT '',
-  `page_id` int(11) NOT NULL DEFAULT '0',
-  `timestamp` int(11) DEFAULT NULL,
-  `visit_count` int(11) DEFAULT NULL,
+  `page_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `timestamp` int(11) unsigned DEFAULT NULL,
+  `visit_count` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`session_id`,`page_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -286,8 +279,8 @@ CREATE TABLE `app_history` (
 DROP TABLE IF EXISTS `app_oauth`;
 
 CREATE TABLE `app_oauth` (
-  `oauth_id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) DEFAULT NULL,
+  `oauth_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) unsigned DEFAULT NULL,
   `provider` char(255) DEFAULT NULL,
   `access_token` char(255) DEFAULT NULL,
   `access_token_secret` char(255) DEFAULT NULL,
@@ -303,9 +296,9 @@ CREATE TABLE `app_oauth` (
 DROP TABLE IF EXISTS `app_openid`;
 
 CREATE TABLE `app_openid` (
-  `auth_id` int(11) NOT NULL AUTO_INCREMENT,
+  `auth_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `openid_url` char(255) DEFAULT NULL,
-  `user_id` int(11) DEFAULT NULL,
+  `user_id` int(11) unsigned DEFAULT NULL,
   `provider` char(255) DEFAULT NULL,
   `oauth_access_token` char(255) DEFAULT NULL,
   `oauth_access_token_secret` char(255) DEFAULT NULL,
@@ -320,9 +313,9 @@ CREATE TABLE `app_openid` (
 DROP TABLE IF EXISTS `app_password_reset`;
 
 CREATE TABLE `app_password_reset` (
-  `user_id` int(11) NOT NULL DEFAULT '0',
+  `user_id` int(11) unsigned NOT NULL DEFAULT '0',
   `token` char(50) DEFAULT NULL,
-  `expires` int(11) DEFAULT NULL,
+  `expires` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -332,7 +325,7 @@ CREATE TABLE `app_password_reset` (
 DROP TABLE IF EXISTS `app_roles`;
 
 CREATE TABLE `app_roles` (
-  `role_id` int(11) NOT NULL,
+  `role_id` int(11) unsigned NOT NULL,
   `role` char(255) DEFAULT NULL,
   PRIMARY KEY (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -360,9 +353,9 @@ DROP TABLE IF EXISTS `app_starred`;
 
 CREATE TABLE `app_starred` (
   `session_id` char(72) NOT NULL DEFAULT '',
-  `page_id` int(11) NOT NULL DEFAULT '0',
+  `page_id` int(11) unsigned NOT NULL DEFAULT '0',
   `save_to` char(50) DEFAULT NULL,
-  `timestamp` int(11) DEFAULT NULL,
+  `timestamp` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`session_id`,`page_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -373,11 +366,11 @@ CREATE TABLE `app_starred` (
 DROP TABLE IF EXISTS `app_user`;
 
 CREATE TABLE `app_user` (
-  `user_id`  int(11) NOT NULL AUTO_INCREMENT,
+  `user_id`  int(11) unsigned NOT NULL AUTO_INCREMENT,
   `username` char(255) DEFAULT NULL,
   `password` char(255) DEFAULT NULL,
-  `active`   int(11) DEFAULT NULL,
-  `laboratory_id` int(11) DEFAULT NULL,
+  `active`   int(11) unsigned DEFAULT NULL,
+  `laboratory_id` int(11) unsigned DEFAULT NULL,
   `first_name` char(255) DEFAULT NULL,
   `middle_name` char(255) DEFAULT NULL,
   `last_name` char(255) DEFAULT NULL,
@@ -396,8 +389,8 @@ INSERT INTO `app_user` VALUES ('3','cgc-admin','{SSHA}bTzfBMj+pPwVBMBNYEl2HlMw5h
 DROP TABLE IF EXISTS `app_users_to_roles`;
 
 CREATE TABLE `app_users_to_roles` (
-  `user_id` int(11) NOT NULL DEFAULT '0',
-  `role_id` int(11) NOT NULL DEFAULT '0',
+  `user_id` int(11) unsigned NOT NULL DEFAULT '0',
+  `role_id` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`user_id`,`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

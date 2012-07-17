@@ -17,13 +17,13 @@ sub freezers :Path('/freezers') :Args(0)   {
     
     my $entity;
     foreach my $row (@rows) {
-	my @samples = $row->freezer_samples;
-	push @{$entity->{freezers}},{
-	    name       => $row->name,
-	    id         => $row->id,
-	    type       => $row->type,
-	    samples    => scalar @samples,
-	};
+		my @samples = $row->freezer_samples;
+		push @{$entity->{freezers}},{
+		    name       => $row->name,
+		    id         => $row->id,
+		    type       => $row->type,
+		    samples    => scalar @samples,
+		};
     }
 
     $c->stash->{template} = 'freezer/all.tt2';
