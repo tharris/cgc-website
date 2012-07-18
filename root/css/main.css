@@ -212,147 +212,28 @@ div.more .ui-icon {
 }
 
 
+/* CGC suppress a styling for popovers on headers */
 .popover-link {
     a:link: text-decoration:none;
     color: black;
 }
 
-
-/* The search bar form */
-#searchResultForm {
-  float:left;
-  position:relative;
-  padding:0;
-  width:80%;
+/* CGC style administrative wells */
+.well-admin {
+    background-color:#f2dede;
+    border-color:#eed3d7;
+    color:#b94a48;
 }
 
-#searchBody {
-  border-right:1px dotted gray;
-  float:right;
-  margin: 0.3em;
-  position:relative;
-  background:white;
-}
 
-#searchResultForm #searchBody {
-  width:80%;
-  margin: 0;
-  padding:0.3em;
-  float:left;
-  border:none;
-}
 
-#searchForm {
-  float:right;
-  position:relative;
-  padding:0;
-  height:30px;
-  margin:0.5em 1.5em 0 0;
-  background:#FFF;
-}
 
-#searchForm input.text, #searchResultForm input.text{  
-  float:left;
-  width:8em;
-  color: #565656;  
-  border:none;
-  padding: 0 0.3em; 
-  font-size:1em;
-  text-align: left;  
-  height:1.3em;
-  margin:0;
-}  
 
-#searchResultForm input.text{
-  width:97%;
-  margin: 0;
-}
 
-#searchForm input.ui-icon, #searchResultForm input.ui-icon{
-  float:right;
-  margin:0.3em 0.5em 0 0;
-  padding:0;
-  background-color:transparent;
-  cursor:pointer;
-  border:none;
-  display:inline;
-}
 
-#searchResultForm input.ui-icon {
-  margin:0;
-}
 
-.searchIcon{
-  background-color:white;
-  border:1px solid #CCC;
-  margin:0 0.3em;
-  float:left;
-  padding:0.6em;
-  cursor:pointer;
-}
 
-#searchSelect {
-  float:left;
-  padding:0;
-  margin:0.2em 0.5em;
-  list-style:none;
-  height:auto;
-  background:#E9EEF2;
-  color:black;
-  font-size:10pt;
-  position:relative;
-  max-width:10em;
-}
 
-#searchSelect li{
-  width:100%;
-}
-
-#searchSelect li:hover{
-  background:#C2D1DF;
-}
-
-#searchSelect:hover {
-  background:#C2D1DF;
-}
-
-#searchSelect ul{
-  display:none;
-  list-style:none;
-  padding:0;
-  margin:0;
-  width:auto;
-  background:#E9EEF2;
-  position:absolute;
-  right:0;
-  top:100%;
-  z-index:598;
-  font-size:0.9em;
-  border:1px solid #CDCDCD;
-}
-
-#searchSelect ul li{
-  margin:0;
-  padding:0.3em 0;
-  text-align:right;
-}
-
-#searchSelect ul li a{
-  padding:0.5em;
-  white-space:nowrap;
-}
-
-#searchSelect ul li a:hover{
-  color:black;
-}
-
-#searchSelect:hover ul {
-  display:block;
-}
-
-#all-search-results {
-  padding:2em 0 0 0.5em;
-}
 
 
 #notifications {
@@ -408,12 +289,6 @@ div.more .ui-icon {
 
 
 
-#openid {
-margin-left:2em ;
-width:170px;
-float:right;
-position:relative;
-}
 
 #content-slider {
   width:74px;
