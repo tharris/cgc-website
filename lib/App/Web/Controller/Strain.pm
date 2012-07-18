@@ -81,7 +81,7 @@ sub strain_GET {
 	$entity = {
 	    name       => $strain->name,
 	    species    => $strain->species
-		? $strain->species->name : 'No species',
+		? $strain->species->name : 'No species',  # do these strings belong in View?
 		outcrossed => $strain->outcrossed,
 		mutagen    => $strain->mutagen
 		? $strain->mutagen->name : 'No mutagen',
@@ -93,6 +93,7 @@ sub strain_GET {
 		samples    => $freezer_samples,
 		history    => $strain_history,  # This is already flattened.
 		atomized_genotype => $atomized_genotype,
+		description => $strain->description,
 	};
 	$self->status_ok($c, entity => $entity);
     } else {

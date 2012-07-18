@@ -89,6 +89,7 @@
 
 
            </td></tr>	
+        <tr><th>Description</th>    <td>[% strain.description %]</td></tr>
         <tr><th>Mutagen</th>    <td>[% strain.mutagen %]</td></tr>
         <tr><th>Outcrossed</th> <td>[% strain.outcrossed %]</td></tr>
         <tr><th>Received</th>   <td>[% strain.received %][% IF c.check_user_roles('admin') %]
