@@ -23,6 +23,12 @@
 [% END %]
 
 
+[%###########################################
+
+    Link helpers
+
+############################################# %]
+
 [%# Link to a species %]
 [% MACRO species_link(species) BLOCK %]
    <em><a href="/species/[% species %]">[% species %]</a></em>
@@ -37,6 +43,14 @@
 [% MACRO ncbi_link(species) BLOCK %]
    <a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=[% species.ncbi_taxonomy_id %]">[% species.ncbi_taxonomy_id %]</a>
 [% END; %]
+
+
+
+[%###########################################
+
+    General formatting
+
+############################################# %]
 
 [% MACRO genetic_position(object) BLOCK;
    IF object.chromosome && object.gmap;
@@ -163,6 +177,7 @@ END;
      </div>
    [% END %]
 [% END %]
+
 
 
 [%# Format history for a given object; expects the flattened history data structure %]
