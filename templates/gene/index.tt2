@@ -1,6 +1,6 @@
-<div class="page-header">
-  <h1>Gene Report</h1>
-</div>
+[% DEFAULT gene = rest %]
+[% IF gene.name; page_title="Gene Report: " _ gene.name ; ELSE ; title="Gene Report"; END ; %]
+[% WRAPPER basic_report_index_page(title=page_title) %]
 
 
 [% IF c.check_user_roles('admin') %]
@@ -16,13 +16,15 @@
 [% END %]
 
 
+[% rest_error %]
+
 <div class="span6">
     <h2>All Genes</h2>
     <p><a href="[% c.uri_for('/genes') %]">View all genes</a></p>
 </div>
 
 
-[% DEFAULT gene = rest %]
+
 <div class="span6">
     <h2>Search</h2>
     <!--
@@ -90,8 +92,7 @@
 [% END %]
 
 
-
-
-
 [% typeahead_support('gene',['sequence_name','locus_name']) %]
 
+
+[% END %]

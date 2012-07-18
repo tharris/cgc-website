@@ -1,6 +1,4 @@
-<div class="page-header">
-  <h1>CGC Freezers</h1>
-</div>
+[% WRAPPER basic_report_index_page(title="CGC Freezers") %]
 
 
 [% IF c.check_user_roles('admin') %]
@@ -15,6 +13,7 @@
 [% END %]
 
 
+[% rest_error %]
 
 
 <div class="span6">
@@ -90,7 +89,7 @@
 
 [% END %]
 
-
-
-
 [% typeahead_support('freezer',['name']) %]
+
+
+[% END %]

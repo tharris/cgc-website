@@ -33,8 +33,14 @@
              <a href="[% c.uri_for('/laboratories') %]">View All</a>
          </div>
 
-	 [% IF c.check_user_roles('admin') %]
          <div class="span4 well">
+           <h3><a href="#" id="variation" class="popover-link" rel="popover" data-content="Search for strains carrying specific variations." data-original-title="Variations">Variations</a></h3>
+             <a href="[% c.uri_for('/variation') %]">Search</a> 
+<!--             or <a href="[% c.uri_for('/variations') %]">View All</a> -->
+         </div>
+
+	 [% IF c.check_user_roles('admin') %]
+         <div class="span4 well well-admin">
            <h3><a href="#" id="freezers" class="popover-link" rel="popover" data-content="Browse CGC freezers and the samples they contain." data-original-title="Freezers">Freezers</a></h3>
              <a href="[% c.uri_for('/freezer') %]">Search</a> or 
              <a href="[% c.uri_for('/freezers') %]">View All</a>
@@ -47,11 +53,7 @@
 <!--             or <a href="[% c.uri_for('/genes') %]">View All</a> -->
          </div>
 
-         <div class="span4 well">
-           <h3><a href="#" id="variation" class="popover-link" rel="popover" data-content="Search for strains carrying specific variations." data-original-title="Variations">Variations</a></h3>
-             <a href="[% c.uri_for('/variation') %]">Search</a> 
-<!--             or <a href="[% c.uri_for('/variations') %]">View All</a> -->
-         </div>
+
 
 
     </div>

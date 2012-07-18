@@ -36,12 +36,12 @@ sub gene_class_GET :Path('/gene-class') :Args(1)   {
 
     my $entity;
     if ($row) { 
-	my @genes = $row->genes;
+	my @genes   = $row->genes;
 	$entity = { 
-	    name        => $row->name,
-	    description => $row->description,
-	    genes       => \@genes,
-	    laboratory  => $row->laboratory,
+	    name           => $row->name,
+	    description    => $row->description,
+	    genes          => \@genes,
+	    laboratory     => $row->laboratory,
 	}
    };
     $self->status_ok($c, entity => $entity);

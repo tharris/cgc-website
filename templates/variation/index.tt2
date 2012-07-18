@@ -1,20 +1,19 @@
-<div class="page-header">
-  <h1>Variation Report</h1>
-</div>
+[% WRAPPER basic_report_index_page(title="Variation Report") %]
+
+    [% IF c.check_user_roles('admin') %]
+    <div class="alert alert-info">
+    <strong>TODO:</strong>
+    <ul>
+       <li>Individual gene report data contains DBIx::Class objects; need to figure out mutliple joins.
+      <li>Typeahead is really slow on big lists.
+     </ul>
+
+     <p><strong>Questions for CGC</strong></p>
+     </div>
+     [% END %]
 
 
-[% IF c.check_user_roles('admin') %]
-<div class="alert alert-info">
-<strong>TODO:</strong>
-<ul>
-<li>Individual gene report data contains DBIx::Class objects; need to figure out mutliple joins.
-<li>Typeahead is really slow on big lists.
-</ul>
-
-<p><strong>Questions for CGC</strong></p>
-</div>
-[% END %]
-
+[% rest_error %]
 
 <div class="span6">
     <h2>All Variations</h2>
@@ -93,3 +92,7 @@
 
 [% typeahead_support('variation',['name']) %]
 
+
+
+
+[% END %]

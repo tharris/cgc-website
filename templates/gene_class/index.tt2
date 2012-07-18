@@ -1,6 +1,4 @@
-<div class="page-header">
-  <h1>Gene classes tracked by the CGC</h1>
-</div>
+[% WRAPPER basic_report_index_page(title="Gene classes tracked by the CGC") %]
 
 [% IF c.check_user_roles('admin') %]
 <div class="alert alert-info">
@@ -13,6 +11,7 @@
 [% END %]
 
 
+[% rest_error %]
 
 <div class="span6">
     <h2>All Gene Classes</h2>
@@ -94,3 +93,6 @@
 [% END %]
 
 [% typeahead_support('geneclass',['name','description']) %]
+
+
+[% END %]

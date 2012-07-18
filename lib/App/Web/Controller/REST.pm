@@ -1,7 +1,10 @@
 package App::Web::Controller::REST;
 
 use Moose;
-BEGIN { extends 'Catalyst::Controller::REST'; }
+BEGIN { 
+    extends 'Catalyst::Controller::REST';     
+}
+
 
 use Time::Duration;
 use XML::Simple;
@@ -86,6 +89,32 @@ sub print_POST {
 }
 
 
+
+
+sub auth :Path('/rest/auth') :Args(0) :ActionClass('REST') {}
+
+sub auth_GET {
+    my ($self,$c) = @_;   
+    $c->stash->{noboiler} = 1;
+    $c->stash->{template} = "nav/status.tt2"; 
+    $self->status_ok($c,entity => {});
+    $c->forward('App::Web::View::TT');
+}
+
+sub get_session {
+    my ($self,$c) = @_;
+    unless($c->user_exists){
+      my $sid = $c->get_session_id;
+      return $c->model('CGC::AppSession')->find({session_id=>"session:$sid"});
+    }else{
+      return $c->model('CGC::AppSession')->find({session_id=>"user:" . $c->user->user_id});
+    }
+}
+
+
+=pod
+
+
 sub workbench :Path('/rest/workbench') :Args(0) :ActionClass('REST') {}
 sub workbench_GET {
     my ( $self, $c) = @_;
@@ -149,28 +178,6 @@ $c->response->headers->expires(time);
 
 
 
-sub auth :Path('/rest/auth') :Args(0) :ActionClass('REST') {}
-
-sub auth_GET {
-    my ($self,$c) = @_;   
-    $c->stash->{noboiler} = 1;
-    $c->stash->{template} = "nav/status.tt2"; 
-    $self->status_ok($c,entity => {});
-    $c->forward('App::Web::View::TT');
-}
-
-sub get_session {
-    my ($self,$c) = @_;
-    unless($c->user_exists){
-      my $sid = $c->get_session_id;
-      return $c->model('CGC::AppSession')->find({session_id=>"session:$sid"});
-    }else{
-      return $c->model('CGC::AppSession')->find({session_id=>"user:" . $c->user->user_id});
-    }
-}
-
-
-=pod
 
 DEPRECATED?
 
@@ -631,6 +638,88 @@ sub search_GET {
     return;
 }    
 
+
+
+
+
+
+
+
+# CGC.
+# Generically fetch the *Event history for a provided class.
+# Currently flattening the data structure.
+sub get_history {
+    my ($self,$c,$model,$column,$id) = @_;
+    
+    my @history_rows = $c->model("CGC::" . $model)->search(
+    { $column => $id },
+    { join => [qw/event/] });
+    
+    my @flattened_history;
+    foreach my $history (@history_rows) {
+    my $event = $history->event;
+    push @flattened_history,{
+        event  => $event->event,
+        date   => $event->event_date,
+        remark => $event->remark,
+    };
+    }
+    return \@flattened_history;
+}
+
+
+sub _build_atomized_genotype {
+    my ($self,$c,$strain_id) = @_;
+
+    my @rows = $c->model('CGC::AtomizedGenotype')->search(
+	{ strain_id => $strain_id },
+	{ join => [qw/gene variation rearrangement transgene/] });
+    
+    # Need to construct the string based on position, type, etc.
+    my $data = {};
+    my @types = qw/gene variation rearrangement transgene/;
+    foreach my $component (@rows) {	
+	foreach my $type (@types) {
+	    if ($component->$type) {
+		my $name = $component->$type->name;
+
+		my $id         = $component->$type->id;
+		my $chromosome = $component->$type->chromosome;
+		my $gmap       = $component->$type->gmap;
+		my $pmap_stop  = $component->$type->pmap_start;
+		my $pmap_start  = $component->$type->pmap_stop;
+		
+		my $child;
+		if ($type eq 'variation') {
+		    my @vars = $c->model('CGC::Variation2gene')->search(
+			{ variation_id => $id },
+			{ join => [qw/gene/] });
+		    $c->log->warn("vars: " . join("-",@vars));
+		    if (@vars == 1) {
+			# Try to guess which gene it belongs to		    
+			$name = $vars[0]->gene->name;
+			$child = $component;
+		    }
+		}
+
+		if ($child) {		    
+		    push @{$data->{$chromosome}->{$name}->{has}},
+		    { name       => $child->$type->name,
+		      id         => $child->$type->id,
+		      type       => $type,
+		      gmap       => $gmap || 'unknown',
+		      pmap_stop  => $pmap_stop,
+		      pmap_start => $pmap_start,
+		    };
+		} else {
+		    $data->{$chromosome}->{$name}->{id}   = $component->$type->id;
+		    $data->{$chromosome}->{$name}->{type} = $type;
+		}
+	    }
+	}
+    }
+    return $data;
+}
 
 
 

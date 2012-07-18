@@ -11,11 +11,8 @@
 [% END %]
 
 
-[% IF rest.error %]
-<div class="alert alert-error">
-	<strong>Error:</strong> [% rest.error | html%]
-</div>
-[% END %]
+[% rest_error %]
+
 
 [% DEFAULT strain = rest %]
 <div class="span6">
@@ -49,45 +46,10 @@
         <tr><th>Genotype</th>   <td>[% strain.genotype %]
 	     <span class="label label-important"> To be replaced by the constructed genotype.</span>
 	     </td></tr>
-        <tr><th>Constructed Genotype</th>   <td>	
+        <tr><th>Constructed Genotype</th>   <td>
 
 
-          [% IF strain.atomized_genotype;
-	       	  
-		USE chromosome_iterator = iterator(strain.atomized_genotype.keys.sort);
-		
-                FOREACH chromosome IN chromosome_iterator;
-
-	           # Components should be sorted by gmap position.
-		   FOREACH component IN strain.atomized_genotype.$chromosome.keys;
-     		      '<a href="' _ c.uri_for('/' _ strain.atomized_genotype.$chromosome.$component.type,
-		                    component)
-				  _ '">' _ component _ '</a>';
-
-  		      FOREACH child IN strain.atomized_genotype.$chromosome.$component.has;
-         	         '(' _ '<a href="' _ c.uri_for('/' _ child.type,
-		                    child.name)
-				  _ '">' _ child.name _ '</a>' _ ')';
-		      END;
-
-    		      ' ' _ chromosome;
-		      
-		      IF loop.last;
-			  IF chromosome_iterator.last;
-			  '.';
-			  ELSE;
-			  '; ';
-			  END;
-		     END;
-
-		   END;
-                 END;
-	     END;
-	     '<span class="label label-important"> Constructed from constituent parts; compare to the "Genotype" field above.</span>';
-	   %]
-
-
-
+	  [% constructed_genotype(strain.atomized_genotype) %]
            </td></tr>	
         <tr><th>Description</th>    <td>[% strain.description %]</td></tr>
         <tr><th>Mutagen</th>    <td>[% strain.mutagen %]</td></tr>

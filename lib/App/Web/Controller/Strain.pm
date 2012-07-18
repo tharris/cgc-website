@@ -4,7 +4,7 @@ use namespace::autoclean;
 
 use Data::Dumper;
 
-BEGIN { extends 'Catalyst::Controller::REST'; }
+BEGIN { extends 'App::Web::Controller::REST'; }
 
 __PACKAGE__->config(
     default => 'application/json',
@@ -51,15 +51,15 @@ sub strain_GET {
         # Get the event history for this sample.
         my $strain_history = $self->get_history($c,'StrainEvent','strain_id',$strain->id);
         
-        
-	# Pull out some admin level fields, mainly samples and their history.
-	my $freezer_samples;
-	
+        	
 	# All freezer samples, and history for those samples.
 	my @sample_rows = $c->model('CGC::FreezerSample')->search(
 	    { strain_id => $strain->id }
 	    );
 	
+	# Pull out some admin level fields, mainly samples and their history.
+	my $freezer_samples;
+
 	foreach my $sample (@sample_rows) {
 	    my $freezer_history = $self->get_history($c,'FreezerSampleEvent','freezer_sample_id',$sample->id);
 	    my $freezer = $sample->freezer;
@@ -99,59 +99,6 @@ sub strain_GET {
     } else {
 	$self->status_not_found($c, message => "Cannot find strain '$key'");
     }
-}
-
-sub _build_atomized_genotype {
-    my ($self,$c,$strain_id) = @_;
-
-    my @rows = $c->model('CGC::AtomizedGenotype')->search(
-	{ strain_id => $strain_id },
-	{ join => [qw/gene variation rearrangement transgene/] });
-    
-    # Need to construct the string based on position, type, etc.
-    my $data = {};
-    my @types = qw/gene variation rearrangement transgene/;
-    foreach my $component (@rows) {	
-	foreach my $type (@types) {
-	    if ($component->$type) {
-		my $name = $component->$type->name;
-
-		my $id         = $component->$type->id;
-		my $chromosome = $component->$type->chromosome;
-		my $gmap       = $component->$type->gmap;
-		my $pmap_stop  = $component->$type->pmap_start;
-		my $pmap_start  = $component->$type->pmap_stop;
-		
-		my $child;
-		if ($type eq 'variation') {
-		    my @vars = $c->model('CGC::Variation2gene')->search(
-			{ variation_id => $id },
-			{ join => [qw/gene/] });
-		    $c->log->warn("vars: " . join("-",@vars));
-		    if (@vars == 1) {
-			# Try to guess which gene it belongs to		    
-			$name = $vars[0]->gene->name;
-			$child = $component;
-		    }
-		}
-
-		if ($child) {		    
-		    push @{$data->{$chromosome}->{$name}->{has}},
-		    { name       => $child->$type->name,
-		      id         => $child->$type->id,
-		      type       => $type,
-		      gmap       => $gmap || 'unknown',
-		      pmap_stop  => $pmap_stop,
-		      pmap_start => $pmap_start,
-		    };
-		} else {
-		    $data->{$chromosome}->{$name}->{id}   = $component->$type->id;
-		    $data->{$chromosome}->{$name}->{type} = $type;
-		}
-	    }
-	}
-    }
-    return $data;
 }
 
 
@@ -323,27 +270,6 @@ sub _process_form :Private {
 
 
 
-# Generically get the history for sample/freezer/whatever.
-# Kind of bizarre that this is in REST controller, but subclasses
-# inherit from us.
-sub get_history {
-    my ($self,$c,$model,$column,$id) = @_;
-    
-    my @history_rows = $c->model("CGC::" . $model)->search(
-    { $column => $id },
-    { join => [qw/event/] });
-    
-    my @flattened_history;
-    foreach my $history (@history_rows) {
-    my $event = $history->event;
-    push @flattened_history,{
-        event  => $event->event,
-        date   => $event->event_date,
-        remark => $event->remark,
-    };
-    }
-    return \@flattened_history;
-}
     
 
 
