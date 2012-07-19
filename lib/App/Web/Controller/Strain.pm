@@ -6,14 +6,6 @@ use Data::Dumper;
 
 BEGIN { extends 'App::Web::Controller::REST'; }
 
-__PACKAGE__->config(
-    default => 'application/json',
-    map => {
-        'text/html' => [ qw/View TT/ ],
-        'application/json' => 'JSON',
-    }
-);
-
 =head1 NAME
 
 App::Web::Controller::Strain - Catalyst Controller

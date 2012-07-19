@@ -14,7 +14,7 @@ use URI::Escape;
 use DateTime;
 
 __PACKAGE__->config(
-    'default'          => 'text/x-json',
+    'default'          => 'application/json',
     'stash_key'        => 'rest',
     'map'              => {
 		'text/x-yaml'      => 'YAML',

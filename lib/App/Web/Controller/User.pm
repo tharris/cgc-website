@@ -2,7 +2,7 @@ package App::Web::Controller::User;
 
 use strict;
 use warnings;
-use base 'App::Web::Controller';
+use base 'App::Web::Controller::REST';
  
 # Sets the actions in this controller to be registered with no prefix
 # so they function identically to actions created in App.pm
@@ -56,18 +56,39 @@ sub account : Chained('user') PathPart('account')  Args(0) {
     $c->stash->{template} = 'user/account.tt2';
 }
 
-=head2 /user/*/cart
-
-The user's cart.
-
-=cut
-
-sub cart :Chained('user') :PathPart('cart') :Args(0) {
-    my ($self, $c) = @_;
-    $c->stash->{template} = 'user/cart.tt2';
+sub cart :Chained('/user') :Args(0) :ActionClass('REST') {
+	my ($self, $c) = @_;
+	$c->stash->{template} = 'user/cart.tt2';
+}
+	
+sub cart_GET {
+	my ($self, $c) = @_;
+	my $cart = $c->model('CGC::AppCart')->single({ user_id => $c->user->id });
+	$c->log->debug($cart);
+	$self->status_ok($c, entity => $cart);
 }
 
+sub cart_POST {
+	my ($self, $c) = @_;
+	my $cart = $c->model('CGC::AppCart')->single({ user_id => $c->user->id });
+	$self->status_ok($c,
+		entity => $cart
+	);
+}
 
+# =head2 /user/*/cart
+# 
+# The user's cart.
+# 
+# =cut
+# 
+# sub cart :Chained('user') :PathPart('cart') {	
+#     my ($self, $c) = @_;
+# 	$c->forward()
+#     $c->stash->{template} = 'user/cart.tt2';
+# }
+# 
+# 
 
 =head1 AUTHOR
 

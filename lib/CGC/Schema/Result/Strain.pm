@@ -181,6 +181,21 @@ __PACKAGE__->add_unique_constraint("strain_name_unique", ["name"]);
 
 =head1 RELATIONS
 
+=head2 app_cart_contents
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::AppCartContent>
+
+=cut
+
+__PACKAGE__->has_many(
+  "app_cart_contents",
+  "CGC::Schema::Result::AppCartContent",
+  { "foreign.strain_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 app_order_contents
 
 Type: has_many
@@ -302,8 +317,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 21:09:15
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:6J0de8SrtfSVx6borOBX3g
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-18 21:11:51
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:RJ5bLtT2m3veV/XnODZixQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
