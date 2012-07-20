@@ -79,7 +79,8 @@
 		$("#addToCartButton").popover({
 			title: "Are you sure?",
 			trigger: 'focus',
-			content: "<button id='cartCancel' class='btn'>No, cancel</button> <button id='doCartAdd' class='btn btn-primary'>Yes, please</button>"
+			content: "<button id='cartCancel' class='btn'>No, cancel</button>"
+				+ "<button id='doCartAdd' class='btn btn-primary'>Yes, please</button>"
 		});
 		$("#addToCartButton").click(function () {
 			$("#addToCartButton").popover("show");
@@ -91,7 +92,7 @@
 				$.ajax({
 					url: "[% c.req.base %]user/[% c.user.user_id %]/cart",
 					type: "POST",
-					data: { strains: "[% strain.name %]", inline: 1 },
+					data: { add: "[% strain.name %]", inline: 1 },
 					success: function (data) {
 						$("#modal").html(data);
 						$("#modal").modal('show');

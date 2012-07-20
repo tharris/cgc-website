@@ -5,16 +5,18 @@
 </div>
 <div class="modal-body">
 	[% IF cart.strains.size > 0 %]
+        [% cart_path = "${c.req.base}user/${c.user.user_id}/cart" %]
 		[% cart_items = cart.strains ? cart.strains.size : 0 %]
-		<p>You have <strong><span id="cart-items">[% cart_items %]</span></strong></p>
+		<p>You have <strong><span id="cart-items">[% cart_items %]</span></strong> items in your cart.</p>
 		<div class="span6">
-		<table class="table table-striped">
+		<table class="table">
 			[% last_strain = cart_items - 1 -%]
 			[% FOR i IN [ 0 .. last_strain ] %]
 				[% strain = cart.strains.$i %]
-			<tr id="item-[% i %]">
-				<td><a data-remove="item-[% i %]" href="#"><i class="icon-remove"></i></a></td>
-				<td><a href="/strain/[% strain %]">[% strain %]</a></td>
+			<tr id="item-[% i %]" data-strain="[% strain %]">
+				<td style="width:10%"><a data-item="item-[% i %]" href="#"><i class="icon-remove"></i></a></td>
+				<td class="strain-label"><a href="/strain/[% strain %]">[% strain %]</a></td>
+                <td class="strain-extra">&nbsp;</td>
 			</tr>
 			[% END %]
 		</table>
@@ -26,13 +28,68 @@
 
 		<div id="checkout"></div>
 		<script>
-			console.log($('a[data-remove]'));
-			$('a[data-remove]').on('click', function (e) {
-				var remove = $(e.target).parent().attr('data-remove');
-				$('tr#' + remove).css('background-color','#fcc');
+            function addLink($tr, strain) {
+                var anchor = $("<a></a>");
+                anchor.attr('href', '#');
+                anchor.css("color", "red");
+                anchor.text('Add me back');
+                anchor.click(function () {
+    				$.ajax({
+    					url: "[% cart_path %]",
+    					type: "POST",
+                        dataType: 'json',
+    					data: { add: strain, inline: 1 },
+    					success: function (data) {
+            				$tr.children('.strain-label').fadeTo("slow", 1.0);
+                            $tr.children('.strain-extra').empty();
+                        
+                            // Update counts
+                            var items = data['strains'].length;
+    			            $("#cart-items").text(items);
+                			$("#navbar-cart-items").text(items);
+    					},
+    					error: function (jqXHR, textStatus, errorThrown) {
+    						App.showAlert({
+    							title: "Cart error",
+    							items: [
+    								jqXHR.getResponseHeader('Entity'),
+    							]
+    						});
+    					}
+    				});                    
+                });
+                return anchor;
+            }
+			$('a[data-item]').on('click', function (e) {
+                var $tr = $("#" + $(e.target).parent().data('item'));
+                var strain = $tr.data('strain');
+                $.ajax({
+					url: "[% cart_path %]",
+					type: 'POST',
+                    dataType: 'json',
+					data: { rem: strain, inline: 1 },
+					success: function (data) {
+        				$tr.children('.strain-label').fadeTo("slow", 0.5);
+                        $tr.children('.strain-extra').html(addLink($tr, strain));
+                        
+                        // Update counts
+                        var items = data['strains'].length;
+			            $("#cart-items").text(items);
+            			$("#navbar-cart-items").text(items);
+					},
+					error: function (jqXHR, textStatus, errorThrown) {
+						App.showAlert({
+							title: "Cart error",
+							items: [
+								jqXHR.getResponseHeader('Entity'),
+							]
+						});
+					}
+                });
 			});
 		</script>
 	[% ELSE %]
 		<div class="alert">Your cart is empty</div>
+        <span style="visibility:hidden" id="cart-items">0</span>
 	[% END %]
 </div>

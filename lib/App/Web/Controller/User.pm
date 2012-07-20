@@ -78,19 +78,41 @@ sub cart_POST {
 	my $cart = $user->app_cart;
 	my $errors = [];
 	my $post_data = $c->req->data || $c->req->body_parameters;
+	my $get_post_strains = sub {
+		my $key = shift;
+		my $strain_data = $post_data->{$key};
+		return $strain_data
+			? ref $strain_data eq 'ARRAY'
+				? $strain_data
+				: [ split(',', $strain_data) ]
+			: undef;
+	};
 	if (!$cart) {
 		$cart = $c->model('CGC::AppCart')->find_or_create({
 			user_id => $user->id
 		});
 	}
-	if ($post_data->{strains}) {
-		my $strain_names = ref $post_data->{strains} eq 'ARRAY'
-			? $post_data->{strains}
-			: [ split(',', $post_data->{strains}) ];
-			
-		$errors = $self->add_strains($c, $cart, $strain_names);
+	my $add_strains = $get_post_strains->('add');
+	if ($add_strains) {
+		# Add these strains
+		$errors = $self->add_strains_to_cart($c, $cart, $add_strains);
 		if (scalar @$errors) {
-			$self->status_not_found($c, message => join(" ", @$errors));
+			$self->status_bad_request(
+				$c,
+				message => "Cannot add strains [@{[join(' ', @$errors)]}]"
+			);
+		}
+	}
+	
+	my $remove_strains = $get_post_strains->('rem');
+	if ($remove_strains) {
+		# Remove these strains
+		$errors = $self->remove_strains_from_cart($c, $cart, $remove_strains);
+		if (scalar @$errors) {
+			$self->status_bad_request(
+				$c,
+				message => "Cannot remove strains [@{[join(' ', @$errors)]}]"
+			);
 		}
 	}
 	if (scalar @$errors == 0) {
@@ -100,15 +122,15 @@ sub cart_POST {
 	}
 }
 
-sub add_strains :Private {
-	my ($self, $c, $cart, $names) = @_;
+sub update_cart_contents :Private {
+	my ($self, $c, $cart, $names, $related_operation) = @_;
 	my @errors     = ();
 	my @strain_ids = ();
 	my $model = $c->model('CGC::Strain');
 	for my $name (@$names) {
 		my $strain = $model->single({ name => $name });
 		if (!$strain) {
-			push @errors, "Cannot find strain $name";
+			push @errors, $name;
 		} else {
 			push @strain_ids, $strain->id;
 		}
@@ -116,13 +138,20 @@ sub add_strains :Private {
 	if (scalar @errors == 0) {
 		# No errors, update model.
 		for my $id (@strain_ids) {
-			$c->log->debug("Adding strain $id");
-			$cart->find_or_create_related('app_cart_contents', {
+			$cart->$related_operation('app_cart_contents', {
 				strain_id => $id
 			});
 		}
 	}
 	return \@errors;
+}
+
+sub add_strains_to_cart :Private {
+	return update_cart_contents(@_, 'find_or_create_related');
+}
+
+sub remove_strains_from_cart :Private {
+	return update_cart_contents(@_, 'delete_related');
 }
 
 
