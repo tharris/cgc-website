@@ -88,9 +88,29 @@
 			});
 			$("#doCartAdd").click(function () {
 				$("#addToCartButton").popover("hide")
+				$.ajax({
+					url: "[% c.req.base %]user/[% c.user.user_id %]/cart",
+					type: "POST",
+					data: { strains: "[% strain.name %]", inline: 1 },
+					success: function (data) {
+						$("#modal").html(data);
+						$("#modal").modal('show');
+						// Don't forget to update the count
+						$("#navbar-cart-items")
+							.text($(data).find("#cart-items").text());
+					},
+					error: function (jqXHR, textStatus, errorThrown) {
+						App.showAlert({
+							title: "Cart error",
+							items: [
+								jqXHR.getResponseHeader('Entity'),
+							]
+						});
+					}
+				});
 			});
 		});
-	})
+	});
 	</script>
 	[% ELSE %]
 		<div class="alert alert-info">

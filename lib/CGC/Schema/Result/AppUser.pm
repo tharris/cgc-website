@@ -113,16 +113,16 @@ __PACKAGE__->set_primary_key("user_id");
 
 =head1 RELATIONS
 
-=head2 app_carts
+=head2 app_cart
 
-Type: has_many
+Type: might_have
 
 Related object: L<CGC::Schema::Result::AppCart>
 
 =cut
 
-__PACKAGE__->has_many(
-  "app_carts",
+__PACKAGE__->might_have(
+  "app_cart",
   "CGC::Schema::Result::AppCart",
   { "foreign.user_id" => "self.user_id" },
   { cascade_copy => 0, cascade_delete => 0 },
@@ -159,8 +159,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-18 21:11:51
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:pj+UEJm3waR+OR98njf2mg
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-19 11:30:52
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:v6daaAdMqwzXJhNmxI5NnQ
 
 
 __PACKAGE__->has_many(users_to_roles=>'CGC::Schema::Result::AppUsersToRole', 'user_id');

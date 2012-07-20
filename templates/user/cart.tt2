@@ -4,11 +4,12 @@
 	<h2>My Cart</h2>
 </div>
 <div class="modal-body">
-	[% IF cart %]
-		<p>Here are the contents of your cart:</p>
+	[% IF cart.strains.size > 0 %]
+		[% cart_items = cart.strains ? cart.strains.size : 0 %]
+		<p>You have <strong><span id="cart-items">[% cart_items %]</span></strong></p>
 		<div class="span6">
 		<table class="table table-striped">
-			[% last_strain = cart.strains.size - 1 -%]
+			[% last_strain = cart_items - 1 -%]
 			[% FOR i IN [ 0 .. last_strain ] %]
 				[% strain = cart.strains.$i %]
 			<tr id="item-[% i %]">

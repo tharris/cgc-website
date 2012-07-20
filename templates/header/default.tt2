@@ -69,7 +69,7 @@
 			</li>
 			<li class="divider-vertical"></li>
 			<li>
-				<a data-toggle="modal" href="#modal" data-uri="[% user_path %]/cart?content-type=text/html"><i class="icon-shopping-cart icon-white"></i> ([% c.user.cart.items OR 0 %])</a>
+				<a data-toggle="modal" href="#modal" data-uri="[% user_path %]/cart"><i class="icon-shopping-cart icon-white"></i> (<span id="navbar-cart-items">[% c.user.app_cart.items OR 0 %]</span>)</a>
 			</li>
 		</ul>
 	</div>
@@ -93,5 +93,3 @@
 
 
     <div class="container" id="content">
-        
-

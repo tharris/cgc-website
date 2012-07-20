@@ -47,6 +47,7 @@ __PACKAGE__->add_columns(
   },
 );
 __PACKAGE__->set_primary_key("cart_id");
+__PACKAGE__->add_unique_constraint("user_id", ["user_id"]);
 
 =head1 RELATIONS
 
@@ -65,25 +66,39 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 app_cart_content
+=head2 app_cart_contents
 
-Type: might_have
+Type: has_many
 
 Related object: L<CGC::Schema::Result::AppCartContent>
 
 =cut
 
-__PACKAGE__->might_have(
-  "app_cart_content",
+__PACKAGE__->has_many(
+  "app_cart_contents",
   "CGC::Schema::Result::AppCartContent",
   { "foreign.cart_id" => "self.cart_id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-18 21:11:51
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:04IJiW6hKTPN7ICSfV+rJw
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-20 12:19:41
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Y+bQWi5jBq70ypLLbB95pw
 
+sub flatten {
+	my ($self) = @_;
+	return +{
+		strains =>
+			$self->app_cart_contents ?
+			[ map { $_->strain->name } $self->app_cart_contents ] : []
+	};
+}
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
+sub items {
+	my ($self) = @_;
+	return $self->app_cart_contents
+		? scalar $self->app_cart_contents
+		: 0;
+}
+
 1;

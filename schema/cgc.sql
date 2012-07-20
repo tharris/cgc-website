@@ -228,9 +228,10 @@ CREATE TABLE app_cart (
     `cart_id` int(11) unsigned NOT NULL,
     `user_id` int(11) unsigned NOT NULL,
     PRIMARY KEY (`cart_id`),
-    KEY (`user_id`),
+    UNIQUE KEY (`user_id`),
 	CONSTRAINT `app_cart_user_fk`
 		FOREIGN KEY (`user_id`) REFERENCES `app_user` (`user_id`)
+		ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -239,11 +240,12 @@ DROP TABLE IF EXISTS app_cart_contents;
 CREATE TABLE app_cart_contents (
     `cart_id`   int(11) unsigned NOT NULL,
     `strain_id` int(11) unsigned NOT NULL,
-    PRIMARY KEY (`cart_id`),
+    PRIMARY KEY (`cart_id`, `strain_id`),
     KEY (`strain_id`),
     KEY (`cart_id`),
     CONSTRAINT `app_cart_contents_cart_fk`
-        FOREIGN KEY (`cart_id`) REFERENCES `app_cart` (`cart_id`),
+        FOREIGN KEY (`cart_id`) REFERENCES `app_cart` (`cart_id`)
+		ON DELETE CASCADE,
     CONSTRAINT `app_cart_contents_strain_fk`
         FOREIGN KEY (`strain_id`) REFERENCES `strain` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
