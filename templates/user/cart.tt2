@@ -21,6 +21,7 @@
 			[% END %]
 		</table>
 		<a class="btn" href="#">Empty cart</a>
+    	<a class="btn" type="button" class="close" data-dismiss="modal">Dismiss</a>
 		<a class="btn btn-primary" href="#checkout" data-uri="/register?inline">
 			Checkout
 		</a>
