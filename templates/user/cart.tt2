@@ -21,7 +21,7 @@
 			[% END %]
 		</table>
 		<a class="btn" id="empty-cart-button" href="#">Empty cart</a>
-		<a class="btn btn-primary" href="#">
+		<a class="btn btn-primary" href="[% c.uri_for('/order') %]">
 			Checkout
 		</a>
 		</div>

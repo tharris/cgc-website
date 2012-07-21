@@ -57,6 +57,11 @@ sub order_GET {
 		$self->status_not_found($c, message => "Cannot find this order");
 	}
 }
+	
+sub order_form :Path("/order") :Args(0) {
+	my ($self, $c) = @_;
+	$c->stash->{template} = 'order/form.tt2';
+}
 
 =head1 AUTHOR
 
