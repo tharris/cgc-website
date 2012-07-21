@@ -95,7 +95,7 @@ sub cart_POST {
 	my $add_strains = $get_post_strains->('add');
 	if ($add_strains) {
 		# Add these strains
-		$errors = $self->add_strains_to_cart($c, $cart, $add_strains);
+		$self->add_strains_to_cart($c, $cart, $add_strains, $errors);
 		if (scalar @$errors) {
 			$self->status_bad_request(
 				$c,
@@ -107,7 +107,12 @@ sub cart_POST {
 	my $remove_strains = $get_post_strains->('rem');
 	if ($remove_strains) {
 		# Remove these strains
-		$errors = $self->remove_strains_from_cart($c, $cart, $remove_strains);
+		if ($remove_strains->[0] eq '*') {
+			$self->empty_cart($c, $cart, $errors);
+		} else {
+			$self->remove_strains_from_cart(
+				$c, $cart, $remove_strains, $errors);
+		}
 		if (scalar @$errors) {
 			$self->status_bad_request(
 				$c,
@@ -122,20 +127,30 @@ sub cart_POST {
 	}
 }
 
+sub empty_cart :Private {
+	my ($self, $c, $cart, $errors) = @_;
+	eval {
+		$c->log->debug("Emptying cart");
+		$cart->delete_related('app_cart_contents');
+	};
+	if ($@) {
+		push @$errors, "Cannot empty cart: $@";
+	}
+}
+
 sub update_cart_contents :Private {
-	my ($self, $c, $cart, $names, $related_operation) = @_;
-	my @errors     = ();
+	my ($self, $c, $cart, $names, $errors, $related_operation) = @_;
 	my @strain_ids = ();
 	my $model = $c->model('CGC::Strain');
 	for my $name (@$names) {
 		my $strain = $model->single({ name => $name });
 		if (!$strain) {
-			push @errors, $name;
+			push @$errors, $name;
 		} else {
 			push @strain_ids, $strain->id;
 		}
 	}
-	if (scalar @errors == 0) {
+	if (scalar @$errors == 0) {
 		# No errors, update model.
 		for my $id (@strain_ids) {
 			$cart->$related_operation('app_cart_contents', {
@@ -143,15 +158,14 @@ sub update_cart_contents :Private {
 			});
 		}
 	}
-	return \@errors;
 }
 
 sub add_strains_to_cart :Private {
-	return update_cart_contents(@_, 'find_or_create_related');
+	update_cart_contents(@_, 'find_or_create_related');
 }
 
 sub remove_strains_from_cart :Private {
-	return update_cart_contents(@_, 'delete_related');
+	update_cart_contents(@_, 'delete_related');
 }
 
 

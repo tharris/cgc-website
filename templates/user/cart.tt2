@@ -20,8 +20,8 @@
 			</tr>
 			[% END %]
 		</table>
-		<a class="btn" href="#">Empty cart</a>
-		<a class="btn btn-primary" href="#checkout" data-uri="/register?inline">
+		<a class="btn" id="empty-cart-button" href="#">Empty cart</a>
+		<a class="btn btn-primary" href="#">
 			Checkout
 		</a>
 		</div>
@@ -70,7 +70,8 @@
 					data: { rem: strain, inline: 1 },
 					success: function (data) {
         				$tr.children('.strain-label').fadeTo("slow", 0.5);
-                        $tr.children('.strain-extra').html(addLink($tr, strain));
+                        $tr.children('.strain-extra')
+                            .html(addLink($tr, strain));
                         
                         // Update counts
                         var items = data['strains'].length;
@@ -87,6 +88,44 @@
 					}
                 });
 			});
+    		$("#empty-cart-button").popover({
+    			title: "Are you sure?",
+    			trigger: 'focus',
+    			content: "<button id='empty-cancel-button' class='btn'>No, cancel</button>"
+    				+ "<button id='empty-do-button' class='btn btn-primary'>Yes, empty it</button>"
+    		});
+            
+    		$("#empty-cart-button").click(function () {
+    			$("#empty-cart-button").popover("show");
+    			$("#empty-cancel-button").click(function () {
+    				$("#empty-cart-button").popover("hide")
+    			});
+    			$("#empty-do-button").click(function () {
+    				$("#empty-cart-button").popover("hide")
+    				$.ajax({
+    					url: "[% cart_path %]",
+    					type: "POST",
+    					data: { rem: "*", inline: 1 },
+    					success: function (html) {
+    						$("#modal").html(html);
+
+    						// Update counts
+    						$("#navbar-cart-items")
+                                // .text($(data).find("#cart-items").text());
+                                .text(0);
+    					},
+    					error: function (jqXHR, textStatus, errorThrown) {
+    						App.showAlert({
+    							title: "Cart error",
+    							items: [
+    								jqXHR.getResponseHeader('Entity'),
+    							]
+    						});
+    					}
+    				});
+    			});
+    		});
+            
 		</script>
 	[% ELSE %]
 		<div class="alert">Your cart is empty</div>
