@@ -306,14 +306,26 @@ END;
             <label class="control-label" for="contains-type">Contains</label>
             <div class="controls containsDuplicatable" id="contains1">
 	         [% types = [ 'gene', 'variation', 'transgene' , 'rearrangement'] %]
-                  <select id="contains-type1">
+
+
+                  <select id="contains-type1" class="contains-selecter">
                      <option></option>
-      	             [% FOREACH type IN types.sort %]
-                         <option value="[% type %]">[% type %]</option>
+      	             [% FOREACH thistype IN types.sort %]
+                         <option value="[% thistype %]">[% thistype %]</option>
      	             [% END %]
                   </select>
 
-              <input type="text" class="input-xlarge" id="contains-name1">  <a href="#" class="btn btn-mini btnAdd"><i class="icon-plus"></i></a> <a href="#" class="btn btn-mini btnDel"><i class="icon-minus"></i></a>
+      	             [% FOREACH thistype IN types.sort %]		  
+                  <select id="contains-name1" type="[% thistype %]" style="display:none">
+                     <option></option>
+     	                [% FOREACH item IN $thistype.keys.sort %]
+                           <option value="[% $thistype.$item.id %]">[% $thistype.$item.name %] [% $thistype.$item.chromosome %]</option>
+      	                [% END %]
+                     </select>
+		     [% END %]
+
+<!--              <input type="text" class="input-xlarge" id="contains-name1"> -->
+		   <a href="#" class="btn btn-mini btnAdd"><i class="icon-plus"></i></a> <a href="#" class="btn btn-mini btnDel"><i class="icon-minus"></i></a>
             </div>
           </div>
 
@@ -427,6 +439,23 @@ $('#strain-submit').click(function (e) {
 });
 </script>
 
+
+<script type="text/javascript">
+   $('.contains-selecter').change(function() {
+        var myId = $(this).attr('id');
+ 	var text = $('#' + myId + ' option:selected').text();
+	console.log(text);
+	
+	// Hide all the other drop down elements
+	$(this).siblings('[type]').hide();
+
+	// Make the appropriate select element visible 
+	$(this).siblings('[type=' + text + ']').show();
+
+	return false;
+	});
+
+</script>      
 
 
     <script type="text/javascript">

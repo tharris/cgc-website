@@ -125,6 +125,44 @@ sub new_strain_GET {
         };
     }
 
+    # Genes
+#    my @gene_rows = $c->model('CGC::Gene')
+#        ->search({}, { columns => [qw/name id/], });
+
+#    foreach (@gene_rows) {
+#	# Needs to be singular to match form element id
+#        $c->stash->{gene}->{ $_->name } = {
+#            id   => $_->id,
+#            name => $_->name,
+#        };
+#    }
+
+    # Rearrangements
+    my @rearrangement_rows = $c->model('CGC::Rearrangement')
+        ->search({}, { columns => [qw/name id chromosome/], });
+
+    foreach (@rearrangement_rows) {
+	# Needs to be singular to match form element id
+        $c->stash->{rearrangement}->{ $_->name } = {
+            id   => $_->id,
+            name => $_->name,
+	    chromosome => $_->chromosome,
+        };
+    }
+
+    # Transgene
+    my @transgene_rows = $c->model('CGC::Transgene')
+        ->search({}, { columns => [qw/name id chromosome/], });
+
+    foreach (@transgene_rows) {
+	# Needs to be singular to match form element id
+        $c->stash->{transgene}->{ $_->name } = {
+            id   => $_->id,
+            name => $_->name,
+	    chromosome => $_->chromosome,
+        };
+    }
+
     # Species
     my @species_rows = $c->model('CGC::Species')->search(
         { 'strains.species_id' => { '!=', undef }, },
