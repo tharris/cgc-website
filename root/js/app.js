@@ -70,6 +70,7 @@ var App = (function (window) {
             return null;
         }
     };
+
     
     app.showAlert = function (args) {
     	var $prependElement = args.prependTo || $(body);

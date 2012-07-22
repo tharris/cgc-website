@@ -301,6 +301,22 @@ END;
             </div>
           </div>
 
+
+          <div class="control-group">
+            <label class="control-label" for="contains-type">Contains</label>
+            <div class="controls containsDuplicatable" id="contains1">
+	         [% types = [ 'gene', 'variation', 'transgene' , 'rearrangement'] %]
+                  <select id="contains-type1">
+                     <option></option>
+      	             [% FOREACH type IN types.sort %]
+                         <option value="[% type %]">[% type %]</option>
+     	             [% END %]
+                  </select>
+
+              <input type="text" class="input-xlarge" id="contains-name1">  <a href="#" class="btn btn-mini btnAdd"><i class="icon-plus"></i></a> <a href="#" class="btn btn-mini btnDel"><i class="icon-minus"></i></a>
+            </div>
+          </div>
+
           <div class="control-group">
             <label class="control-label" for="remark">Remarks</label>
             <div class="controls">
@@ -410,6 +426,64 @@ $('#strain-submit').click(function (e) {
 	return false;
 });
 </script>
+
+
+
+    <script type="text/javascript">
+            $('.btnAdd').click(function() {
+		
+	        // Assume that the +/- buttons are contained within
+		// a div that we wish to clone.
+		var toClone = $(this).parent();
+
+		// The dynamic way of doing this doesn't work?
+//                var matches = (" " + toClone.attr('class') + " ").match(/\s(\w+Duplicatable)/);
+//                if (matches) {
+//		     var myClass = matches[0];
+//
+//		     // How many of these elements already exist?
+//		     var num = $('.' + myClass).length;
+////		     alert("number is " + num);	
+//                }
+
+
+		// hard coded
+                var num     = $('.containsDuplicatable').length; // how many "duplicatable" input fields we currently have
+
+                var newNum  = new Number(num + 1);      // the numeric ID of the new input field being added
+ 
+                // create the new element via clone(), and manipulate it's ID using newNum value
+	 	// Again, the element to clone is hardcoded
+               var newElem = $(toClone).clone().attr('id', 'contains' + newNum);
+ 
+                $(newElem).children('select,input').each(function() {
+
+		     // Replace the name and id numbers
+		     var id     = $(this).attr('id').match(/(.+)\d+/);
+		     var bareid = id[1];
+
+                     $(this).attr('id',bareid + newNum);
+                     console.log("Modified element to: ", bareid + newNum);
+
+		     // enable the delete button
+                     $(this).children('class="btnDel').attr('disabled','');
+                     })
+                 
+                // insert the new element after the last "duplicatable" input field
+                $('#contains' + num).after(newElem);
+		return false;
+             });
+ 
+            $('.btnDel').click(function() {
+	        // Currently hard-coded
+		var toRemove = $(this).parent();
+		$(toRemove).remove();
+            });
+ 
+            $('#btnDel').attr('disabled','disabled');
+    </script>
+
+
 
 
 [% END %]
