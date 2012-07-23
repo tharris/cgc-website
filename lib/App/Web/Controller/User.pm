@@ -92,6 +92,11 @@ sub cart_POST {
 			user_id => $user->id
 		});
 	}
+	if ($post_data->{remark}) {
+		$c->log->debug("Got a remark " . $post_data->{remark});
+		$cart->remark($post_data->{remark});
+		$cart->update();
+	}
 	my $add_strains = $get_post_strains->('add');
 	if ($add_strains) {
 		# Add these strains

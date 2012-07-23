@@ -34,6 +34,11 @@ __PACKAGE__->table("app_cart");
   is_foreign_key: 1
   is_nullable: 0
 
+=head2 remark
+
+  data_type: 'mediumtext'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -51,6 +56,8 @@ __PACKAGE__->add_columns(
     is_foreign_key => 1,
     is_nullable => 0,
   },
+  "remark",
+  { data_type => "mediumtext", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("cart_id");
 __PACKAGE__->add_unique_constraint("user_id", ["user_id"]);
@@ -88,12 +95,13 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-20 21:49:59
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ivlOu+N411qP5ZXE8+jaHw
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-23 13:39:34
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:W+S1rXUYIvRcCf9bvCotgg
 
 sub flatten {
 	my ($self) = @_;
 	return +{
+		remark => $self->remark,
 		strains =>
 			$self->app_cart_contents ?
 			[ map { $_->strain->name } $self->app_cart_contents ] : []

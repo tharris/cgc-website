@@ -227,6 +227,8 @@ DROP TABLE IF EXISTS app_cart;
 CREATE TABLE app_cart (
     `cart_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
     `user_id` int(11) unsigned NOT NULL,
+    `remark`  mediumtext
+        COMMENT 'Order requests supplied by user',
     PRIMARY KEY (`cart_id`),
     UNIQUE KEY (`user_id`),
 	CONSTRAINT `app_cart_user_fk`

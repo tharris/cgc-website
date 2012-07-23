@@ -90,7 +90,7 @@
 			$("#doCartAdd").click(function () {
 				$("#addToCartButton").popover("hide")
 				$.ajax({
-					url: "[% c.req.base %]user/[% c.user.user_id %]/cart",
+					url: "[% cart_path %]",
 					type: "POST",
 					data: { add: "[% strain.name %]", inline: 1 },
 					success: function (data) {

@@ -5,7 +5,6 @@
 </div>
 <div class="modal-body">
 	[% IF cart.strains.size > 0 %]
-        [% cart_path = "${c.req.base}user/${c.user.user_id}/cart" %]
 		[% cart_items = cart.strains ? cart.strains.size : 0 %]
 		<p>You have <strong><span id="cart-items">[% cart_items %]</span></strong> items in your cart.</p>
 		<div class="span6">
@@ -20,9 +19,18 @@
 			</tr>
 			[% END %]
 		</table>
+        <form action="[% cart_path %]" method="post" accept-charset="utf-8">
+            <label for="cart-remark">Order notes</label>
+            <textarea name="cart-remark" rows="3" cols="60">
+                [% cart.remark %]
+            </textarea>
+            <span id="remark-status"></span>
+        </form>
+        
 		<a class="btn" id="empty-cart-button" href="#">Empty cart</a>
+    	<button type="button" class="btn" data-dismiss="modal">Continue shopping</button>
 		<a class="btn btn-primary" href="[% c.uri_for('/order') %]">
-			Checkout
+			Check out
 		</a>
 		</div>
 
@@ -88,6 +96,34 @@
 					}
                 });
 			});
+            var currentRemark = '';
+            $("textarea[name=cart-remark]").on('blur', function () {
+                var newRemark = $(this).val();
+                if (newRemark != currentRemark) {                    
+                    $.ajax({
+                        url: "[% cart_path %]",
+                        type: 'POST',
+                        dataType: 'json',
+                        data: { remark: newRemark, inline: 1 },
+                        success: function () {
+                            var $status = $("#remark-status");
+                            $status.addClass("badge badge-info");
+                            $status.text("Notes are saved.");
+                            $status.fadeIn('slow');
+                            setInterval(function () {
+                                $status.fadeOut('slow');
+                            }, 1500);
+                            currentRemark = newRemark;
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            App.showAlert({
+                                title: "Order notes error",
+                                items: [ jqXHR.getResponseHeader('Entity') ]
+                            });
+                        }
+                    });
+                }
+            });
     		$("#empty-cart-button").popover({
     			title: "Are you sure?",
     			trigger: 'focus',
@@ -128,6 +164,12 @@
             
 		</script>
 	[% ELSE %]
+        [% IF cart.remark %]
+            <form action="[% cart_path %]" method="post" accept-charset="utf-8">
+                <label for="remark">Order notes</label>
+                <textarea name="remark" rows="3" cols="60"></textarea>
+            </form>
+        [% END %]
 		<div class="alert">Your cart is empty</div>
         <span style="visibility:hidden" id="cart-items">0</span>
 	[% END %]

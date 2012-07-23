@@ -528,8 +528,7 @@ $('#strain-submit').click(function (e) {
 END;
 %]
 
-
-
+[% SET cart_path = "${c.req.base}user/${c.user.user_id}/cart" %]
 
 
 
