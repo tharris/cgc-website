@@ -152,9 +152,20 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 21:09:15
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UJDwdQuEzrj58hQsgihwQA
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-23 16:57:39
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Qkx6XSmsePuwnU5L+yYAwg
 
+# Yeah, I said entitify
+sub flatten {
+	my ($self) = @_;
+	return +{
+        id       => $self->id,
+        user     => $self->user->username,
+        remark   => $self->remark,
+        received => $self->date_received . "",
+        shipped  => $self->date_shipped . "",
+        strains  => [map { $_->strain->name } $self->app_order_contents],
+    };
+}
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

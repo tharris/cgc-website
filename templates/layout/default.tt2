@@ -7,8 +7,19 @@
     [% PROCESS header/default.tt2 %]
 
 <!--    <div id="content">-->
-      <span class="message">[% status_msg %]</span>
-      <span class="error">[% error_msg %]</span>
+      [% IF status_msg %]
+          <div class="alert alert-info">
+              [% IF status_msg_title %]
+                  <h3 class="alert-heading">[% status_msg_title %]</h3>
+                  <p>[% status_msg %]
+              [% ELSE %]
+                  [% status_msg %]
+              [% END %]
+          </div>
+      [% END %]
+      [% IF error_msg %]
+          <div class="alert alert-error">[% error_msg %]</div>
+      [% END %]
 
       [% IF c.request.param('query') %]
         <script>

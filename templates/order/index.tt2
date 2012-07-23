@@ -16,7 +16,11 @@
 		<thead><h3>Order Information</h3></thead>
 		<tr><th>ID</th><td>[% order.id %]</td></tr>
 		<tr><th>User</th><td>[% order.user %]</td></tr>
-		<tr><th>Strains</th><td>[% order.strains %]</td></tr>
+		<tr><th>Strains ([% order.strains.size %])</th><td>
+            [% FOR strain IN order.strains %]
+            <a href="[% c.uri_for('/strain') %]/[% strain %]">[% strain %]</a><br/>
+            [% END %]
+        </td></tr>
 		<tr><th>Date received</th><td>[% order.received %]</td></tr>
 		<tr><th>Date shipped</th><td>[% order.shipped %]</td></tr>
 		<tr><th>Remark</th><td>[% order.remark %]</td></tr>

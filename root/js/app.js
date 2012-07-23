@@ -73,7 +73,7 @@ var App = (function (window) {
 
     
     app.showAlert = function (args) {
-    	var $prependElement = args.prependTo || $(body);
+    	var $prependElement = args.prependTo || $('body');
     	var items = args.items || [];
 		var alertDiv = $("#cgc-alert");
 		if (alertDiv.length > 0) {

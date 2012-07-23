@@ -1,29 +1,64 @@
-<div class="row">
-<div class="span6 well">
-    <h3>Order Summary</h3>
-    <dl class="dl-horizontal">
-        <dt id="cart-strains-label">Strains</dt>
-    
-        <dt>Notes</dt>
-        <dd id="cart-remark"></dd>
-    </dl>
+[% IF rest.error %]
+<div class="alert alert-error">
+    <h3 class="alert-heading">Order error</h3>
+    <p>[% rest.error %]
 </div>
+[% END %]
+<div id="order-review" class="row">
+    <div class="span6 well">
+        <h3>Order Summary</h3>
+        <table class="table table-bordered">
+            <colgroup><col class="span1"><col class="span4"></colgroup>
+            <tr><th>Strains</th><td id="cart-strains"></td></tr>
+            <tr><th>Notes</th><td id="cart-remark"></td></tr>
+        </table>
+    </div>
+    <div id="status"></div>
 </div>
 <div class="row pull-right">
-<a class="btn btn-large" href="#modal" data-toggle="modal" data-uri="[% cart_path %]">Edit cart</a>
-<input class="btn btn-large btn-primary" type="submit" value="Place order">
+<form id="order-form"
+      action="[% c.uri_for('/order') %]"
+      method="POST"
+      accept-charset="utf-8">
+    <input type="hidden" name="confirm" value="true" />
+    <a class="btn btn-large"
+       href="#modal"
+       data-toggle="modal"
+       data-uri="[% cart_path %]">Edit cart</a>
+    <a class="btn btn-large btn-primary"
+       type="submit"
+       id="place-order-button">Place order</a>
+</form>
 </div>
 
 <script type="text/javascript" charset="utf-8">
-$.getJSON('[% "${c.req.base}user/${c.user.user_id}/cart" %]', 
+$.getJSON('[% cart_path %]', 
     function (data) {
         for (var i = 0; i < data.strains.length; i++) {
             var link = $("<a></a>")
                 .attr("href", "[% c.uri_for('/strain') %]/" + data.strains[i])
                 .text(data.strains[i]);
-            $("#cart-strains-label").after($("<dd></dd>").html(link));
+            $("#cart-strains").append($("<span></span>").html(link)).append("<br/>");
         };
         $("#cart-remark").text(data.remark);
     }
 );
+
+$("#place-order-button").popover({
+	title: "Are you sure?",
+    placement: "bottom",
+	trigger: 'focus',
+	content: "<button id='cancel-place-order' class='btn'>No, I'm not sure</button>"
+		+ "<button id='do-place-order' class='btn btn-primary'>Yes, please</button>"
+});
+$("#place-order-button").click(function () {
+	$("#place-order-button").popover("show");
+	$("#cancel-place-order").click(function () {
+		$("#place-order-button").popover("hide");
+	});
+	$("#do-place-order").click(function () {
+		$("#place-order-button").popover("hide");
+        $("#order-form").submit();
+    });
+});
 </script>

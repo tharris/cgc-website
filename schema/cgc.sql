@@ -152,8 +152,10 @@ CREATE TABLE `app_order_contents` (
   PRIMARY KEY (`order_id`,`strain_id`),
   KEY `app_order_contents_strain_id_fk` (`strain_id`),
   KEY `app_order_contents_order_id_fk` (`order_id`),
-  CONSTRAINT `app_order_contents_strain_id_fk` FOREIGN KEY (`strain_id`) REFERENCES `strain` (`id`),
-  CONSTRAINT `app_order_contents_order_id_fk` FOREIGN KEY (`order_id`) REFERENCES `app_order` (`id`)
+  CONSTRAINT `app_order_contents_strain_id_fk`
+    FOREIGN KEY (`strain_id`) REFERENCES `strain` (`id`),
+  CONSTRAINT `app_order_contents_order_id_fk`
+    FOREIGN KEY (`order_id`) REFERENCES `app_order` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
