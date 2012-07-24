@@ -151,9 +151,24 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 order_events
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-23 16:57:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Qkx6XSmsePuwnU5L+yYAwg
+Type: has_many
+
+Related object: L<CGC::Schema::Result::OrderEvent>
+
+=cut
+
+__PACKAGE__->has_many(
+  "order_events",
+  "CGC::Schema::Result::OrderEvent",
+  { "foreign.order_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-24 12:14:44
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:h0Byuf+WmAPmHR4RSpgDkA
 
 # Yeah, I said entitify
 sub flatten {
@@ -164,7 +179,9 @@ sub flatten {
         remark   => $self->remark,
         received => $self->date_received . "",
         shipped  => $self->date_shipped . "",
-        strains  => [map { $_->strain->name } $self->app_order_contents],
+        strains  => $self->app_order_contents
+			? [map { $_->strain->name } $self->app_order_contents]
+			: [],
     };
 }
 

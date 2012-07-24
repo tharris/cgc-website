@@ -52,6 +52,7 @@ __PACKAGE__->add_columns(
     is_nullable => 0,
   },
 );
+__PACKAGE__->set_primary_key("event_id");
 
 =head1 RELATIONS
 
@@ -86,8 +87,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 21:09:15
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:EXwiiu09pasUXy5ldMwk9g
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-24 12:17:36
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:0k1/UmYw/CGlFTalDESC4w
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
