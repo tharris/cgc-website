@@ -58,11 +58,8 @@ sub laboratory_GET :Path('/laboratory') :Args(1)   {
     my ($self, $c, $query) = @_;
     $c->stash->{template} = 'laboratory/index.tt2';
 
-    # I suppose that edit can be a url parameter.
-    # my $params = $c->req->parameters;
-   
-
-    my $entity = $self->_get_laboratory($query);
+    # Edit could be url parameter instead of a specific target.
+    my $entity = $self->_get_laboratory($c,$query);
     $self->status_ok($c, entity => $entity);
 }
 
