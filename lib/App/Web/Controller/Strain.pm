@@ -192,12 +192,18 @@ sub new_strain_POST {
 
     my $name = $self->_process_form($c);
 
+    $c->stash->{template} = 'strain/index.tt2';
+    
     if ($name) {
         $c->stash->{message} = "New strain submitted successfully.";
-        $c->detach($c->uri_for("/strain/" . $name));
+
+#        $self->forward($c->uri_for('/'));
+	my $entity = { name => $name };
+	$self->status_ok($c, entity => $entity);
+
     }
 
-    #    $self->status_ok($c, entity => $entity);
+    
 }
 
 sub _process_form : Private {

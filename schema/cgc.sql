@@ -397,6 +397,7 @@ CREATE TABLE `app_user` (
 INSERT INTO `app_user` VALUES ('1','tharris','{SSHA}ZZ2/yHLi1OZ0G4fUMaN/T+NA7rm7Jy57','1','EG','Todd','William','Harris','todd@wormbase.org','1');
 INSERT INTO `app_user` VALUES ('2','shiran','{SSHA}ZZ2/yHLi1OZ0G4fUMaN/T+NA7rm7Jy57','1','EG','Shiran','','Pasternak','shiranpasternak@gmail.com','1');
 INSERT INTO `app_user` VALUES ('3','cgc-admin','{SSHA}bTzfBMj+pPwVBMBNYEl2HlMw5hyqGCs/','1','EG','CGC','','Admin','cgc-admin@todd.co','1');
+INSERT INTO `app_user` VALUES ('4','user','{SSHA}ZZ2/yHLi1OZ0G4fUMaN/T+NA7rm7Jy57','4','EG','Test','','User','testuser@todd.co','1');
 
 # Dump of table app_users_to_roles
 # ------------------------------------------------------------
@@ -412,6 +413,7 @@ CREATE TABLE `app_users_to_roles` (
 INSERT INTO `app_users_to_roles` VALUES ('1','1');
 INSERT INTO `app_users_to_roles` VALUES ('2','1');
 INSERT INTO `app_users_to_roles` VALUES ('3','1');
+INSERT INTO `app_users_to_roles` VALUES ('4','4');
 
 
 

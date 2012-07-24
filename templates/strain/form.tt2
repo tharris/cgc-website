@@ -11,6 +11,10 @@
 	  <li>Submitted by: (tracked in strain).
 	  <li>Entered By: tracked in event
 	  <li>Made By: string entered by user.
+	  <li>Differentiate updates from adds
+	  <li>Add remarks for each event
+	  <li>form verification (strain unique, error checking, etc)
+	  <li> add documentation on how to submit strains
      </ul>
 
      <p><strong>Questions for CGC</strong></p>
@@ -80,8 +84,16 @@
           <div class="control-group">
             <label class="control-label" for="genotype">Genotype</label>
             <div class="controls">
-              <input type="text" class="input-xlarge" id="genotype">
+              <input type="text" class="input-xlarge" id="genotype"
               <p class="help-block">The genotype of the strain.</p>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="remark">Description</label>
+            <div class="controls">
+              <textarea class="input-xlarge" id="description" rows="3"></textarea>
+              <p class="help-block">A brief description of the strain. Include any information critical to scoring or maintaining the strain.</p>
             </div>
           </div>
 
@@ -145,12 +157,6 @@
             </div>
           </div>
 
-          <div class="control-group">
-            <label class="control-label" for="remark">Remarks</label>
-            <div class="controls">
-              <textarea class="input-xlarge" id="remark" rows="3"></textarea>
-            </div>
-          </div>
 	  </fieldset>
 
 
@@ -239,7 +245,7 @@
 [% END %]
 
           <div class="form-actions">
-            <button type="submit" class="btn btn-primary" id="strain-submit">Save changes</button>
+            <button type="submit" class="btn btn-primary" id="strain-submit">Add Strain</button>
             <button class="btn">Cancel</button>
           </div>
         </fieldset>
@@ -262,7 +268,9 @@ $('#strain-submit').click(function (e) {
 	    type: "POST", 
 	    data: parameters,
 		success: function (data) {
-			console.log("Successfully posted", data);
+			console.log("Successfully posted", data.name);
+                        $.session.set('message-text', 'Your strain has been submitted to the CGC.')
+		        window.location.assign('/strain/' + data.name);
 		},
 		error: function (jqXHR, status, err) {
 			console.log("Error! " + err, jqXHR);
