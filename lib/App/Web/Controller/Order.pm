@@ -72,12 +72,7 @@ sub order_POST {
 		$cart->delete();
 		$cart->delete_related('app_cart_contents');
 		$c->log->debug("Created order " . $order->id);
-		$c->stash->{template} = 'order/index.tt2';
-		$c->stash->{status_msg_title} = 'Success!';
-		$c->stash->{status_msg} =
-			'Your order has been placed. ' .
-			'You should receive a confirmation email shortly.';
-		return $self->status_ok($c, entity => { order => $order->flatten });
+		$self->status_ok($c, entity => { order => $order->flatten });
 	}
 }
 

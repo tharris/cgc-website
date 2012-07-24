@@ -20,7 +20,8 @@
     </style>
 
     <script src="/js/bootstrap/jquery.js"></script>
-	<script src="/js/jquery/jquery-ui.js"></script>
+    <script src="/js/jquery/jquery-ui.js"></script>
+    <script src="/js/jquery/jquery.session.js"></script>
 	<script src="/js/bootstrap/bootstrap.min.js"></script>
 	<script src="/js/bootstrap-typeahead.js"></script>
 	<script src="/js/app.js"></script>

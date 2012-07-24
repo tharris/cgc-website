@@ -80,10 +80,13 @@ var App = (function (window) {
 			alertDiv.empty();
 		} else {
 			alertDiv = $("<div></div>");
-			alertDiv.addClass("alert alert-block");
+			alertDiv.addClass("alert");
 			alertDiv.attr('id', 'cgc-alert');
 			$prependElement.prepend(alertDiv);
 		}
+        if (args.alertClass) {
+            alertDiv.addClass(args.alertClass);
+        }
 		alertDiv
 			.append('<button class="close" data-dismiss="alert">×</button>')
 			.append('<h4 class="alert-heading">' + args.title + '</h4>');

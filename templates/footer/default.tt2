@@ -21,3 +21,14 @@
 <!-- end boilerplate/footer -->
 
     </div><!--end wrap-->
+<script type="text/javascript" charset="utf-8">
+    $(function () {
+        if ($.session.get("message-text")) {
+            App.showAlert({
+                alertClass: 'alert-info',
+                title: $.session.get("message-title"),
+                items: [$.session.get("message-text")]
+            });
+        }
+    });
+</script>

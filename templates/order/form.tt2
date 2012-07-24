@@ -32,13 +32,29 @@
 </div>
 
 <script type="text/javascript" charset="utf-8">
+var canSubmitForm = false;
 $.getJSON('[% cart_path %]', 
     function (data) {
+        if (data.strains.length > 0) {
+            canSubmitForm = true;
+        } else {
+            if (!$("alert alert-error")) {
+                App.showAlert({
+                    prependTo: $("#order-review"),
+                    title: "Order error",
+                    items: [ "Your cart is empty" ]
+                });
+            }
+            $("#place-order-button").click(false);
+            $("#place-order-button").attr('disabled', true);
+        }
         for (var i = 0; i < data.strains.length; i++) {
             var link = $("<a></a>")
                 .attr("href", "[% c.uri_for('/strain') %]/" + data.strains[i])
                 .text(data.strains[i]);
-            $("#cart-strains").append($("<span></span>").html(link)).append("<br/>");
+                $("#cart-strains")
+                    .append($("<span></span>")
+                        .html(link)).append("<br/>");
         };
         $("#cart-remark").text(data.remark);
     }
@@ -52,13 +68,30 @@ $("#place-order-button").popover({
 		+ "<button id='do-place-order' class='btn btn-primary'>Yes, please</button>"
 });
 $("#place-order-button").click(function () {
-	$("#place-order-button").popover("show");
-	$("#cancel-place-order").click(function () {
-		$("#place-order-button").popover("hide");
-	});
-	$("#do-place-order").click(function () {
-		$("#place-order-button").popover("hide");
-        $("#order-form").submit();
-    });
+    if (canSubmitForm) {
+    	$("#place-order-button").popover("show");
+    	$("#cancel-place-order").click(function () {
+    		$("#place-order-button").popover("hide");
+    	});
+    	$("#do-place-order").click(function () {
+    		$("#place-order-button").popover("hide");
+            $("#place-order-button").attr('disabled', true);
+            canSubmitForm = false;
+            $.ajax({
+                url: "[% c.uri_for('/order') %]",
+                type: "POST",
+                dataType: "json",
+                data: { confirm: true },
+                success: function (json) {
+                    $.session.set("message-title", "Success!");
+                    $.session.set("message-text",
+                        "Your order has been placed. " +
+                        "You should receive a confirmation email shortly.'");
+                    var url = "[% c.uri_for('/order') %]/" + json.order.id;
+                    window.location.assign(url);
+                }
+            });
+        });
+    }
 });
 </script>
