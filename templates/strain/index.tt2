@@ -62,7 +62,7 @@
          	<tr><th>Made by</th>    <td>[% strain.made_by %] ([% link_to_wormbase('Person',strain.made_by,'view at WormBase') %])</td></tr>
 	[% END %]
 	[% IF strain.laboratory %]
-   		<tr><th>Laboratory</th> <td><a href="[% c.uri_for('/laboratory',strain.laboratory) %]">[% strain.laboratory %]</a></td></tr>
+   		<tr><th>Laboratory</th> <td>[% laboratory_link(strain.laboratory) %]</td></tr>
 	[% END %]
 
        [% format_history(items=strain.history) %]
@@ -130,7 +130,7 @@
 
 
 
-[% IF c.check_user_roles('admin') %]
+[% IF c.check_user_roles('admin') || c.check_user_roles('manager') || c.check_user_roles('employee') %]
 
      <div class="span6">     
      [% WRAPPER admin_content title="Freezer Samples" %]
@@ -164,5 +164,6 @@
 </div><!-- close row -->
 </div><!-- close 12 span -->
 </div><!-- close 12 span row -->
+
 
       [% END %]

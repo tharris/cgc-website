@@ -15,21 +15,341 @@
 
      <p><strong>Questions for CGC</strong></p>
      <ul>
-     <li>Can we standardize the mutagen data</li>
+     <li>Can we standardize the mutagen data?</li>
      <li>How often to new strains come in containgin genes or variations not yet listed in WormBase?
      <li>TH: need to explain difference between genotype and constructed genotype
      </ul>
 [% END %]
 
 
+[% IF c.user_exists %]
+
+
+   [%# Dynamically select action - PUT or POST %]
+      <form class="form-horizontal" method="POST" id="strain-form" action="/strain/new-strain">
+<!--      <form class="form-horizontal" id="strain-form" action="#"> -->
+        <fieldset>
+          <legend>Origin</legend>
+
+          <div class="control-group">
+            <label class="control-label" for="submitted_by">Made By</label>
+            <div class="controls">
+              <input type="text" class="input-xlarge" id="made_by">
+              <p class="help-block">The person who made the strain if different than the person submitting.</p>
+            </div>
+          </div>
+
+
+          <div class="control-group">
+            <label class="control-label" for="laboratory">Laboratory</label>
+            <div class="controls">
+                  <select id="laboratory">
+                     <option></option>
+	      [% FOREACH lab IN labs.keys.sort %]
+                     <option value="[% labs.$lab.id %]">[% lab %] ([% labs.$lab.head %])</option>
+	      [% END %]
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Strain Information</legend>
+
+          <div class="control-group">
+            <label class="control-label" for="strain_name">Strain Name</label>
+            <div class="controls">
+              <input type="text" class="input-xlarge" id="strain_name">
+              <p class="help-block">Enter the strain designation, for example, EG1000, N2.</p>
+            </div>
+          </div>
+
+
+          <div class="control-group">
+            <label class="control-label" for="species">Species</label>
+            <div class="controls">
+                  <select id="species">
+                     <option></option>
+	      [% FOREACH this_species IN species.keys.sort %]
+                     <option value="[% species.$this_species %]">[% this_species %]</option>
+	      [% END %]
+              </select>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="genotype">Genotype</label>
+            <div class="controls">
+              <input type="text" class="input-xlarge" id="genotype">
+              <p class="help-block">The genotype of the strain.</p>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="laboratory">Outcrossed</label>
+            <div class="controls">
+              <select id="outcrossed">
+                <option></option>
+                <option>not outcrossed</option>
+                <option>1x</option>
+                <option>2x</option>
+                <option>3x</option>
+                <option>4x</option>
+                <option>5x</option>
+                <option>6x</option>
+                <option>7x</option>
+                <option>8x</option>
+                <option>9x</option>
+                <option>10x</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="mutagen">Mutagen</label>
+            <div class="controls">
+                  <select id="mutagen">
+                     <option></option>
+	      [% FOREACH mutagen IN mutagens.keys.sort %]
+                     <option value="[% mutagens.$mutagen %]">[% mutagen %]</option>
+	      [% END %]
+              </select>
+            </div>
+          </div>
+
+
+          <div class="control-group">
+            <label class="control-label" for="contains-type">Contains</label>
+            <div class="controls containsDuplicatable" id="contains1">
+	         [% types = [ 'gene', 'variation', 'transgene' , 'rearrangement'] %]
+
+
+                  <select id="contains-type1" class="contains-selecter">
+                     <option></option>
+      	             [% FOREACH thistype IN types.sort %]
+                         <option value="[% thistype %]">[% thistype %]</option>
+     	             [% END %]
+                  </select>
+
+      	             [% FOREACH thistype IN types.sort %]		  
+                  <select id="contains-name1" type="[% thistype %]" style="display:none">
+                     <option></option>
+     	                [% FOREACH item IN $thistype.keys.sort %]
+                           <option value="[% $thistype.$item.id %]">[% $thistype.$item.name %] [% $thistype.$item.chromosome %]</option>
+      	                [% END %]
+                     </select>
+		     [% END %]
+
+<!--              <input type="text" class="input-xlarge" id="contains-name1"> -->
+		   <a href="#" class="btn btn-mini btnAdd"><i class="icon-plus"></i></a> <a href="#" class="btn btn-mini btnDel"><i class="icon-minus"></i></a>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="remark">Remarks</label>
+            <div class="controls">
+              <textarea class="input-xlarge" id="remark" rows="3"></textarea>
+            </div>
+          </div>
+	  </fieldset>
+
+
 [% IF c.check_user_roles('admin') || c.check_user_roles('manager') || c.check_user_roles('employee') %]
 
+	  <fieldset>
+	  <legend>Workflow</legend>
+	  <em><p>This section is only visible to CGC staff. It's used to track progress once a new strain has been submitted.</p>
+	  <p>Each step should be unique and trackable by user and date. Right now just checkboxes.</em>
 
-    [% INCLUDE strain_submission_form %]
+
+          <div class="well span6">
+          <table id="workflow" class="table table-striped">
+          <thead><h3>Workflow</h3></thead>
+          <tbody>
+               <tr><th>Date Submitted</th>       <td></td><td></td></tr>
+               <tr><th>Strain Received</th>
+                    <td>
+                       <div class="control-group">
+                         <div class="controls">
+                              <input type="checkbox" id="receivedCheckbox" value="option1">                     
+                         </div>
+                       </div>
+                     </td>
+		     <td></td>
+                </tr>
+
+               <tr><th>Genotype verified</th>
+                    <td>
+                       <div class="control-group">
+                         <div class="controls">
+                              <input type="checkbox" id="genotypeVerified" value="option1">                     
+                         </div>
+                       </div>
+                     </td>
+		     <td></td>
+                </tr>
+
+
+               <tr><th>Strain Frozen</th>
+                    <td>
+                       <div class="control-group">
+                         <div class="controls">
+                              <input type="checkbox" id="frozenCheckbox" value="option1">                     
+                         </div>
+                       </div>
+                     </td>
+		     <td></td>
+                </tr>
+
+               <tr><th>Freeze Verified</th>
+                    <td>
+                       <div class="control-group">
+                         <div class="controls">
+                              <input type="checkbox" id="freezeverifiedCheckbox" value="option1">                     
+                         </div>
+                       </div>
+                     </td>
+		     <td></td>
+                </tr>
+          </table>
+     </div>
+    </fieldset>
+
+	  <!--
+          <div class="control-group">
+            <label class="control-label" for="multiSelect">Multicon-select</label>
+            <div class="controls">
+              <select multiple="multiple" id="multiSelect">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+              </select>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="fileInput">File input</label>
+            <div class="controls">
+              <input class="input-file" id="fileInput" type="file">
+            </div>
+          </div>
+	  -->
+
+[% END %]
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="strain-submit">Save changes</button>
+            <button class="btn">Cancel</button>
+          </div>
+        </fieldset>
+      </form>
+
+
+<script>
+$('#strain-submit').click(function (e) {
+	e.preventDefault(); 
+
+	var parameters = {};
+	$("#strain-form").find('input[value!=""], select[value!=""]').each(
+		function () {
+			parameters[$(this).attr('id')] = $(this).val();
+		}
+	);
+	$.ajax({
+	    url: '/strain/new-strain',
+	    dataType: 'json',
+	    type: "POST", 
+	    data: parameters,
+		success: function (data) {
+			console.log("Successfully posted", data);
+		},
+		error: function (jqXHR, status, err) {
+			console.log("Error! " + err, jqXHR);
+		}
+	});
+	return false;
+});
+</script>
+
+
+<script type="text/javascript">
+   $('.contains-selecter').change(function() {
+        var myId = $(this).attr('id');
+ 	var text = $('#' + myId + ' option:selected').text();
+	console.log(text);
+	
+	// Hide all the other drop down elements
+	$(this).siblings('[type]').hide();
+
+	// Make the appropriate select element visible 
+	$(this).siblings('[type=' + text + ']').show();
+
+	return false;
+	});
+
+</script>      
+
+
+    <script type="text/javascript">
+            $('.btnAdd').click(function() {
+		
+	        // Assume that the +/- buttons are contained within
+		// a div that we wish to clone.
+		var toClone = $(this).parent();
+
+		// The dynamic way of doing this doesn't work?
+//                var matches = (" " + toClone.attr('class') + " ").match(/\s(\w+Duplicatable)/);
+//                if (matches) {
+//		     var myClass = matches[0];
+//
+//		     // How many of these elements already exist?
+//		     var num = $('.' + myClass).length;
+////		     alert("number is " + num);	
+//                }
+
+
+		// hard coded
+                var num     = $('.containsDuplicatable').length; // how many "duplicatable" input fields we currently have
+
+                var newNum  = new Number(num + 1);      // the numeric ID of the new input field being added
+ 
+                // create the new element via clone(), and manipulate it's ID using newNum value
+	 	// Again, the element to clone is hardcoded
+               var newElem = $(toClone).clone().attr('id', 'contains' + newNum);
+ 
+                $(newElem).children('select,input').each(function() {
+
+		     // Replace the name and id numbers
+		     var id     = $(this).attr('id').match(/(.+)\d+/);
+		     var bareid = id[1];
+
+                     $(this).attr('id',bareid + newNum);
+                     console.log("Modified element to: ", bareid + newNum);
+
+		     // enable the delete button
+                     $(this).children('class="btnDel').attr('disabled','');
+                     })
+                 
+                // insert the new element after the last "duplicatable" input field
+                $('#contains' + num).after(newElem);
+		return false;
+             });
+ 
+            $('.btnDel').click(function() {
+	        // Currently hard-coded
+		var toRemove = $(this).parent();
+		$(toRemove).remove();
+            });
+ 
+            $('#btnDel').attr('disabled','disabled');
+    </script>
 
 [% ELSE %]
-   <div class="alert alert-error">You must be an administrator to add a new strain</div>
+   <div class="alert alert-error">You must be an logged in to submit a new strain.</div>
 [% END %]
+
+
 
 
 

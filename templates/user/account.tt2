@@ -16,10 +16,16 @@
               <li><a href="#"><i class="icon-shopping-cart"></i> My Orders</a></li>
 
               [% IF c.check_user_roles('admin') %]
-                   <li class="nav-header">Strain Management</li>
+                   <li class="nav-header">Strains</li>
                    <li><a href="#"><i class="icon-inbox"></i> Add a new strain</a></li>
                    <li><a href="#"><i class="icon-inbox"></i> Update a strain</a></li>
                    <li><a href="#"><i class="icon-inbox"></i> Thaw a strain</a></li>
+
+
+                   <li class="nav-header">Laboratories</li>
+                   <li><a href="#"><i class="icon-inbox"></i> View all labs</a></li>
+                   <li><a href="#"><i class="icon-inbox"></i> Add a lab</a></li>
+                   <li><a href="#"><i class="icon-inbox"></i> Update a lab</a></li>
 
                     <li class="nav-header">Orders</li>
                     <li><a href="#"><i class="icon-inbox"></i> New Orders</a></li>
