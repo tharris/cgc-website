@@ -1,7 +1,7 @@
 [% DEFAULT orders = rest.orders %]
 
 <div class="page-header">
-  <h1>Orders</h1>
+  <h1>Orders <small>([% orders.size %])</small></h1>
 </div>
 
 <table border="0" class="table table-striped">

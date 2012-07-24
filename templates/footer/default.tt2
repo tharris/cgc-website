@@ -29,6 +29,8 @@
                 title: $.session.get("message-title"),
                 items: [$.session.get("message-text")]
             });
+            $.session.delete("message-text");
+            $.session.delete("message-title");
         }
     });
 </script>
