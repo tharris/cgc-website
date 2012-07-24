@@ -75,8 +75,9 @@ DROP TABLE IF EXISTS `freezer_event`;
 CREATE TABLE `freezer_event` (
 	`event_id`   int(11) unsigned NOT NULL,
 	`freezer_id` int(11) unsigned NOT NULL,
-	 FOREIGN KEY (`event_id`)   REFERENCES `event`   (`id`),
-	 FOREIGN KEY (`freezer_id`) REFERENCES `freezer` (`id`)
+    PRIMARY KEY (`event_id`),
+    FOREIGN KEY (`event_id`)   REFERENCES `event`   (`id`),
+    FOREIGN KEY (`freezer_id`) REFERENCES `freezer` (`id`)
 	 /* Any other specific columns? */
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -84,8 +85,9 @@ DROP TABLE IF EXISTS `freezer_sample_event`;
 CREATE TABLE `freezer_sample_event` (
 	`event_id`   int(11) unsigned NOT NULL,
 	`freezer_sample_id` int(11) unsigned NOT NULL,
-	 FOREIGN KEY (`event_id`)          REFERENCES `event`          (`id`),
-	 FOREIGN KEY (`freezer_sample_id`) REFERENCES `freezer_sample` (`id`)
+    PRIMARY KEY (`event_id`),
+	FOREIGN KEY (`event_id`)          REFERENCES `event`          (`id`),
+	FOREIGN KEY (`freezer_sample_id`) REFERENCES `freezer_sample` (`id`)
 	 /* Any other specific columns? */
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -93,8 +95,9 @@ DROP TABLE IF EXISTS `laboratory_event`;
 CREATE TABLE `laboratory_event` (
 	`event_id`   int(11) unsigned NOT NULL,
 	`laboratory_id` int(11) unsigned NOT NULL,
-	 FOREIGN KEY (`event_id`)      REFERENCES `event`      (`id`),
-	 FOREIGN KEY (`laboratory_id`) REFERENCES `laboratory` (`id`)
+    PRIMARY KEY (`event_id`),
+	FOREIGN KEY (`event_id`)      REFERENCES `event`      (`id`),
+	FOREIGN KEY (`laboratory_id`) REFERENCES `laboratory` (`id`)
 	 /* Any other specific columns? */
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -102,15 +105,17 @@ DROP TABLE IF EXISTS `strain_event`;
 CREATE TABLE `strain_event` (
 	`event_id`   int(11) unsigned NOT NULL,
 	`strain_id` int(11) unsigned NOT NULL,
-	 FOREIGN KEY (`event_id`)  REFERENCES `event`  (`id`),
-	 FOREIGN KEY (`strain_id`) REFERENCES `strain` (`id`)
+    PRIMARY KEY (`event_id`),
+	FOREIGN KEY (`event_id`)  REFERENCES `event`  (`id`),
+	FOREIGN KEY (`strain_id`) REFERENCES `strain` (`id`)
 	 /* Any other specific columns? */
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `admin_event`;
 CREATE TABLE `admin_event` (
 	`event_id` int(11) unsigned NOT NULL,
-	 FOREIGN KEY (`event_id`) REFERENCES `event` (`id`)
+    PRIMARY KEY (`event_id`),
+	FOREIGN KEY (`event_id`) REFERENCES `event` (`id`)
 	 /* Any other specific columns? */
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -118,8 +123,11 @@ DROP TABLE IF EXISTS `order_event`;
 CREATE TABLE `order_event` (
 	`event_id` int(11) unsigned NOT NULL,
 	`order_id` int(11) unsigned NOT NULL,
-	FOREIGN KEY (`event_id`) REFERENCES `event` (`id`),
+    PRIMARY KEY (`event_id`),
+	FOREIGN KEY (`event_id`) REFERENCES `event` (`id`)
+        ON DELETE CASCADE,
 	FOREIGN KEY (`order_id`) REFERENCES `app_order` (`id`)
+        ON DELETE CASCADE
 	 /* Any other specific columns? */
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

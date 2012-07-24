@@ -1,4 +1,4 @@
-package CGC::Schema::Result::LaboratoryEvent;
+package CGC::Schema::Result::OrderEvent;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
@@ -12,11 +12,11 @@ __PACKAGE__->load_components("InflateColumn::DateTime");
 
 =head1 NAME
 
-CGC::Schema::Result::LaboratoryEvent
+CGC::Schema::Result::OrderEvent
 
 =cut
 
-__PACKAGE__->table("laboratory_event");
+__PACKAGE__->table("order_event");
 
 =head1 ACCESSORS
 
@@ -27,7 +27,7 @@ __PACKAGE__->table("laboratory_event");
   is_foreign_key: 1
   is_nullable: 0
 
-=head2 laboratory_id
+=head2 order_id
 
   data_type: 'integer'
   extra: {unsigned => 1}
@@ -44,7 +44,7 @@ __PACKAGE__->add_columns(
     is_foreign_key => 1,
     is_nullable => 0,
   },
-  "laboratory_id",
+  "order_id",
   {
     data_type => "integer",
     extra => { unsigned => 1 },
@@ -71,24 +71,24 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 laboratory
+=head2 order
 
 Type: belongs_to
 
-Related object: L<CGC::Schema::Result::Laboratory>
+Related object: L<CGC::Schema::Result::AppOrder>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "laboratory",
-  "CGC::Schema::Result::Laboratory",
-  { id => "laboratory_id" },
+  "order",
+  "CGC::Schema::Result::AppOrder",
+  { id => "order_id" },
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
 
 # Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-24 12:17:36
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Tr3lR1wiIjjShMN0qPCpQQ
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:PMMm80RpSIrD3xb+acbWnw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

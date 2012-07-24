@@ -84,16 +84,16 @@ __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
 
-=head2 admin_events
+=head2 admin_event
 
-Type: has_many
+Type: might_have
 
 Related object: L<CGC::Schema::Result::AdminEvent>
 
 =cut
 
-__PACKAGE__->has_many(
-  "admin_events",
+__PACKAGE__->might_have(
+  "admin_event",
   "CGC::Schema::Result::AdminEvent",
   { "foreign.event_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
@@ -114,69 +114,84 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
-=head2 freezer_events
+=head2 freezer_event
 
-Type: has_many
+Type: might_have
 
 Related object: L<CGC::Schema::Result::FreezerEvent>
 
 =cut
 
-__PACKAGE__->has_many(
-  "freezer_events",
+__PACKAGE__->might_have(
+  "freezer_event",
   "CGC::Schema::Result::FreezerEvent",
   { "foreign.event_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 freezer_sample_events
+=head2 freezer_sample_event
 
-Type: has_many
+Type: might_have
 
 Related object: L<CGC::Schema::Result::FreezerSampleEvent>
 
 =cut
 
-__PACKAGE__->has_many(
-  "freezer_sample_events",
+__PACKAGE__->might_have(
+  "freezer_sample_event",
   "CGC::Schema::Result::FreezerSampleEvent",
   { "foreign.event_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 laboratory_events
+=head2 laboratory_event
 
-Type: has_many
+Type: might_have
 
 Related object: L<CGC::Schema::Result::LaboratoryEvent>
 
 =cut
 
-__PACKAGE__->has_many(
-  "laboratory_events",
+__PACKAGE__->might_have(
+  "laboratory_event",
   "CGC::Schema::Result::LaboratoryEvent",
   { "foreign.event_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 strain_events
+=head2 order_event
 
-Type: has_many
+Type: might_have
+
+Related object: L<CGC::Schema::Result::OrderEvent>
+
+=cut
+
+__PACKAGE__->might_have(
+  "order_event",
+  "CGC::Schema::Result::OrderEvent",
+  { "foreign.event_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 strain_event
+
+Type: might_have
 
 Related object: L<CGC::Schema::Result::StrainEvent>
 
 =cut
 
-__PACKAGE__->has_many(
-  "strain_events",
+__PACKAGE__->might_have(
+  "strain_event",
   "CGC::Schema::Result::StrainEvent",
   { "foreign.event_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 21:09:15
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ZJeIDwLMAwMzvjcrd1Coaw
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-24 12:17:36
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:7gPV84CHWN9x+Y1ZXjUijg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
