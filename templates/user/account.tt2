@@ -17,14 +17,14 @@
 
               [% IF c.check_user_roles('admin') %]
                    <li class="nav-header">Strains</li>
-                   <li><a href="/strain/new-strain"><i class="icon-inbox"></i> Add a new strain</a></li>
+                   <li><a href="#" data-uri="/strain/new-strain"><i class="icon-inbox"></i> Add a new strain</a></li>
                    <li><a href="#"><i class="icon-inbox"></i> Update a strain</a></li>
                    <li><a href="#"><i class="icon-inbox"></i> Thaw a strain</a></li>
 
 
                    <li class="nav-header">Laboratories</li>
                    <li><a href="#"><i class="icon-inbox"></i> View all labs</a></li>
-                   <li><a href="#"><i class="icon-inbox"></i> Add a lab</a></li>
+                   <li><a href="#" data-uri="/laboratory/new-laboratory" class="dashboard"><i class="icon-inbox"></i> Add a lab</a></li>
                    <li><a href="#"><i class="icon-inbox"></i> Update a lab</a></li>
 
                     <li class="nav-header">Orders</li>
@@ -78,3 +78,21 @@
 
 
 
+
+
+
+<script>
+        $('ul.nav a').on('click',
+            function (data) {
+	    // Preserve window hash if we want to append to uri
+            // var hash = window.location.hash;
+	        var uri = $(this).attr('data-uri');
+               	 window.location.hash = uri;
+		 $("#content-pane").load(uri);
+		 alert(uri);
+                // window.location.href = '/[% class %]/' + data.target.value
+                // If we want to get fancy and avoid page loads....
+		
+            }
+        );
+</script>

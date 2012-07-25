@@ -7,6 +7,30 @@
 	</header>
 </div>
 
+    <div class="row offset2">
+         <div class="span6 well">
+             <h3><a href="#" id="global-search" class="popover-link" rel="popover" data-content="Search for strains using strain IDs, genes, alleles, transgenes, rearrangements, lab codes, or even the people who made them." data-original-title="Search">Search</a>
+              </h3>
+            <div class="span3">
+             <input id="search-strain" type="text" class="span3"
+                  [% IF strain %] value="[% strain.name %]"
+                  [% ELSE %] placeholder="Start typing..."
+                  [% END %]
+              />
+             </div>
+             <div class="span2">
+                 Examples<br />
+                 <span style="margin-bottom: 9px"><small>
+Strain: <a href="/strain/CA257">CA257</a><br />
+Laboratory: <a href="/laboratory/MT">MT</a><br />
+Gene: <a href="/gene/unc-22">unc-22</a><br />
+Species: <a href="/species/caenorhabditis_elegans">C. elegans</a><br />
+             </small></span>
+             </div> 
+       </div>
+    </div>
+  
+
     <div class="row offset1">
         <div class="span4 well">
              <h3><a href="#" id="available-species" class="popover-link" rel="popover" data-content="Search or browse all available species with strains available from the CGC" data-original-title="Available Species">Available Species</a>
@@ -52,11 +76,8 @@
              <a href="[% c.uri_for('/gene') %]">Search</a> 
 <!--             or <a href="[% c.uri_for('/genes') %]">View All</a> -->
          </div>
-
-
-
-
     </div>
 
 
 
+[% typeahead_support('strain',['genotype','name']) %]

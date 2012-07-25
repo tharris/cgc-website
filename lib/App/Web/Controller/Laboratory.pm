@@ -111,7 +111,7 @@ sub new_laboratory : Path('/laboratory/new-laboratory') : ActionClass('REST') { 
 sub new_laboratory_GET  {
     my ($self, $c) = @_;
     $c->stash->{template} = 'laboratory/form.tt2';
-    $c->assert_any_user_roles( qw/admin manager employee/ ); # users cannot add labs.
+    $c->assert_any_user_role( qw/admin manager employee/ ); # users cannot add labs.
     my $entity = { action => 'add' };
     $self->status_ok($c, entity => $entity);
 }
@@ -121,7 +121,7 @@ sub edit_laboratory : Path('/laboratory/edit-laboratory') : ActionClass('REST') 
 sub edit_laboratory_GET :Path('/laboratory/edit-laboratory') :Args(1)   {
     my ($self, $c, $query) = @_;
     $c->stash->{template} = 'laboratory/form.tt2';
-    $c->assert_any_user_roles( qw/admin manager employee/ ); # users cannot edit labs.
+    $c->assert_any_user_role( qw/admin manager employee/ ); # users cannot edit labs.
     my $entity = $self->_get_laboratory($c,$query);
     $entity->{action} = 'edit';    
     $self->status_ok($c, entity => $entity);

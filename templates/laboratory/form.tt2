@@ -26,7 +26,7 @@
 <!-- PAGE CONTENT -->
    <form class="form-horizontal" method="POST" id="strain-form" action="/strain/new-strain">
 
-   <div class="well span6">
+   <div class="well">
         <div class="control-group">
             <label class="control-label" for="name">Laboratory Designation</label>
             <div class="controls">
