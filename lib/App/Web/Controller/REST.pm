@@ -66,6 +66,43 @@ sub list_GET {
 
 
 
+# Do a (mostly) global search.
+
+=pod
+
+sub global_list :Local : ActionClass('REST') :Args(1) { }
+
+sub global_list_GET {
+	my ($self, $c) = @_;
+
+	my @classes = qw/strain laboratory gene_class gene variation rearrangement transgene/;
+
+	my $transformer = sub {
+		my ($row,$columns) = shift;
+#		my $row = shift;
+		return [ map { $row->get_column($_) } @$columns ];
+	};
+
+	my $select = exists $c->request->parameters->{distinct}
+		? { select => { distinct => $columns }, as => $columns }
+		: { columns => $columns };
+	
+	my $strain_rows = [ map { $transformer->($_) }
+			    $c->model("CGC::Strain")->search(undef, { columns => [qw/name genotype/]) ];
+	
+
+	my $rows = [ map { $transformer->($_) }
+		     $c->model("CGC::$class")->search(undef, $select) ];
+	$c->stash->{cachecontrol}{list} =  1800; # 30 minutes
+	$self->status_ok(
+	    $c,
+	    entity => $rows,
+    );
+}
+
+
+=cut
+
 
 
 sub print :Path('/rest/print') :Args(0) :ActionClass('REST') {}

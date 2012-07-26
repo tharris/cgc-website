@@ -35,7 +35,14 @@ sub strain_GET {
 
     $c->stash->{template} = 'strain/index.tt2';
 
-    my $column = ($key =~ /^\d+$/) ? 'id' : 'name';
+    my $column;
+    if ($key =~ /^\d+$/) {
+	$column = 'id';
+    } elsif ($key =~ /^[A-Z]+/) {
+	$column = 'name';
+    } else {
+	$column = 'genotype';
+    }
     my $strain = $c->model('CGC::Strain')->single({ $column => $key });
 
     my $entity;

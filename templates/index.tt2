@@ -7,9 +7,10 @@
 	</header>
 </div>
 
-    <div class="row offset2">
-         <div class="span6 well">
-             <h3><a href="#" id="global-search" class="popover-link" rel="popover" data-content="Search for strains using strain IDs, genes, alleles, transgenes, rearrangements, lab codes, or even the people who made them." data-original-title="Search">Search</a>
+  <div class="row offset2">
+      <div class="span6 well">
+        <div id="basic-search"> 
+            <h3><a href="#" id="global-search" class="popover-link" rel="popover" data-content="Search for strains using strain IDs, genes, alleles, transgenes, rearrangements, lab codes, or even the people who made them." data-original-title="Search">Search</a>
               </h3>
             <div class="span3">
              <input id="search-strain" type="text" class="span3"
@@ -26,10 +27,57 @@ Laboratory: <a href="/laboratory/MT">MT</a><br />
 Gene: <a href="/gene/unc-22">unc-22</a><br />
 Species: <a href="/species/caenorhabditis_elegans">C. elegans</a><br />
              </small></span>
+             <br>
+	     <a href="#" id="search-toggle">Advanced Search</a>
+
              </div> 
-       </div>
-    </div>
-  
+         </div>
+
+         <div id="advanced-search" style="display:none">
+ 
+            <h3><a href="#" id="advanced-search" class="popover-link" rel="popover" data-content="Search for strains using strain IDs, genes, alleles, transgenes, rearrangements, lab codes, or even the people who made them." data-original-title="Search">Search</a>
+              </h3>
+            <div class="span3">
+
+                 <div class="control-group">
+                    <label class="control-label" for="search-class">Search for</label>
+                    <div class="controls">
+                         <select id="search-class">
+                             <option></option>
+                             <option value="gene">Gene</option>
+                             <option value="transgene">Transgene</option>
+                             <option value="rearrangement">Rearrangement</option>
+                             <option value="variation">Allele</option>
+                             <option value="laboratory">laboratory</option>
+                             <option value="genomic-position">...by genomic position</option>
+                             <option value="genetic-position">...by genetic position</option>
+                         </select>
+
+                         <input target="search-input" type="text" class="span3"
+                            value=""
+                            placeholder="Start typing..."
+                          />
+                    </div>
+
+
+                </div>
+             </div>
+             <div class="span2" id="search-examples">
+                 Examples<br />
+                 <span style="margin-bottom: 9px"><small>
+Strain: <a href="/strain/CA257">CA257</a><br />
+Laboratory: <a href="/laboratory/MT">MT</a><br />
+Gene: <a href="/gene/unc-22">unc-22</a><br />
+Species: <a href="/species/caenorhabditis_elegans">C. elegans</a><br />
+             </small></span>
+             </div> 
+	     <a href="#" id="search-toggle">Basic Search</a>
+
+        </div>
+
+      </div>
+   </div>
+
 
     <div class="row offset1">
         <div class="span4 well">
@@ -80,4 +128,38 @@ Species: <a href="/species/caenorhabditis_elegans">C. elegans</a><br />
 
 
 
-[% typeahead_support('strain',['genotype','name']) %]
+
+
+
+	      [% typeahead_support('strain',['genotype','name']) %]
+	      [% typeahead_support('gene',['name']) %]
+	      [% typeahead_support('laboratory',['name','head']) %]
+	      [% typeahead_support('transgene',['name']) %]
+	      [% typeahead_support('variation',['name']) %]
+	      [% typeahead_support('rearrangement',['name']) %]
+	      [% typeahead_support('species',['name']) %]
+
+
+<script>
+    $('#search-toggle').click(function() {
+    $('#advanced-search').toggle();
+    $('#basic-search').toggle(); 
+    return false; 
+
+    });
+</script>
+
+
+<script>
+   $('#search-class').change(function() {
+ 	var text = $('#search-class ' + 'option:selected').val();
+	alert(text);
+
+	// Change the id to 
+ 	$('[target="search-input"]').attr('id','search-' + text);
+
+	return false;
+	});
+
+</script>      
+
