@@ -16,7 +16,7 @@
     <link type="text/css" href="/css/main.css" rel="stylesheet" />
     
     <style>
-    body { padding-top: 60px; }
+    #content { margin-top: 60px; }
     </style>
 
     <script src="/js/bootstrap/jquery.js"></script>

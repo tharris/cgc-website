@@ -32,5 +32,8 @@
             $.session.delete("message-text");
             $.session.delete("message-title");
         }
+        $("a.brand").click(function () {
+            window.location.assign("[% c.uri_for('/') %]");
+        });
     });
 </script>
