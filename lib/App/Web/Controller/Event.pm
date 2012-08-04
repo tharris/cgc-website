@@ -27,6 +27,11 @@ Catalyst Controller.
 
 =cut
 
+sub begin :Auto {
+	my ($self, $c) = @_;
+	$c->stash(model => 'Event', default_model_columns => [qw/event/]);
+}
+
 sub index :ActionClass('REST') {
 	my ($self, $c) = @_;	
 	$c->stash->{template} = 'event/index.tt2';
