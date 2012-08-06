@@ -2,15 +2,7 @@ package App::Web::Controller::Laboratory;
 
 use Moose;
 
-BEGIN { extends 'Catalyst::Controller::REST'; }
-
-__PACKAGE__->config(
-	default => 'application/json',
-	map => {
-		'text/html' => [ qw/View TT/ ],
-	}
-);
-
+BEGIN { extends 'App::Web::Controller::REST'; }
 
 =head1 NAME
 

@@ -38,6 +38,10 @@ Catalyst Controller.
  
 # Typeahead support method
 
+sub auto :Private {
+	my ($self, $c) = @_;
+}
+
 sub list :Path('list') :ActionClass('REST') {}
 
 =head2 list_GET
