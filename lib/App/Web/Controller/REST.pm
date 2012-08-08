@@ -17,10 +17,10 @@ __PACKAGE__->config(
     'default'          => 'application/json',
     'stash_key'        => 'rest',
     'map'              => {
-		'text/x-yaml'      => 'YAML',
-		'text/html'        => [ 'View', 'TT' ],
-		'text/xml'         => 'XML::Simple',
-		'application/json' => 'JSON',
+        'text/x-yaml'      => 'YAML',
+        'text/html'        => [ 'View', 'TT' ],
+        'text/xml'         => 'XML::Simple',
+        'application/json' => 'JSON',
     }
 );
 
@@ -38,33 +38,62 @@ Catalyst Controller.
  
 # Typeahead support method
 
-sub list :Local : ActionClass('REST') :Args(1) { }
-
-sub list_GET {
-	my ($self, $c, $class) = @_;
-
-	$class = ($class eq 'geneclass') ? 'GeneClass' : ucfirst($class);
-
-	my $columns = $c->request->param('columns')
-		? [ split(',', $c->request->param('columns')) ]
-		: [ qw/name/ ];
-	my $transformer = sub {
-		my $row = shift;
-		return [ map { $row->get_column($_) } @$columns ];
-	};
-	my $select = exists $c->request->parameters->{distinct}
-		? { select => { distinct => $columns }, as => $columns }
-		: { columns => $columns };
-	my $rows = [ map { $transformer->($_) }
-		     $c->model("CGC::$class")->search(undef, $select) ];
-	$c->stash->{cachecontrol}{list} =  1800; # 30 minutes
-	$self->status_ok(
-	    $c,
-	    entity => $rows,
-    );
+sub auto :Private {
+	my ($self, $c) = @_;
 }
 
+sub list :Path('list') :ActionClass('REST') {}
 
+=head2 list_GET
+
+A generic endpoint for all REST resources defined in the app. Basically,
+every resource can define a custom model (if different than the controller
+namespace) by setting 'model' in the stash to the model name (in the `begin`
+subroutine).
+
+An additional configuration is the list of default columns to select for the
+model. It should be set in the stash as an arrayref in 'default_model_columns'.
+
+Example:
+
+    (in App::Web::Controller::SomeResource)
+
+    sub begin :Auto {
+        my ($self, $c) = @_;
+        $c->stash(
+            model => 'ResourceModel',
+            default_model_columns => [qw/id name/]
+        );
+    }
+    
+=cut
+sub list_GET {
+    my ($self, $c) = @_;
+    
+    my $model = $c->stash->{model} || $c->{namespace};
+    if (!defined($model)) {
+        return $self->status_bad_request($c,
+            message => "No resource model is defined for this action");
+    }
+
+    my $columns = $c->request->param('columns')
+        ? [ split(',', $c->request->param('columns')) ]
+        : $c->stash->{default_model_columns} || [ qw/name/ ];
+    my $transformer = sub {
+        my $row = shift;
+        return [ map { $row->get_column($_) } @$columns ];
+    };
+    my $select = exists $c->request->parameters->{distinct}
+        ? { select => { distinct => $columns }, as => $columns }
+        : { columns => $columns };
+    my $rows = [ map { $transformer->($_) }
+             $c->model("CGC::$model")->search(undef, $select) ];
+    $c->stash->{cachecontrol}{list} =  1800; # 30 minutes
+    $self->status_ok(
+        $c,
+        entity => $rows,
+    );
+}
 
 # Do a (mostly) global search.
 
@@ -73,30 +102,30 @@ sub list_GET {
 sub global_list :Local : ActionClass('REST') :Args(1) { }
 
 sub global_list_GET {
-	my ($self, $c) = @_;
+    my ($self, $c) = @_;
 
-	my @classes = qw/strain laboratory gene_class gene variation rearrangement transgene/;
+    my @classes = qw/strain laboratory gene_class gene variation rearrangement transgene/;
 
-	my $transformer = sub {
-		my ($row,$columns) = shift;
-#		my $row = shift;
-		return [ map { $row->get_column($_) } @$columns ];
-	};
+    my $transformer = sub {
+        my ($row,$columns) = shift;
+#       my $row = shift;
+        return [ map { $row->get_column($_) } @$columns ];
+    };
 
-	my $select = exists $c->request->parameters->{distinct}
-		? { select => { distinct => $columns }, as => $columns }
-		: { columns => $columns };
-	
-	my $strain_rows = [ map { $transformer->($_) }
-			    $c->model("CGC::Strain")->search(undef, { columns => [qw/name genotype/]) ];
-	
+    my $select = exists $c->request->parameters->{distinct}
+        ? { select => { distinct => $columns }, as => $columns }
+        : { columns => $columns };
+    
+    my $strain_rows = [ map { $transformer->($_) }
+                $c->model("CGC::Strain")->search(undef, { columns => [qw/name genotype/]) ];
+    
 
-	my $rows = [ map { $transformer->($_) }
-		     $c->model("CGC::$class")->search(undef, $select) ];
-	$c->stash->{cachecontrol}{list} =  1800; # 30 minutes
-	$self->status_ok(
-	    $c,
-	    entity => $rows,
+    my $rows = [ map { $transformer->($_) }
+             $c->model("CGC::$class")->search(undef, $select) ];
+    $c->stash->{cachecontrol}{list} =  1800; # 30 minutes
+    $self->status_ok(
+        $c,
+        entity => $rows,
     );
 }
 
@@ -228,32 +257,32 @@ sub get_user_info_GET{
     
     my $api = $c->model('AppAPI');
     my $object = $api->fetch({class => 'Person',
-			      name  => $name,
-			     }) or die "$!";
+                  name  => $name,
+                 }) or die "$!";
 
     my $message;
     my $status_ok = 1;
     my @users = $c->model('CGC::AppUser')->search({wbid=>$name, wb_link_confirm=>1});
     if(@users){
-	$status_ok = 0;
-	$message = "This account has already been linked";
+    $status_ok = 0;
+    $message = "This account has already been linked";
     }elsif($object && $object->email->{data}){
-	my $emails = join (', ', map {"<a href='mailto:$_'>$_</a>"} @{$object->email->{data}});
-	$message = "An email will be sent to " . $emails . " to confirm your identity";
+    my $emails = join (', ', map {"<a href='mailto:$_'>$_</a>"} @{$object->email->{data}});
+    $message = "An email will be sent to " . $emails . " to confirm your identity";
     }else{
-	$status_ok = 0;
-	$message = "This account cannot be linked at this time";
+    $status_ok = 0;
+    $message = "This account cannot be linked at this time";
     }
     $self->status_ok(
-	$c,
-	entity =>  {
-	    wbid => $name,
-	    fullname => $object->name->{data}->{label},
-	    email => $object->email->{data},
-	    message => $message,
-	    status_ok => $status_ok,
-	},
-	);
+    $c,
+    entity =>  {
+        wbid => $name,
+        fullname => $object->name->{data}->{label},
+        email => $object->email->{data},
+        message => $message,
+        status_ok => $status_ok,
+    },
+    );
     
 }
 
@@ -276,12 +305,12 @@ sub history_GET {
     $c->stash->{template} = "shared/fields/user_history.tt2"; 
     
     if($clear){ 
-	$c->log->debug("clearing");
-	$session->user_history->delete();
-	$session->update();
-	$c->stash->{history} = "";
-	$c->forward('App::Web::View::TT');
-	$self->status_ok($c,entity => {});
+    $c->log->debug("clearing");
+    $session->user_history->delete();
+    $session->update();
+    $c->stash->{history} = "";
+    $c->forward('App::Web::View::TT');
+    $self->status_ok($c,entity => {});
     }
     
     my @hist = $session->user_history if $session;
@@ -293,13 +322,13 @@ sub history_GET {
     
     my @histories;
     map {
-	if($_->visit_count > 0){
-	    my $time = $_->get_column('timestamp');
-	    push @histories, {  time_lapse => concise(ago(time()-$time, 1)),
-				visits => $_->visit_count,
-				page => $_->page,
-	    };
-	}
+    if($_->visit_count > 0){
+        my $time = $_->get_column('timestamp');
+        push @histories, {  time_lapse => concise(ago(time()-$time, 1)),
+                visits => $_->visit_count,
+                page => $_->page,
+        };
+    }
     } @hist[0..$count-1];
     $c->stash->{history} = \@histories;
     $c->response->headers->expires(time);
@@ -332,12 +361,12 @@ sub update_role_POST {
     my ($self,$c,$id,$value,$checked) = @_;
     
     if($c->check_user_roles('admin')){
-	my $user=$c->model('CGC::AppUser')->find({user_id=>$id}) if($id);
-	my $role=$c->model('CGC::AppRole')->find({role=>$value}) if($value);
-	
-	my $users_to_roles=$c->model('CGC::AppUsersToRole')->find_or_create(user_id=>$id,role_id=>$role->role_id);
-	$users_to_roles->delete()  unless($checked eq 'true');
-	$users_to_roles->update();
+    my $user=$c->model('CGC::AppUser')->find({user_id=>$id}) if($id);
+    my $role=$c->model('CGC::AppRole')->find({role=>$value}) if($value);
+    
+    my $users_to_roles=$c->model('CGC::AppUsersToRole')->find_or_create(user_id=>$id,role_id=>$role->role_id);
+    $users_to_roles->delete()  unless($checked eq 'true');
+    $users_to_roles->update();
     }
 }
 
@@ -367,32 +396,32 @@ sub rest_register_POST {
     my $password = $c->req->params->{password};
     
     if ($email && $username && $password) {
-	my $csh = Crypt::SaltedHash->new() or die "Couldn't instantiate CSH: $!";
-	$csh->add($password);
-	my $hash_password = $csh->generate();
-	
-	# Is this email already registered?
-	my @emails = $c->model('CGC::AppUser')->search({email=>$email, validated=>1});
-	
-	# goofy.
-	foreach (@emails) {
-	    $c->res->body(0);
-	    return 0;         
-	}
-       	
-	my $user = $c->model('CGC::AppUser')->find_or_create({username        => $username, 
-							      password        => $hash_password,
-							      active          => 0,
-							      email           => $email,
-							     });
-	my $user_id = $user->user_id;
-	
-	$self->rest_register_email($c, $email, $username, $user_id);
-	
-	$c->stash->{template} = "auth/registration_complete.tt2"; 
-	$c->stash->{email}    = $email;
+    my $csh = Crypt::SaltedHash->new() or die "Couldn't instantiate CSH: $!";
+    $csh->add($password);
+    my $hash_password = $csh->generate();
+    
+    # Is this email already registered?
+    my @emails = $c->model('CGC::AppUser')->search({email=>$email, validated=>1});
+    
+    # goofy.
+    foreach (@emails) {
+        $c->res->body(0);
+        return 0;         
+    }
+        
+    my $user = $c->model('CGC::AppUser')->find_or_create({username        => $username, 
+                                  password        => $hash_password,
+                                  active          => 0,
+                                  email           => $email,
+                                 });
+    my $user_id = $user->user_id;
+    
+    $self->rest_register_email($c, $email, $username, $user_id);
+    
+    $c->stash->{template} = "auth/registration_complete.tt2"; 
+    $c->stash->{email}    = $email;
 #       $c->stash->{redirect} = $c->req->params->{redirect};
-	$c->forward('App::Web::View::TT');
+    $c->forward('App::Web::View::TT');
     }
 }
 
@@ -415,23 +444,23 @@ sub rest_register_email {
     my $url = $c->uri_for('/confirm') . "?u=" . $user_id . "&code=" . $digest;
     
 #    if ($wbid){
-#	$c->stash->{info}->{wbid}=$wbid;
-#	my $csh2 = Crypt::SaltedHash->new() or die "Couldn't instantiate CSH: $!";
-#	$csh2->add($email . "_" . $wbid);
-#	my $wb_hash = $csh2->generate();
-#	$wb_hash =~ s/^{SSHA}//;
-#	$wb_hash =~ s/\+/\%2B/g;
-#	$url     = $url . "&wb=" . $wb_hash;
+#   $c->stash->{info}->{wbid}=$wbid;
+#   my $csh2 = Crypt::SaltedHash->new() or die "Couldn't instantiate CSH: $!";
+#   $csh2->add($email . "_" . $wbid);
+#   my $wb_hash = $csh2->generate();
+#   $wb_hash =~ s/^{SSHA}//;
+#   $wb_hash =~ s/\+/\%2B/g;
+#   $url     = $url . "&wb=" . $wb_hash;
 #    }
     
     $c->stash->{digest} = $url;
     
     $c->log->debug(" send out email to $email");
     $c->stash->{email} = {
-	to       => $email,
-	from     => $c->config->{register_email},
-	subject  => "CGC Account Activation", 
-	template => "auth/register_email.tt2",
+    to       => $email,
+    from     => $c->config->{register_email},
+    subject  => "CGC Account Activation", 
+    template => "auth/register_email.tt2",
     };
     
     $c->forward( $c->view('Email::Template') );
@@ -458,7 +487,7 @@ sub check_user_info {
       $user->email($c->req->params->{email}) if($c->req->params->{email});
   }else{
       if($user = $c->model('CGC::AppUser')->find({email=>$c->req->params->{email},active =>1})){
-	  $c->res->body(0) ;return 0 ;
+      $c->res->body(0) ;return 0 ;
       }
       $user=$c->model('CGC::AppUser')->find_or_create({email=>$c->req->params->{email}}) ;
       $user->username($c->req->params->{username}),
@@ -659,7 +688,7 @@ sub search_GET {
     my ($self,$c,$class,$query) = @_;
     
     if ($class eq 'laboratory') {
-	$class ='CGC::Laboratory';
+    $class ='CGC::Laboratory';
     } 
     
 #    my @results = $c->model($class)->search({laboratory_designation => $query });
@@ -667,12 +696,12 @@ sub search_GET {
     $c->log->info(@results . ": $class");
     my @data;
     foreach (@results) {
-	$c->log->info($_->head);
-	push @data,{ id => $_->id,
-		     lab => $_->laboratory_designation,
-		     pi  => $_->lab_head_first_name . ' ' . $_->lab_head_last_name,
-		     institution => $_->institution };
-	
+    $c->log->info($_->head);
+    push @data,{ id => $_->id,
+             lab => $_->laboratory_designation,
+             pi  => $_->lab_head_first_name . ' ' . $_->lab_head_last_name,
+             institution => $_->institution };
+    
     }
     $self->status_ok( $c, entity => { data => \@data } );
     return;
@@ -712,51 +741,51 @@ sub _build_atomized_genotype {
     my ($self,$c,$strain_id) = @_;
 
     my @rows = $c->model('CGC::AtomizedGenotype')->search(
-	{ strain_id => $strain_id },
-	{ join => [qw/gene variation rearrangement transgene/] });
+    { strain_id => $strain_id },
+    { join => [qw/gene variation rearrangement transgene/] });
     
     # Need to construct the string based on position, type, etc.
     my $data = {};
     my @types = qw/gene variation rearrangement transgene/;
-    foreach my $component (@rows) {	
-	foreach my $type (@types) {
-	    if ($component->$type) {
-		my $name = $component->$type->name;
+    foreach my $component (@rows) { 
+    foreach my $type (@types) {
+        if ($component->$type) {
+        my $name = $component->$type->name;
 
-		my $id         = $component->$type->id;
-		my $chromosome = $component->$type->chromosome;
-		my $gmap       = $component->$type->gmap;
-		my $pmap_stop  = $component->$type->pmap_start;
-		my $pmap_start  = $component->$type->pmap_stop;
-		
-		my $child;
-		if ($type eq 'variation') {
-		    my @vars = $c->model('CGC::Variation2gene')->search(
-			{ variation_id => $id },
-			{ join => [qw/gene/] });
-		    $c->log->warn("vars: " . join("-",@vars));
-		    if (@vars == 1) {
-			# Try to guess which gene it belongs to		    
-			$name = $vars[0]->gene->name;
-			$child = $component;
-		    }
-		}
+        my $id         = $component->$type->id;
+        my $chromosome = $component->$type->chromosome;
+        my $gmap       = $component->$type->gmap;
+        my $pmap_stop  = $component->$type->pmap_start;
+        my $pmap_start  = $component->$type->pmap_stop;
+        
+        my $child;
+        if ($type eq 'variation') {
+            my @vars = $c->model('CGC::Variation2gene')->search(
+            { variation_id => $id },
+            { join => [qw/gene/] });
+            $c->log->warn("vars: " . join("-",@vars));
+            if (@vars == 1) {
+            # Try to guess which gene it belongs to         
+            $name = $vars[0]->gene->name;
+            $child = $component;
+            }
+        }
 
-		if ($child) {		    
-		    push @{$data->{$chromosome}->{$name}->{has}},
-		    { name       => $child->$type->name,
-		      id         => $child->$type->id,
-		      type       => $type,
-		      gmap       => $gmap || 'unknown',
-		      pmap_stop  => $pmap_stop,
-		      pmap_start => $pmap_start,
-		    };
-		} else {
-		    $data->{$chromosome}->{$name}->{id}   = $component->$type->id;
-		    $data->{$chromosome}->{$name}->{type} = $type;
-		}
-	    }
-	}
+        if ($child) {           
+            push @{$data->{$chromosome}->{$name}->{has}},
+            { name       => $child->$type->name,
+              id         => $child->$type->id,
+              type       => $type,
+              gmap       => $gmap || 'unknown',
+              pmap_stop  => $pmap_stop,
+              pmap_start => $pmap_start,
+            };
+        } else {
+            $data->{$chromosome}->{$name}->{id}   = $component->$type->id;
+            $data->{$chromosome}->{$name}->{type} = $type;
+        }
+        }
+    }
     }
     return $data;
 }

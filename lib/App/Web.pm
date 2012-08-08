@@ -122,7 +122,7 @@ __PACKAGE__->config->{authentication} = {
 # These should ALWAYS be served in static mode.
 # This also impacts A::W::V::TT configuration.
 __PACKAGE__->config(
-    static => {
+    'Plugin::Static::Simple' => {
         dirs         => [qw/css js img tmp/],
         include_path => [ "$ENV{APP_ROOT}/tmp", __PACKAGE__->config->{root}, "$ENV{APP_ROOT}/external/bootstrap/assets", "$ENV{APP_ROOT}/root/static" ],
         #   logging  => 1,

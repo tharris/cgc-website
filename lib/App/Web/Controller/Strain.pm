@@ -18,8 +18,7 @@ Catalyst Controller.
 
 =cut
 
-sub strain : Path('/strain') : ActionClass('REST') {
-}
+sub strain : Path('/strain') : ActionClass('REST') {}
 
 sub index : Private {
     my ($self, $c) = @_;

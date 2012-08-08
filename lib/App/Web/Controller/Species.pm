@@ -6,14 +6,7 @@ use Moose;
 #use parent 'App::Web::Controller';
 
 
-BEGIN { extends 'Catalyst::Controller::REST'; }
-
-__PACKAGE__->config(
-	default => 'application/json',
-	map => {
-		'text/html' => [ qw/View TT/ ],
-	}
-);
+BEGIN { extends 'App::Web::Controller::REST'; }
 
 ##############################################################
 #
@@ -56,10 +49,9 @@ sub index : Private {
 }
 
 
-sub species : Path('/species') : ActionClass('REST') { }
+sub species : Path('/species') : ActionClass('REST') {}
 
-    # If returing DBIx::Class objects
-sub species_GET :Path('/species') :Args(1)   {
+sub species_GET {
     my ($self,$c,$key) = @_;
 
     if (!$key) {
