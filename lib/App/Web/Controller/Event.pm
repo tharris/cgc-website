@@ -29,21 +29,22 @@ Catalyst Controller.
 
 sub begin :Auto {
 	my ($self, $c) = @_;
-	$c->stash(model => 'Event', default_model_columns => [qw/event/]);
+	$c->stash(model => 'Event', default_model_columns => [
+        { col => 'id',         name => 'ID' },
+        { col => 'event',      name => 'Description' },
+        { col => 'event_date', name => 'Date'},
+    ]);
 }
 
-sub index :ActionClass('REST') {
-	my ($self, $c) = @_;	
-	$c->stash->{template} = 'event/index.tt2';
-	return $self->status_ok($c,
-		entity => {}
-	);
-}
+sub index :ActionClass('REST') {}
 
 sub index_GET {
     my ($self, $c, $id) = @_;
 	return if (not defined $id);
 	my $event = $c->model('CGC::Event')->single({ id => $id });
+    if (!$event) {
+        return $self->status_not_found($c, message => 'Event not found');
+    }
 	return $self->status_ok($c, entity => {
 		event => {
 			id   => $event->id,

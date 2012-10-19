@@ -12,17 +12,20 @@ use Crypt::SaltedHash;
 use List::Util qw(shuffle);
 use URI::Escape;
 use DateTime;
+use Readonly;
 
 __PACKAGE__->config(
-    'default'          => 'application/json',
-    'stash_key'        => 'rest',
-    'map'              => {
+    default          => 'application/json',
+    stash_key        => 'rest',
+    map              => {
         'text/x-yaml'      => 'YAML',
         'text/html'        => [ 'View', 'TT' ],
         'text/xml'         => 'XML::Simple',
         'application/json' => 'JSON',
     }
 );
+
+Readonly my $LIST_MAX => 500;
 
 =head1 NAME
 
@@ -70,29 +73,56 @@ Example:
 sub list_GET {
     my ($self, $c) = @_;
     
+    my $entity = {};
     my $model = $c->stash->{model} || $c->{namespace};
     if (!defined($model)) {
         return $self->status_bad_request($c,
             message => "No resource model is defined for this action");
     }
+    my $resultset = $c->model("CGC::$model");
 
-    my $columns = $c->request->param('columns')
-        ? [ split(',', $c->request->param('columns')) ]
-        : $c->stash->{default_model_columns} || [ qw/name/ ];
+    my $columns = [];
+    if ($c->request->param('columns')) {
+        for my $item (split(',', $c->request->param('columns'))) {
+            my ($col, $name) = split(':', $item);
+            $name ||= $col;
+            push @$columns, { col => $_, name => $_ }
+        }
+    } elsif (defined $c->stash->{default_model_columns}) {
+        $columns = $c->stash->{default_model_columns};
+    } else {
+        $columns = [ { col => 'name', name => 'Name' } ];
+    }
+    my @column_ids = map { $_->{col} } @$columns;
+    $entity->{meta} = {
+        columns => $columns,
+        datalength => $resultset->count
+    };
+
+	$c->stash->{template} ||= 'list.tt2';
+    if ($c->request->header('Accept') =~ m|text/html| &&
+        !$c->request->param('xhr')) {
+        # Just send back the template. All data is transferred via AJAX
+        # (see below)
+    	return $self->status_ok($c, entity => $entity);
+    }
+    my $offset = $c->request->param('offset') || 0;
+    my $numrows = $c->request->param('numrows') || $LIST_MAX;
     my $transformer = sub {
         my $row = shift;
-        return [ map { $row->get_column($_) } @$columns ];
+        return [ map { $row->get_column($_) } @column_ids ];
     };
-    my $select = exists $c->request->parameters->{distinct}
-        ? { select => { distinct => $columns }, as => $columns }
-        : { columns => $columns };
+    my $attributes = { rows => $numrows, offset => $offset };
+    if (exists $c->request->parameters->{distinct}) {
+        $attributes->{select} = { distinct => \@column_ids };
+        $attributes->{as}     = \@column_ids;
+    } else {
+        $attributes->{columns} = \@column_ids;
+    }
     my $rows = [ map { $transformer->($_) }
-             $c->model("CGC::$model")->search(undef, $select) ];
-    $c->stash->{cachecontrol}{list} =  1800; # 30 minutes
-    $self->status_ok(
-        $c,
-        entity => $rows,
-    );
+        $resultset->search(undef, $attributes) ];
+    $entity->{data} = $rows;
+    return $self->status_ok($c, entity => $entity);
 }
 
 # Do a (mostly) global search.
@@ -807,6 +837,49 @@ sub logout_GET {
 #     $c->response->redirect($c->uri_for('/'));
 #    $self->reload($c,1) ;
 #     $c->session_expire_key( __user => 0 );
+}
+
+sub _set_cache_headers {
+    my ($self, $c) = @_;
+
+    # begin by setting our minumum cache time to our default cache time in seconds.
+    my $cachetime = 3600;
+
+    # check to see if we have an error: we don't want error pages to be cached
+    # so we force our cache-time to 0 in that case.
+    if ( scalar @{ $c->error }) {
+        $cachetime = 0;
+    } else {
+        # Look at each element of cachecontrol to find the shortest
+        # cache time set. 
+
+        foreach my $section ( keys %{$c->stash->{cachecontrol}} ) {
+
+            # if the currently selected cache-control element is less
+            # than the page's cache-time: we drop the cache-time to 
+            # match the new limit.
+            if ($c->stash->{cachecontrol}{$section} < $cachetime) {
+                $cachetime = $c->stash->{cachecontrol}{$section};
+            }
+        }
+    }
+
+    # at this point - $cachetime should be set to the most restrictive
+    # time set by all of the actions. Now it's time to turn it into 
+    # a header that the cache server / browser can understand.  
+
+    if ($cachetime == 0) {
+
+        # if $cachetime is 0 - then we can't cache the page and we 
+        # need to tell our requesting server / browser that.
+
+        $c->response->header('Cache-Control' => 'no-cache')
+
+    } else {
+
+        # otherwise we set max-age to the cache-time specified.
+        $c->response->header('Cache-Control' => "max-age=$cachetime");
+    }
 }
 
 =cut

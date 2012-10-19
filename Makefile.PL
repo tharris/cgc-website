@@ -53,9 +53,10 @@ requires 'Config::General';                                      #
 #####requires 'CHI';                                                  # Cache
 #####requires 'CHI::Driver::File';                                    # Cache (on disk)
 #requires 'Class::MOP';                                           # => '1.12';
-requires 'Crypt::SaltedHash';  #
-requires 'Time::Duration';     #
-requires 'Readonly';           #
+requires 'Crypt::SaltedHash';        #
+requires 'Time::Duration';           #
+requires 'Readonly';                 #
+requires 'DateTime::Format::MySQL';  #
 
 #requires 'Data::Dump';                                           #
 #requires 'Data::OptList';                                        #

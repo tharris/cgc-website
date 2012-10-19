@@ -145,11 +145,9 @@ sub issue_rss {
 # This hack requires that the template be specified
 # in the dynamic action itself. 
 
-
-
 #sub end : Path {
 sub end : ActionClass('RenderView') {
-  my ($self,$c) = @_;      
+  my ($self,$c) = @_;
   
   # Forward to our view FIRST.
   # If we catach any errors, direct to

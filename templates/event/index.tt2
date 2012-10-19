@@ -1,0 +1,23 @@
+[% rest_error %]
+
+[% DEFAULT list = rest %]
+<table id="event-list" class="table table-striped">
+<thead><h3>Events</h3></thead>
+<tbody>
+    <tr>
+        <th>ID</th>
+        <th>Date</th>
+        <th>User</th>
+        <th>Description</th>
+    </tr>
+        
+    [% FOREACH evt IN list %]
+    <tr>
+        <td>[% evt.id %]</td>
+        <td>
+        <td>[% evt.desc %]</td>
+    </tr>
+    [% END %]
+
+</tbody>
+</table>
