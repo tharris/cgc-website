@@ -32,9 +32,9 @@ sub orders : Path("/orders") : Args(0) {
     my ($self, $c) = @_;
 
     my $search_params = {};
-    if (grep { $_ eq 'pending' } $c->request->query_keywords) {
+    if ($c->request->query_keywords =~ m/\bpending\b/) {
         $search_params->{date_shipped} = undef;
-    } elsif (grep { $_ eq 'new' } $c->request->query_keywords) {
+    } elsif ($c->request->query_keywords =~ m/\bnew\b/) {
         $search_params->{date_received} = { '>=' => \'DATE_SUB(CURDATE(),INTERVAL 7 DAY)' }
     }
     my @rows = $c->model('CGC::AppOrder')->search($search_params);

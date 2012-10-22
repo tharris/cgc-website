@@ -125,7 +125,7 @@ __PACKAGE__->config(
     'Plugin::Static::Simple' => {
         dirs         => [qw/css js img tmp/],
         include_path => [ "$ENV{APP_ROOT}/tmp", __PACKAGE__->config->{root}, "$ENV{APP_ROOT}/external/bootstrap/assets", "$ENV{APP_ROOT}/root/static" ],
-        #   logging  => 1,
+        logging => 0,
     }
 );
 
