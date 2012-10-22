@@ -18,6 +18,17 @@ Catalyst Controller.
 
 =cut
 
+sub begin :Auto {
+	my ($self, $c) = @_;
+	$c->stash(model => 'Strain', default_model_columns => [
+        { col => 'name',          name => 'Name' },
+        { col => 'genotype',      name => 'Genotype' },
+        { col => 'species_id',    name => 'Species' },
+        { col => 'laboratory_id', name => 'Laboratory' },
+        { col => 'description',   name => 'Description' },
+    ]);
+}
+
 sub strain : Path('/strain') : ActionClass('REST') {}
 
 sub index : Private {

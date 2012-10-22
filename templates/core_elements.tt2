@@ -125,7 +125,7 @@ END;
             ajax: {
             	uris: [
 		[% FOREACH col IN columns %]
-            		'/[% class %]/list?distinct;columns=[% col %]',
+            		'/[% class %]/list?nometa;distinct;columns=[% col %]',
 	        [% END %]
             	],
 				preprocess: function (item) {

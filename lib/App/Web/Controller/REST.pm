@@ -25,7 +25,7 @@ __PACKAGE__->config(
     }
 );
 
-Readonly my $LIST_MAX => 500;
+Readonly my $LIST_MAX => 500000;
 
 =head1 NAME
 
@@ -75,7 +75,7 @@ sub list_GET {
     
     my $entity = {};
     my $model = $c->stash->{model} || $c->{namespace};
-    if (!defined($model)) {
+    if (!defined($model) || $model !~ m/^\w+$/) {
         return $self->status_bad_request($c,
             message => "No resource model is defined for this action");
     }
@@ -86,7 +86,7 @@ sub list_GET {
         for my $item (split(',', $c->request->param('columns'))) {
             my ($col, $name) = split(':', $item);
             $name ||= $col;
-            push @$columns, { col => $_, name => $_ }
+            push @$columns, { col => $col, name => $name };
         }
     } elsif (defined $c->stash->{default_model_columns}) {
         $columns = $c->stash->{default_model_columns};
@@ -101,7 +101,7 @@ sub list_GET {
 
 	$c->stash->{template} ||= 'list.tt2';
     if ($c->request->header('Accept') =~ m|text/html| &&
-        !$c->request->param('xhr')) {
+        !exists $c->request->parameters->{xhr}) {
         # Just send back the template. All data is transferred via AJAX
         # (see below)
     	return $self->status_ok($c, entity => $entity);
@@ -121,7 +121,11 @@ sub list_GET {
     }
     my $rows = [ map { $transformer->($_) }
         $resultset->search(undef, $attributes) ];
-    $entity->{data} = $rows;
+    if (exists $c->request->parameters->{nometa}) {
+        $entity = $rows;
+    } else {
+        $entity->{data} = $rows;
+    }
     return $self->status_ok($c, entity => $entity);
 }
 
