@@ -1,0 +1,20 @@
+[% DEFAULT freezers = rest.freezers %]
+
+[% FOREACH freezer IN freezers %]
+<div class="well span8">
+    <h2>Freezer: <a href="/freezer/[% freezer.name %]">[% freezer.name %]</a></h2>
+    <table class="table">
+        <tr><th>Location</th><th>Strains</th></tr>
+        [% FOREACH location IN freezer.locations %]
+            <tr>
+                <td>[% location.loc %]</td>
+                <td>
+                    [% FOREACH strain IN location.strains %]
+                        <a href="/strain/[% strain.name %]">[% strain.name %]</a><br/>
+                    [% END %]
+                </td>
+                
+        [% END %]
+    </table>
+</div>
+[% END %]
