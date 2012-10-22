@@ -31,7 +31,13 @@ sub begin :Auto {
 sub orders : Path("/orders") : Args(0) {
     my ($self, $c) = @_;
 
-    my @rows = $c->model('CGC::AppOrder')->search();
+    my $search_params = {};
+    if (grep { $_ eq 'pending' } $c->request->query_keywords) {
+        $search_params->{date_shipped} = undef;
+    } elsif (grep { $_ eq 'new' } $c->request->query_keywords) {
+        $search_params->{date_received} = { '>=' => \'DATE_SUB(CURDATE(),INTERVAL 7 DAY)' }
+    }
+    my @rows = $c->model('CGC::AppOrder')->search($search_params);
 
     my $orders = [];
     for my $row (@rows) {
