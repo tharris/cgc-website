@@ -50,7 +50,7 @@ sub orders :Path("/orders") :Args(0) {
 sub order_strains :Path("/orders/strains") :Args(0) {
     my ($self, $c) = @_;
     my $freezers = {};
-    my %seen = {};
+    my %seen = ();
     my @rows = $c->model('CGC::AppOrder')->search(undef, {
         join => { app_order_contents => { strain => { freezer_samples => 'freezer' } } },
         order_by => 'freezer_samples.freezer_location'
