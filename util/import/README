@@ -33,7 +33,7 @@ Here's a very terse outline of commands to create and populate the database base
 
 	# Variables
 	CGC_DB=cgc
-	IMPORT_DIR=$HOME/Dropbox/umn-cgc/foxpro_dumps/TSV
+	IMPORT_DIR=/usr/local/cgc/website/production/data/foxpro_dumps/TSV
 
 	# Create database
 	mysqladmin create $CGC_DB

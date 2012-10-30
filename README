@@ -12,11 +12,49 @@ Installation
  > cd $approot
  > perl Makefile.PL
  > make installdeps
- > mysql -u -p cgc < schema/cgc.sql
- > mysql -u -p cgc < util/sql/user_database.sql
+ > mysql -u user -ppassword -e 'create database cgc_YYYYMMDD'
+ > mysql -u -p cgc_YYYYMMDD < schema/cgc.sql
+ > mysql -u -p cgc_YYYYMMDD < util/sql/user_database.sql
+ (You'll either need to make a symlink for cgc-[DATE] -> cgc in your data directory
+  or change the name of the database in your configuration file)
 
 # Get bootstrap
 git submodule update --init
+
+
+Populate the database
+-----------------------------------
+
+1. Fetch data from the CGC
+
+ > mkdir data/YYYY-MM-DD
+ > cd YYYY-MM-DD
+ > mkdir foxpro foxpro_tsv wormbase
+ > cd foxpro
+ // Minimally get the following files from the CGC
+ cgcmail.txt frzloc.txt gophstrnt.txt lablist.txt transrec.txt
+ > cp gophstrn.txt ../foxpro_tsv/strain.ego
+
+2. Convert FoxPro data dumps
+ > cd $APP/util/import
+ > ./foxpro_parser.pl $APP/data/YYYY.MM.DD/foxpro/cgcmail.txt > $APP/data/YYYY.MM.DD/foxpro_tsv/cgcmail.tsv
+ > ./foxpro_parser.pl $APP/data/YYYY.MM.DD/foxpro/frzloc.txt > $APP/data/YYYY.MM.DD/foxpro_tsv/frzloc.tsv
+ > ./foxpro_parser.pl $APP/data/YYYY.MM.DD/foxpro/lablist.txt > $APP/data/YYYY.MM.DD/foxpro_tsv/lablist.tsv
+ > ./foxpro_parser.pl $APP/data/YYYY.MM.DD/foxpro/transrec.txt > $APP/data/YYYY.MM.DD/foxpro_tsv/transrec.tsv
+
+3. Import CGC data
+
+ > export CGC_DB=cgc
+ > export IMPORT_DIR=$APP/data/YYYY.MM.DD/foxpro_tsv
+ > ./util/import/import.pl --verbose 2 --dir $IMPORT_DIR
+
+
+
+
+
+
+
+
 
 Running the application
 -----------------------

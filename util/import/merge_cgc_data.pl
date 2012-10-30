@@ -741,3 +741,22 @@ sub find_or_create {
     }
     return $object;
 }
+
+
+
+
+
+sub update_or_create {
+    my ($schema, $name, $params) = @_;
+    my $resultset = $schema->resultset($name);
+    my $object    = $resultset->find($params);
+#    if (!$object) {
+#        $object = $resultset->new($params);
+#        $object->insert();
+#    } else {
+    my $object = $resultset->update_or_create({ name => $params->{name} },
+					      {} );
+    
+#    }
+    return $object;
+}

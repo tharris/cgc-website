@@ -1,5 +1,0 @@
-Transrec is the database in which we keep track of which orders have been shipped, paid, etc.   It includes information on the type of payment (PO vs credit card), check numbers, etc. It is the primary reference for checking the status of the order, re-billing, lab histories, and so forth.
-
-This is the word format, the raw text will follow...
-
-Aric

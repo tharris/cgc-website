@@ -351,7 +351,7 @@ sub populate_laboratories {
                 && $input->commercial ne 'N'
                 && $input->commercial ne '');
         my $laboratory = $resultset->update_or_create(
-            {   name        => $laboratory,
+            {   name        => $input->code,
 		head        => $labdata->{head},
                 institution => $labdata->{institution},
                 city        => $labdata->{city},
@@ -409,6 +409,23 @@ sub populate_transactions {
     Find a schema object based on params. If doesn't exist, create.
 
 =cut
+
+sub update_or_create {
+    my ($schema, $name, $params) = @_;
+    my $resultset = $schema->resultset($name);
+    my $object    = $resultset->find($params);
+#    if (!$object) {
+#        $object = $resultset->new($params);
+#        $object->insert();
+#    } else {
+    my $object = $resultset->update_or_create({ name => $params->{name} },
+					      {} );
+    
+#    }
+    return $object;
+}
+
+
 
 sub find_or_create {
     my ($schema, $name, $params) = @_;
