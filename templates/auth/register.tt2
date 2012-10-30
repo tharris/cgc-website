@@ -12,7 +12,8 @@
 		  <div class="login-holder ui-corner-all register-notice" id="system-message" style="width:15em;display:none;"></div>
 
 		   <label>laboratory affiliation (<a href="#" id="why-lab-affiliation" rel="popover" data-content="To order strains from the CGC, you must be affiliated with a lab assigned an official lab designation. We only ship strains to the primary addresses for these registered labs. If you don't have a lab designation, please contact us." data-original-title="Lab affiliation">why?</a>)</label>
-		   <input class="lab-designation" type="text" data-provide="typeahead" name="lab-designation" size="30"  />
+		   <input id="search-laboratory" class="lab-designation" type="text" name="lab-designation" size="30"  />
+           [% typeahead_support('laboratory', ['name']) %]
 
 		   <label>password</label>
 		   <input id="password" type="password" name="password" size="30" value="[% password %]"/>

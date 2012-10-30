@@ -1,0 +1,7 @@
+Hi Todd,
+
+Here is the file we call CGC MAIL.  It is a list of every strain sent:  transaction number, strain name, lab code, lab member requesting it, date sent, whether there is a fee or not, invoice/order number, date invoice was sent, and comments.
+
+We use this data to determine how many strains were sent, how many labs received strains, the number of orders sent, number of times a strain was sent, etc. for a given period.
+
+Aric

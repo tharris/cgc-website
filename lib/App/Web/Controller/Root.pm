@@ -42,30 +42,8 @@ The default action is run last when no other action matches.
 
 sub default :Path {
     my ($self,$c) = @_;    
-    my $path = $c->request->path;
-
-    # A user may be trying to request the top level page
-    # for a class. Capturing that here saves me
-    # having to create a separate index for each class.
-    my ($class) = $path =~ /reports\/(.*)/;
-
-    # Does this path exist as one of our pages?
-    # This saves me from having to add an index action for
-    # each class.  Each class will have a single default screen.
-    if (defined $class && $c->config->{pages}->{$class}) {
-	
-		# Use the debug index pages.
-		if ($c->config->{debug}) {
-		  $c->stash->{template} = 'debug/index.tt2';
-		} else {
-			$c->stash->{template} = 'species/report.tt2';
-			$c->stash->{path} = $c->request->path;
-		}
-    } else {
-		$c->log->debug("Detaching");
-		$c->detach('/soft_404');
-		$c->finalize();
-    }
+	$c->detach('/soft_404');
+	$c->finalize();
 }
 
 sub soft_404 :Path('/soft_404') {

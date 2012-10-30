@@ -28,10 +28,16 @@ sub begin :Auto {
     ]);
 }
 
-sub orders : Path("/orders") : Args(0) {
+sub orders :Path("/orders") :Args(0) {
     my ($self, $c) = @_;
 
-    my @rows = $c->model('CGC::AppOrder')->search();
+    my $search_params = {};
+    if ($c->request->query_keywords =~ m/\bpending\b/) {
+        $search_params->{date_shipped} = undef;
+    } elsif ($c->request->query_keywords =~ m/\bnew\b/) {
+        $search_params->{date_received} = { '>=' => \'DATE_SUB(CURDATE(),INTERVAL 7 DAY)' }
+    }
+    my @rows = $c->model('CGC::AppOrder')->search($search_params);
 
     my $orders = [];
     for my $row (@rows) {
@@ -39,6 +45,35 @@ sub orders : Path("/orders") : Args(0) {
     }
     $c->stash->{template} = 'order/all.tt2';
     $self->status_ok($c, entity => { orders => $orders });
+}
+
+sub order_strains :Path("/orders/strains") :Args(0) {
+    my ($self, $c) = @_;
+    my $freezers = {};
+    my %seen = ();
+    my @rows = $c->model('CGC::AppOrder')->search(undef, {
+        join => { app_order_contents => { strain => { freezer_samples => 'freezer' } } },
+        order_by => 'freezer_samples.freezer_location'
+    });
+    for my $order (@rows) {
+        for my $strain (map { $_->strain } $order->app_order_contents) {
+            next if ($seen{$strain->name});
+            $seen{$strain->name} = 1;
+            for my $sample ($strain->freezer_samples) {
+                my $freezer = $freezers->{$sample->freezer->name} ||= {};
+                $freezer->{$sample->freezer_location} ||= [];
+                push @{$freezer->{$sample->freezer_location}}, $strain;
+            }
+        }
+    }
+    my @freezers = map { +{ name => $_, locations => [] } } sort keys %$freezers;
+    for my $item (@freezers) {
+        my $freezer = $freezers->{$item->{name}};
+        $item->{locations} = [ map { +{ loc => $_, strains => $freezer->{$_} } }
+            sort keys %$freezer];
+    }
+    $c->stash->{template} = 'order/strains.tt2';
+    $self->status_ok($c, entity => { freezers => \@freezers });
 }
 
 sub order :Path("/order") :ActionClass('REST') {}

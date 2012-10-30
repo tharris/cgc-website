@@ -17,6 +17,7 @@
 
               [% IF c.check_user_roles('admin') %]
                    <li class="nav-header">Strains</li>
+                   <li><a href="#" data-uri="/orders/strains"><i class="icon-inbox"></i> Ordered strains</a></li>
                    <li><a href="#" data-uri="/strain/new-strain"><i class="icon-inbox"></i> Add a new strain</a></li>
                    <li><a href="#"><i class="icon-inbox"></i> Update a strain</a></li>
                    <li><a href="#"><i class="icon-inbox"></i> Thaw a strain</a></li>
@@ -28,8 +29,8 @@
                    <li><a href="#"><i class="icon-inbox"></i> Update a lab</a></li>
 
                     <li class="nav-header">Orders</li>
-                    <li><a href="#"><i class="icon-inbox"></i> New Orders</a></li>
-                    <li><a href="#"><i class="icon-inbox"></i> Pending Orders</a></li>
+                    <li><a href="#" data-uri="/orders?new"><i class="icon-inbox"></i> New Orders</a></li>
+                    <li><a href="#" data-uri="/orders?pending"><i class="icon-inbox"></i> Pending Orders</a></li>
 <!--                    <li><a href="#"><i class="icon-inbox"></i> Recently Shipped</a></li> -->
 
                     <li class="nav-header">Users</li>
@@ -82,17 +83,15 @@
 
 
 <script>
-        $('ul.nav a').on('click',
-            function (data) {
-	    // Preserve window hash if we want to append to uri
-            // var hash = window.location.hash;
-	        var uri = $(this).attr('data-uri');
-               	 window.location.hash = uri;
-		 $("#content-pane").load(uri);
-		 alert(uri);
-                // window.location.href = '/[% class %]/' + data.target.value
-                // If we want to get fancy and avoid page loads....
-		
-            }
-        );
+    $('ul.nav a').on('click', function (data) {
+        // Preserve window hash if we want to append to uri
+        // var hash = window.location.hash;
+        var uri = $(this).attr('data-uri');
+        window.location.hash = uri;
+        $("#content-pane").load(uri);
+        // window.location.href = '/[% class %]/' + data.target.value
+        // If we want to get fancy and avoid page loads....                 
+        $("li.active").removeClass('active');
+        $(this).parent().addClass('active');
+    });
 </script>

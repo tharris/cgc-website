@@ -1,4 +1,4 @@
-<script src="/js/jquery/jquery.stream.js" type="text/javascript" charset="utf-8"></script>
+[% #<script src="/js/jquery/jquery.stream.js" type="text/javascript" charset="utf-8"></script> %]
 <table class="table table-striped" id="item-list">
 	<thead>
         [% FOREACH col IN rest.meta.columns %]
@@ -83,6 +83,7 @@ $(function () {
             fnSetKey(aoData, "offset", iRequestStart); // [SP] CGC
             fnSetKey(aoData, "iDisplayLength", iRequestLength * iPipe);
             fnSetKey(aoData, "numrows", iRequestLength * iPipe); // [SP] CGC
+            fnSetKey(aoData, "columns", getParameterByName('columns'));
 
             $.getJSON(sSource, aoData, function (json) { /* Callback processing */
                 json.aaData = json.data;

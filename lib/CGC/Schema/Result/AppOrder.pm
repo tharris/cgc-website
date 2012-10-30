@@ -170,15 +170,14 @@ __PACKAGE__->has_many(
 # Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-24 12:14:44
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:h0Byuf+WmAPmHR4RSpgDkA
 
-# Yeah, I said entitify
 sub flatten {
 	my ($self) = @_;
 	return +{
         id       => $self->id,
         user     => $self->user->username,
         remark   => $self->remark,
-        received => $self->date_received . "",
-        shipped  => $self->date_shipped . "",
+        received => $self->date_received ? $self->date_received . "" : "",
+        shipped  => $self->date_shipped  ? $self->date_shipped  . "" : "",
         strains  => $self->app_order_contents
 			? [map { $_->strain->name } $self->app_order_contents]
 			: [],
