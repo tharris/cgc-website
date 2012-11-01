@@ -1,18 +1,33 @@
+use utf8;
 package CGC::Schema::Result::Gene;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+CGC::Schema::Result::Gene
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
+=head1 COMPONENTS LOADED
+
+=over 4
+
+=item * L<DBIx::Class::InflateColumn::DateTime>
+
+=back
+
+=cut
+
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 NAME
-
-CGC::Schema::Result::Gene
+=head1 TABLE: C<gene>
 
 =cut
 
@@ -162,8 +177,43 @@ __PACKAGE__->add_columns(
   "confirmed",
   { data_type => "varchar", is_nullable => 1, size => 20 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<gene_name_unique>
+
+=over 4
+
+=item * L</name>
+
+=back
+
+=cut
+
 __PACKAGE__->add_unique_constraint("gene_name_unique", ["name"]);
+
+=head2 C<gene_wormbase_id_unique>
+
+=over 4
+
+=item * L</wormbase_id>
+
+=back
+
+=cut
+
 __PACKAGE__->add_unique_constraint("gene_wormbase_id_unique", ["wormbase_id"]);
 
 =head1 RELATIONS
@@ -183,26 +233,6 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-=head2 species
-
-Type: belongs_to
-
-Related object: L<CGC::Schema::Result::Species>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "species",
-  "CGC::Schema::Result::Species",
-  { id => "species_id" },
-  {
-    is_deferrable => 1,
-    join_type     => "LEFT",
-    on_delete     => "CASCADE",
-    on_update     => "CASCADE",
-  },
-);
-
 =head2 gene_class
 
 Type: belongs_to
@@ -215,6 +245,26 @@ __PACKAGE__->belongs_to(
   "gene_class",
   "CGC::Schema::Result::GeneClass",
   { id => "gene_class_id" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE",
+  },
+);
+
+=head2 species
+
+Type: belongs_to
+
+Related object: L<CGC::Schema::Result::Species>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "species",
+  "CGC::Schema::Result::Species",
+  { id => "species_id" },
   {
     is_deferrable => 1,
     join_type     => "LEFT",
@@ -238,9 +288,19 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 variations
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 21:09:15
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:E25w8MmuYRv3NMK1GAHcQA
+Type: many_to_many
+
+Composing rels: L</variation2genes> -> variation
+
+=cut
+
+__PACKAGE__->many_to_many("variations", "variation2genes", "variation");
+
+
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-10-31 13:06:46
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:nRH97FYwfVR7bSjlZf6QKA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

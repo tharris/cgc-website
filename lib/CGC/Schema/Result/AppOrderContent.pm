@@ -1,18 +1,33 @@
+use utf8;
 package CGC::Schema::Result::AppOrderContent;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+CGC::Schema::Result::AppOrderContent
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
+=head1 COMPONENTS LOADED
+
+=over 4
+
+=item * L<DBIx::Class::InflateColumn::DateTime>
+
+=back
+
+=cut
+
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 NAME
-
-CGC::Schema::Result::AppOrderContent
+=head1 TABLE: C<app_order_contents>
 
 =cut
 
@@ -52,6 +67,8 @@ __PACKAGE__->table("app_order_contents");
   is_nullable: 1
   size: 5
 
+to be added by whoever freezes/thaws strain
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -84,24 +101,22 @@ __PACKAGE__->add_columns(
   "curator_remarks",
   { data_type => "varchar", is_nullable => 1, size => 5 },
 );
-__PACKAGE__->set_primary_key("order_id", "strain_id");
 
-=head1 RELATIONS
+=head1 PRIMARY KEY
 
-=head2 strain
+=over 4
 
-Type: belongs_to
+=item * L</order_id>
 
-Related object: L<CGC::Schema::Result::Strain>
+=item * L</strain_id>
+
+=back
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "strain",
-  "CGC::Schema::Result::Strain",
-  { id => "strain_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
+__PACKAGE__->set_primary_key("order_id", "strain_id");
+
+=head1 RELATIONS
 
 =head2 order
 
@@ -118,9 +133,24 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
 );
 
+=head2 strain
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-23 16:57:39
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:TPY5iztbtjmM4oSi9o/MGw
+Type: belongs_to
+
+Related object: L<CGC::Schema::Result::Strain>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "strain",
+  "CGC::Schema::Result::Strain",
+  { id => "strain_id" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-10-31 13:06:46
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:GRrNCyafg8txxZ4vovQgLw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -36,11 +36,12 @@ sub process_object {
 	$lab = $o->Laboratory;
     }
 
+#	    received    => $obj->CGC_received || undef,
+#	    reference_strain => $finder->($obj->Reference_strain,'Strain','name'),
     my $strain_row = $strain_rs->update_or_create(
 	{   name        => $obj->name         || '',
 	    description => $obj->Remark       || undef,
 	    outcrossed  => $obj->Outcrossed   || undef,
-#	    received    => $obj->CGC_received || undef,
 	    made_by     => $made_by           || undef,
 	    laboratory_id => $lab ? $self->lab_finder($lab)->id : undef,
 	    males       => $obj->Males        || undef,	    
@@ -48,7 +49,6 @@ sub process_object {
 	    inbreeding_state_isofemale   => $obj->Isofemale   || undef,
 	    inbreeding_state_multifemale => $obj->Multifemale || undef,
 	    inbreeding_state_inbred      => $obj->Inbred      || undef,
-#	    reference_strain => $finder->($obj->Reference_strain,'Strain','name'),
 	    mutagen_id       => $obj->Mutagen ? $self->mutagen_finder($obj->Mutagen)->id : undef,
 	    genotype         => $obj->Genotype || undef,
 	    species_id       => $obj->Species ? $self->species_finder($obj->Species)->id : undef,
@@ -60,11 +60,11 @@ sub process_object {
     my $event_rs   = $self->get_rs('Event');
     if ($obj->CGC_received) {
 	my $date = $self->reformat_date($obj->CGC_received);
-	my $event_row  = $event_rs->update_or_create({
+	my $event_row  = $event_rs->create({
 	    event => 'strain received at CGC',
 	    event_date => $date,
 	    user_id    => 1,
-						     });
+					   });
 	
 	# Create entry in the join table. Necessary?
 	# or my $author = $book->create_related('author', { name => 'Fred'});

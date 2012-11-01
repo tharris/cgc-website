@@ -543,7 +543,7 @@ DROP TABLE IF EXISTS `transgene`;
 CREATE TABLE `transgene` (
   `id`          int(11) unsigned NOT NULL AUTO_INCREMENT,
   `wormbase_id` varchar(20) DEFAULT NULL,
-  `name` varchar(30) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
   `description`  varchar(255) DEFAULT NULL,
   `reporter_type` varchar(40) DEFAULT NULL,
   `reporter_product` varchar(40) DEFAULT NULL,

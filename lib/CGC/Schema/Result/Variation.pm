@@ -1,18 +1,33 @@
+use utf8;
 package CGC::Schema::Result::Variation;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+CGC::Schema::Result::Variation
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
+=head1 COMPONENTS LOADED
+
+=over 4
+
+=item * L<DBIx::Class::InflateColumn::DateTime>
+
+=back
+
+=cut
+
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 NAME
-
-CGC::Schema::Result::Variation
+=head1 TABLE: C<variation>
 
 =cut
 
@@ -75,11 +90,15 @@ __PACKAGE__->table("variation");
   is_nullable: 1
   size: 30
 
+eg intron, exon, promoter
+
 =head2 variation_type
 
   data_type: 'varchar'
   is_nullable: 1
   size: 30
+
+synthesis of the is_* cols, eg Naturally occurring insertion
 
 =head2 type_of_dna_change
 
@@ -87,17 +106,23 @@ __PACKAGE__->table("variation");
   is_nullable: 1
   size: 30
 
+eg substitution, insertion, deletion
+
 =head2 type_of_protein_change
 
   data_type: 'varchar'
   is_nullable: 1
   size: 30
 
+eg missense, nonsense, frameshift
+
 =head2 protein_change_position
 
   data_type: 'varchar'
   is_nullable: 1
   size: 30
+
+A212D
 
 =head2 is_ko_consortium_allele
 
@@ -226,7 +251,31 @@ __PACKAGE__->add_columns(
     is_nullable => 1,
   },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<variation_name_unique>
+
+=over 4
+
+=item * L</name>
+
+=back
+
+=cut
+
 __PACKAGE__->add_unique_constraint("variation_name_unique", ["name"]);
 
 =head1 RELATIONS
@@ -244,26 +293,6 @@ __PACKAGE__->has_many(
   "CGC::Schema::Result::AtomizedGenotype",
   { "foreign.variation_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
-);
-
-=head2 species
-
-Type: belongs_to
-
-Related object: L<CGC::Schema::Result::Species>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "species",
-  "CGC::Schema::Result::Species",
-  { id => "species_id" },
-  {
-    is_deferrable => 1,
-    join_type     => "LEFT",
-    on_delete     => "CASCADE",
-    on_update     => "CASCADE",
-  },
 );
 
 =head2 gene_class
@@ -306,6 +335,26 @@ __PACKAGE__->belongs_to(
   },
 );
 
+=head2 species
+
+Type: belongs_to
+
+Related object: L<CGC::Schema::Result::Species>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "species",
+  "CGC::Schema::Result::Species",
+  { id => "species_id" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE",
+  },
+);
+
 =head2 variation2genes
 
 Type: has_many
@@ -321,9 +370,19 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 genes
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 21:09:15
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:vMVW7s9/xIQtvPQruYIoCA
+Type: many_to_many
+
+Composing rels: L</variation2genes> -> gene
+
+=cut
+
+__PACKAGE__->many_to_many("genes", "variation2genes", "gene");
+
+
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-10-31 13:07:36
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:keQitQa2xNVCrgnPcV/kcQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

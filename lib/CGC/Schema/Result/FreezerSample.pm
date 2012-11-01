@@ -1,18 +1,33 @@
+use utf8;
 package CGC::Schema::Result::FreezerSample;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+CGC::Schema::Result::FreezerSample
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
+=head1 COMPONENTS LOADED
+
+=over 4
+
+=item * L<DBIx::Class::InflateColumn::DateTime>
+
+=back
+
+=cut
+
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 NAME
-
-CGC::Schema::Result::FreezerSample
+=head1 TABLE: C<freezer_sample>
 
 =cut
 
@@ -53,6 +68,8 @@ __PACKAGE__->table("freezer_sample");
   is_nullable: 1
   size: 10
 
+Not sure yet how to represent location
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -82,6 +99,17 @@ __PACKAGE__->add_columns(
   "freezer_location",
   { data_type => "char", is_nullable => 1, size => 10 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
 
 =head1 RELATIONS
@@ -106,6 +134,21 @@ __PACKAGE__->belongs_to(
   },
 );
 
+=head2 freezer_sample_events
+
+Type: has_many
+
+Related object: L<CGC::Schema::Result::FreezerSampleEvent>
+
+=cut
+
+__PACKAGE__->has_many(
+  "freezer_sample_events",
+  "CGC::Schema::Result::FreezerSampleEvent",
+  { "foreign.freezer_sample_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 strain
 
 Type: belongs_to
@@ -126,24 +169,9 @@ __PACKAGE__->belongs_to(
   },
 );
 
-=head2 freezer_sample_events
 
-Type: has_many
-
-Related object: L<CGC::Schema::Result::FreezerSampleEvent>
-
-=cut
-
-__PACKAGE__->has_many(
-  "freezer_sample_events",
-  "CGC::Schema::Result::FreezerSampleEvent",
-  { "foreign.freezer_sample_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
-
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 21:09:15
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ygwdeAp2CyZGHvMc5IwTNw
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-10-31 13:06:46
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:uJFh/qO1TwYi61AeNvaM9Q
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

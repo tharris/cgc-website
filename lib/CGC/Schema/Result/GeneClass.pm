@@ -1,18 +1,33 @@
+use utf8;
 package CGC::Schema::Result::GeneClass;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+CGC::Schema::Result::GeneClass
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
+=head1 COMPONENTS LOADED
+
+=over 4
+
+=item * L<DBIx::Class::InflateColumn::DateTime>
+
+=back
+
+=cut
+
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 NAME
-
-CGC::Schema::Result::GeneClass
+=head1 TABLE: C<gene_class>
 
 =cut
 
@@ -68,7 +83,31 @@ __PACKAGE__->add_columns(
     is_nullable => 1,
   },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<gene_class_name_unique>
+
+=over 4
+
+=item * L</name>
+
+=back
+
+=cut
+
 __PACKAGE__->add_unique_constraint("gene_class_name_unique", ["name"]);
 
 =head1 RELATIONS
@@ -124,8 +163,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-16 21:09:15
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wF/YJSnRDB8xctmx6QQF0g
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-10-31 13:06:46
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:K6ZwN9eMZ70Dv7Oj1GPBuQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

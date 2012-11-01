@@ -1,18 +1,33 @@
+use utf8;
 package CGC::Schema::Result::AppCart;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+CGC::Schema::Result::AppCart
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
+=head1 COMPONENTS LOADED
+
+=over 4
+
+=item * L<DBIx::Class::InflateColumn::DateTime>
+
+=back
+
+=cut
+
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 NAME
-
-CGC::Schema::Result::AppCart
+=head1 TABLE: C<app_cart>
 
 =cut
 
@@ -39,6 +54,8 @@ __PACKAGE__->table("app_cart");
   data_type: 'mediumtext'
   is_nullable: 1
 
+Order requests supplied by user
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -59,25 +76,34 @@ __PACKAGE__->add_columns(
   "remark",
   { data_type => "mediumtext", is_nullable => 1 },
 );
-__PACKAGE__->set_primary_key("cart_id");
-__PACKAGE__->add_unique_constraint("user_id", ["user_id"]);
 
-=head1 RELATIONS
+=head1 PRIMARY KEY
 
-=head2 user
+=over 4
 
-Type: belongs_to
+=item * L</cart_id>
 
-Related object: L<CGC::Schema::Result::AppUser>
+=back
 
 =cut
 
-__PACKAGE__->belongs_to(
-  "user",
-  "CGC::Schema::Result::AppUser",
-  { user_id => "user_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
-);
+__PACKAGE__->set_primary_key("cart_id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<user_id>
+
+=over 4
+
+=item * L</user_id>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("user_id", ["user_id"]);
+
+=head1 RELATIONS
 
 =head2 app_cart_contents
 
@@ -94,9 +120,34 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 user
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-23 13:39:34
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:W+S1rXUYIvRcCf9bvCotgg
+Type: belongs_to
+
+Related object: L<CGC::Schema::Result::AppUser>
+
+=cut
+
+__PACKAGE__->belongs_to(
+  "user",
+  "CGC::Schema::Result::AppUser",
+  { user_id => "user_id" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+);
+
+=head2 strains
+
+Type: many_to_many
+
+Composing rels: L</app_cart_contents> -> strain
+
+=cut
+
+__PACKAGE__->many_to_many("strains", "app_cart_contents", "strain");
+
+
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-10-31 13:06:46
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:sieKtl8u+YIYbVCxkeyo2w
 
 sub flatten {
 	my ($self) = @_;

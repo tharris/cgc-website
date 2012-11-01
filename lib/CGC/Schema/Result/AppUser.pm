@@ -1,18 +1,33 @@
+use utf8;
 package CGC::Schema::Result::AppUser;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
+
+=head1 NAME
+
+CGC::Schema::Result::AppUser
+
+=cut
 
 use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
 
+=head1 COMPONENTS LOADED
+
+=over 4
+
+=item * L<DBIx::Class::InflateColumn::DateTime>
+
+=back
+
+=cut
+
 __PACKAGE__->load_components("InflateColumn::DateTime");
 
-=head1 NAME
-
-CGC::Schema::Result::AppUser
+=head1 TABLE: C<app_user>
 
 =cut
 
@@ -42,6 +57,7 @@ __PACKAGE__->table("app_user");
 =head2 active
 
   data_type: 'integer'
+  extra: {unsigned => 1}
   is_nullable: 1
 
 =head2 laboratory_id
@@ -95,7 +111,7 @@ __PACKAGE__->add_columns(
   "password",
   { data_type => "char", is_nullable => 1, size => 255 },
   "active",
-  { data_type => "integer", is_nullable => 1 },
+  { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
   "laboratory_id",
   { data_type => "integer", extra => { unsigned => 1 }, is_nullable => 1 },
   "first_name",
@@ -109,6 +125,17 @@ __PACKAGE__->add_columns(
   "validated",
   { data_type => "tinyint", is_nullable => 1 },
 );
+
+=head1 PRIMARY KEY
+
+=over 4
+
+=item * L</user_id>
+
+=back
+
+=cut
+
 __PACKAGE__->set_primary_key("user_id");
 
 =head1 RELATIONS
@@ -159,8 +186,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2012-07-19 11:30:52
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:v6daaAdMqwzXJhNmxI5NnQ
+# Created by DBIx::Class::Schema::Loader v0.07024 @ 2012-10-31 13:06:46
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:csZTF4X3fZiZ06idY4KUyQ
 
 
 __PACKAGE__->has_many(users_to_roles=>'CGC::Schema::Result::AppUsersToRole', 'user_id');
