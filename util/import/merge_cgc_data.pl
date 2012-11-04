@@ -117,11 +117,13 @@ Readonly my %IMPORTS => (
         primary => 'transnum',
         type    => 'tsv',
     },
-    strain => {
+
+    # received the datae a strain arrived actually comes from WormBase.
+    strain => {	
         fields => [
             qw(
                 strain     species    genotype   description mutagen
-                outcrossed reference  made_by    received
+                outcrossed reference  made_by 
                 )
         ],
         primary   => 'strain',
@@ -306,10 +308,10 @@ sub populate_schema {
         qw/dsn user password/;
     DEBUG('Connecting to database');
     my $schema = CGC::Schema->connect(@connect_info);
-#    populate_strains($schema, $import->{strain});      # DONE
-#    populate_laboratories($schema, $import->{lablist});
+    populate_strains($schema, $import->{strain});      # DONE
+    populate_laboratories($schema, $import->{lablist});
     populate_freezers($schema, $import->{frzloc});     # DONE
-#    populate_transactions($schema, $import->{transrec});
+    populate_transactions($schema, $import->{transrec});
 }
 
 =head2 populate_strains
@@ -326,7 +328,7 @@ sub populate_strains {
     # Open cache log for writing.
 #    my $log  = join('/',$importer->import_log_dir,"strains-cgc-merge.log");
     # Hard-coded for now.  Need to merge Import/ImportNew and import.pl functionality
-    my $log  = join('/','/usr/local/wormbase/todd/cgc-website/logs/import_logs',"strains-cgc-merge.log");
+    my $log  = join('/','/usr/local/wormbase/tmp/cgc-website/logs/import_logs',"strains-cgc-merge.log");
     open OUT,">>$log";
 
     my $finder = sub {
@@ -350,7 +352,7 @@ sub populate_strains {
 
 		my $db_val;
 		if ($field eq 'species' || $field eq 'mutagen') {
-		    $db_val    = $row->$db_col->name;
+		    $db_val    = eval { $row->$db_col->name };
 		} else {
 		    $db_val    = $row->$db_col;
 		}
@@ -367,7 +369,8 @@ sub populate_strains {
 	} else {
 	    print OUT "------> FOUND A STRAIN NOT PRESENT IN WORMBASE: " . $input->strain . "\n";
 	}
-	next;
+
+	# Date a strain arrived comes via WormBase.
 	my $strain = $resultset->update_or_create(
 	    {   name        => $input->strain,
 #		description => $input->description,
@@ -375,7 +378,7 @@ sub populate_strains {
                 made_by     => $input->made_by,
                 outcrossed  => $input->outcrossed,
                 mutagen     => $finder->($input, 'Mutagen', 'mutagen'),
-                genotype    => $finder->($input, 'Genotype', 'genotype'),
+                genotype    => $input->genotype,
                 species     => $finder->($input, 'Species', 'species'),
             },
             { primary => 'strain_name_unique' }
@@ -389,7 +392,7 @@ sub populate_laboratories {
     my $resultset = $schema->resultset('Laboratory');
     my $legacy_rs = $schema->resultset('LegacyLablist');
 
-    my $log  = join('/','/usr/local/wormbase/todd/cgc-website/logs/import_logs',"laboratory-cgc-merge.log");
+    my $log  = join('/','/usr/local/wormbase/tmp/cgc-website/logs/import_logs',"laboratory-cgc-merge.log");
     open OUT,">>$log";
 
     for my $input (@{ $labs->[0] }) {
@@ -528,7 +531,7 @@ sub populate_freezers {
         return update_or_create($schema, $table, { name => $value });
     };
 
-    my $log  = join('/','/usr/local/wormbase/todd/cgc-website/logs/import_logs',"freezer-cgc-merge.log");
+    my $log  = join('/','/usr/local/wormbase/tmp/cgc-website/logs/import_logs',"freezer-cgc-merge.log");
     open OUT,">>$log";
 
     # Get out rows corresponding to various freezers.
@@ -719,7 +722,7 @@ sub reformat_date {
 
 sub populate_transactions {
     my ($schema, $transactions) = @_;
-    my $orders = $schema->resultset('LabOrder');
+    my $orders = $schema->resultset('AppOrder');
     for my $input (@{ $transactions->[0] }) {
 
     }

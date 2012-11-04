@@ -37,9 +37,13 @@ sub process_object {
     # Not sure if this is the best way to track wormbase data.
     my $name = $gene->Public_name || "$gene";
     if ($gene->Status eq 'Dead') {
-	$name .= "-dead";
+	$name .= "-dead " . $gene->name;
     }
-    
+
+    # HACK!
+    next if $name eq 'B0213.1-dead';
+    next if $name eq 'C02A12.7-dead';
+
     my $gene_row = $gene_resultset->update_or_create(
 	{   wormbase_id   => $gene->name,
 	    name          => $name,
