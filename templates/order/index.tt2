@@ -3,7 +3,11 @@
 <div class="page-header">
   <h1>Strain Order</h1>
 </div>
-<p>This is really basic for now....</p>
+
+
+TODO: 
+Unsubmitted orders
+
 [% IF rest.error %]
 <div class="alert alert-error">
 	<strong>Error:</strong> [% rest.error | html%]
@@ -13,14 +17,14 @@
 [% IF order %]
 <div class="span6">
 	<table class="table table-striped">
-		<thead><h3>Order Information</h3></thead>
-		<tr><th>ID</th><td>[% order.id %]</td></tr>
-		<tr><th>User</th><td>[% order.user %]</td></tr>
-		<tr><th>Strains ([% order.strains.size %])</th><td>
-            [% FOR strain IN order.strains %]
-            <a href="[% c.uri_for('/strain') %]/[% strain %]">[% strain %]</a><br/>
-            [% END %]
-        </td></tr>
+           <thead><h3>Order Information</h3></thead>
+		 <tr><th>ID</th><td>[% order.id %]</td></tr>
+		 <tr><th>User</th><td>[% order.user %]</td></tr>
+		 <tr><th>Strains ([% order.strains.size %])</th><td>
+                   [% FOR strain IN order.strains %]
+                      <a href="[% c.uri_for('/strain') %]/[% strain %]">[% strain %]</a><br/>
+                   [% END %]
+                </td></tr>
 		<tr><th>Date received</th><td>[% order.received %]</td></tr>
 		<tr><th>Date shipped</th><td>[% order.shipped %]</td></tr>
 		<tr><th>Remark</th><td>[% order.remark %]</td></tr>
@@ -29,5 +33,5 @@
 [% END %]
 
 <script type="text/javascript" charset="utf-8">
-console.log($.session.get("message"));
+    console.log($.session.get("message"));
 </script>

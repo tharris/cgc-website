@@ -11,8 +11,11 @@
   <div class="navbar-inner">
 	<div class="container">
 	  <a class="brand" href="#">[% template.title or c.config.site_name %]</a>
+
     	<ul class="nav">
+<!-- Redundant?
     	  <li class="active"><a href="#">Home</a></li>
+-->
     	[% FOREACH title IN c.config.nav_bar.option %]
     	   <li><a href="/[% title %]"
     	          id="section-[% title %]"
@@ -44,10 +47,22 @@
 						   id="section-user">Profile</a></li>
 				    <li><a href="[% user_path %]/account"
 						   id="section-user">Account</a></li>
+				    <li><a href="[% user_path %]/account"
+						   id="section-user">My Orders</a></li>
 				    <li class="divider"></li>
+
 	[% IF c.check_user_roles('admin') %]
 				    <li class="nav-header">Adminstration</li>
-				    <li><a href="[% c.uri_for('/orders') %]">
+				    <li><a href="[% c.uri_for('/orders?status=new') %]">
+						Orders - New
+					</a></li>
+				    <li><a href="[% c.uri_for('/orders?status=pending') %]">
+						Orders - In Process
+					</a></li>
+				    <li><a href="[% c.uri_for('/orders?status=all') %]">
+						Orders - Shipped
+					</a></li>
+				    <li><a href="[% c.uri_for('/') %]">
 						Stats &amp; Reports
 					</a></li>
 				    <li><a href="[% c.uri_for('/documentation') %]">

@@ -180,7 +180,7 @@ END;
 [% BLOCK admin_content %]
    [% IF c.check_user_roles('admin') %]
      <div class="alert alert-info"><h3>[% title %]</h3>
-          <p><span class="label label-important">Important</span> This content is only visible to administrators!</p>
+          <p><span class="label label-important">Important</span> Items in blue boxes are only visible to CGC administrators!</p>
           <p>[% content %]</p>
      </div>
    [% END %]

@@ -48,7 +48,8 @@ Species: <a href="/species/caenorhabditis_elegans">C. elegans</a><br />
                              <option value="transgene">Transgene</option>
                              <option value="rearrangement">Rearrangement</option>
                              <option value="variation">Allele</option>
-                             <option value="laboratory">laboratory</option>
+                             <option value="laboratory">Laboratory</option>
+                             <option value="Species">Species</option>
                              <option value="genomic-position">...by genomic position</option>
                              <option value="genetic-position">...by genetic position</option>
                          </select>
@@ -80,6 +81,10 @@ Species: <a href="/species/caenorhabditis_elegans">C. elegans</a><br />
 
 
     <div class="row offset1">
+
+
+     [% IF c.check_user_roles('admin') %]
+
         <div class="span4 well">
              <h3><a href="#" id="available-species" class="popover-link" rel="popover" data-content="Search or browse all available species with strains available from the CGC" data-original-title="Available Species">Available Species</a>
               </h3>
@@ -111,24 +116,20 @@ Species: <a href="/species/caenorhabditis_elegans">C. elegans</a><br />
 <!--             or <a href="[% c.uri_for('/variations') %]">View All</a> -->
          </div>
 
-	 [% IF c.check_user_roles('admin') %]
          <div class="span4 well well-admin">
            <h3><a href="#" id="freezers" class="popover-link" rel="popover" data-content="Browse CGC freezers and the samples they contain." data-original-title="Freezers">Freezers</a></h3>
              <a href="[% c.uri_for('/freezer') %]">Search</a> or 
              <a href="[% c.uri_for('/freezers') %]">View All</a>
          </div>
-         [% END %]
 
          <div class="span4 well">
            <h3><a href="#" id="genes" class="popover-link" rel="popover" data-content="Search for strains carrying specific variations." data-original-title="Genes">Genes</a></h3>
              <a href="[% c.uri_for('/gene') %]">Search</a> 
 <!--             or <a href="[% c.uri_for('/genes') %]">View All</a> -->
          </div>
+
+         [% END %]
     </div>
-
-
-
-
 
 
 	      [% typeahead_support('strain',['genotype','name']) %]

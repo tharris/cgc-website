@@ -86,7 +86,7 @@ $("#place-order-button").click(function () {
                     $.session.set("message-title", "Success!");
                     $.session.set("message-text",
                         "Your order has been placed. " +
-                        "You should receive a confirmation email shortly.");
+                        "You should receive a confirmation email shortly.<br>You can track the status of your order from your account.");
                     var url = "[% c.uri_for('/order') %]/" + json.order.id;
                     window.location.assign(url);
                 }

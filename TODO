@@ -3,3 +3,32 @@
 
 The nomenclature tab on the CGC site really contains 
 links to canned queries and is more like a reference.
+
+Menu bar:
+* Typeahead isn't working from the global search menu. Should it be?
+* The global search menu doesn't work.
+* The home link doesn't go home. Do we even need this?
+* The search returns an empty record if searching for things that have no hits (n1159;
+  this should by the way, have hits)
+
+
+
+Adding items to to a cart.
+
+
+View at wormbase link is broken
+
+
+
+Basic/Advanced searching
+-------------------------
+1. I simplified the home page so that it only displays the global search (as per Aric's many requests, even though I no likey)
+2. The faceted "Advanced Search" doesn't work for the various categories. Should we just have a page
+   with links to the different types of searches instead?
+3. From the advanced search, the link back to "Basic Search" doesn't work.
+
+
+
+
+Cart popup:
+     * Why is the "Order Notes" in the cart popup window? This seems ill-placed?

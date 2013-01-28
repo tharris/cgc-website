@@ -71,13 +71,13 @@
     </table>
 	[% IF c.user_exists %]
     <a class="btn" id="addToCartButton"><i class="icon-shopping-cart"></i> Add to Cart</a>
-[%#	<div rel="popover" data-selector="addToCartButton" id="addToCart" data-title="Are you sure?" data-content="<button id='cartCancel' class='btn'>No, cancel</button> <button class='btn btn-primary'>Yes, please</button>"></div> %]
+[%#	<div rel="popover" data-selector="addToCartButton" id="addToCart" data-title="Add to cart: Are you sure?" data-content="<button id='cartCancel' class='btn'>No, cancel</button> <button class='btn btn-primary'>Yes, please</button>"></div> %]
 		
     </div>
 	<script type="text/javascript" charset="utf-8">
 	$(function () {
 		$("#addToCartButton").popover({
-			title: "Are you sure?",
+			title: "Add to cart: Are you sure?",
 			trigger: 'focus',
 			content: "<button id='cartCancel' class='btn'>No, cancel</button>"
 				+ "<button id='doCartAdd' class='btn btn-primary'>Yes, please</button>"

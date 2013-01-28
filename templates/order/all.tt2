@@ -9,7 +9,9 @@
 	<tr>
 		<th>ID</th>
 		<th>User</th>
+		<th>Laboratory</th>
 		<th>Strains</th>
+		<th>Status</th>
 		<th>Received</th>
 		<th>Shipped</th>
 		<th>Remark</th>
@@ -18,7 +20,9 @@
 	<tr class="order-row" data-order-id="[% order.id %]">
 		<td>[% order.id %]</td>
 		<td>[% order.user %]</td>
+		<th>[% order.laboratory %]</td>
 		<td>[% order.strains.size %]</td>
+		<td>[% order.status %]</td>
 		<td>[% order.received %]</td>
 		<td>[% order.shipped %]</td>
 		<td>[% order.remark %]</td>

@@ -100,7 +100,7 @@ sub strain_GET {
             ? $strain->mutagen->name
             : 'No mutagen',
             genotype => $strain->genotype,
-            received => $strain->received,
+            #received => $strain->received,  # This is a join with the event table.
             # lab_order  => $strain->lab_order,
             made_by    => $strain->made_by,
             laboratory => $strain->laboratory
