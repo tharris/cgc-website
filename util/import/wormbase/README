@@ -1,13 +1,28 @@
-This directory contains scripts for porting data from WormBase.
+Load data from WormBase into a new CGC database.
 
-Should be loaded in this order:
+This requires (typically) a local acedb installation.
 
-./load_species.pl
-./load_gene_classes.pl
-./load_laboratories.pl
-./load_strains.pl
+1. Prepare your environment
 
-./load_variations.pl
-./load_transgenes.pl
-./load_rearrengements.pl
-./load_genes.pl
+  export CGC_DBIC_CONF=/path/to/your/app/dbic.conf
+
+2. Loading data into a new CGC database
+
+   All scripts accept the following optional parameters:
+
+     --ace_host: A host with sgifaceserver running. Default: localhost
+     --ace_port: Port for sgifaceserver. Default: localhost
+     --dbic_conf_file: Full path to dbic conf file
+     --test: integer; number of test objects to load
+
+   Logs will end up at:
+   $APP/logs/import_logs/YYYY-MM-DD/CLASS.log
+
+  > ./load_species.pl
+  > ./load_gene_classes.pl
+  > ./load_laboratories.pl
+  > ./load_strains.pl
+  > ./load_variations.pl
+  > ./load_transgenes.pl
+  > ./load_rearrengements.pl
+  > ./load_genes.pl

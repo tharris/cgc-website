@@ -22,29 +22,73 @@ Installation
 git submodule update --init
 
 
-Populate the database
+Prepopulate the database
 -----------------------------------
 
-1. Fetch data from the CGC
+1. Set up your environment
+
+ export CGC_DB=cgc
+ # We version this directory by YYYY.MM.DD below. Adjust
+ # as appropriate here.
+ export IMPORT_DIR=/path/to/foxpro_dumps/TSV
+ 
+ # Full path to your dbic.conf file
+ export CGC_DBIC_CONF=/path/to/app/dbic.conf
+
+2. Create and initialize a new database
+
+ # Create a new database
+ > mysqladmin create $CGC_DB
+  
+ # Initialize the schema
+ > mysql $CGC_DB < schema/cgc.sql
+
+
+3. Get foxpro data dumps from the CGC
 
  > mkdir data/YYYY-MM-DD
  > cd YYYY-MM-DD
  > mkdir foxpro foxpro_tsv wormbase
  > cd foxpro
- // Minimally get the following files from the CGC
+ // Minimally get the following files from the CGC (manually, from Aric)
  cgcmail.txt frzloc.txt gophstrnt.txt lablist.txt transrec.txt
  > cp gophstrn.txt ../foxpro_tsv/strain.ego
 
-2. Convert FoxPro data dumps
+
+4. Convert FoxPro data dumps to a useable format
+
  > cd $APP/util/import
- > ./foxpro_parser.pl $APP/data/YYYY.MM.DD/foxpro/cgcmail.txt > $APP/data/YYYY.MM.DD/foxpro_tsv/cgcmail.tsv
- > ./foxpro_parser.pl $APP/data/YYYY.MM.DD/foxpro/frzloc.txt > $APP/data/YYYY.MM.DD/foxpro_tsv/frzloc.tsv
- > ./foxpro_parser.pl $APP/data/YYYY.MM.DD/foxpro/lablist.txt > $APP/data/YYYY.MM.DD/foxpro_tsv/lablist.tsv
- > ./foxpro_parser.pl $APP/data/YYYY.MM.DD/foxpro/transrec.txt > $APP/data/YYYY.MM.DD/foxpro_tsv/transrec.tsv
+ > ./foxpro_parser.pl $APP/data/YYYY.MM.DD/foxpro/cgcmail.txt > \
+      $APP/data/YYYY.MM.DD/foxpro_tsv/cgcmail.tsv
+ > ./foxpro_parser.pl $APP/data/YYYY.MM.DD/foxpro/frzloc.txt > \
+      $APP/data/YYYY.MM.DD/foxpro_tsv/frzloc.tsv
+ > ./foxpro_parser.pl $APP/data/YYYY.MM.DD/foxpro/lablist.txt > \
+      $APP/data/YYYY.MM.DD/foxpro_tsv/lablist.tsv
+ > ./foxpro_parser.pl $APP/data/YYYY.MM.DD/foxpro/transrec.txt > \
+      $APP/data/YYYY.MM.DD/foxpro_tsv/transrec.tsv
 
-3. Import CGC data
+5. Load data from WormBase into our database.
 
- > export CGC_DB=cgc
+   (See util/import/wormbase/README for additional information)
+
+ # The order these scripts are run in is important.
+ > cd util/import/wormbase
+ > ./load_species.pl
+ > ./load_gene_classes.pl
+ > ./load_laboratories.pl
+ > ./load_strains.pl
+ > ./load_variations.pl
+ > ./load_transgenes.pl
+ > ./load_rearrengements.pl
+ > ./load_genes.pl
+
+6. Merge (or simply import) CGC data
+
+If you've loaded data from WormBase, you'll need to merge
+data
+ > util/import/merge_cgc_data.pl --verbose 2 --dir $IMPORT_DIR
+
+Otherwise, simply import
  > export IMPORT_DIR=$APP/data/YYYY.MM.DD/foxpro_tsv
  > ./util/import/import.pl --verbose 2 --dir $IMPORT_DIR
 
