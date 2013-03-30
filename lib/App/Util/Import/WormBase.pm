@@ -28,6 +28,19 @@ sub _build_ace_handle {
 			    -port => $self->ace_port) or die;
 }
 
+has 'version' => (
+    is => 'ro',
+    lazy_build=>1,
+    );
+
+sub _build_version { 
+    my $self = shift;
+    my $ace  = $self->ace_handle;
+    my $version = $ace->version;
+    return $version;
+}
+
+
 has 'test' => (
     is => 'rw',
     );
@@ -229,10 +242,13 @@ sub rearrangement_finder {
 
 sub mutagen_finder {
     my ($self,$name,$column) = @_;
+#    print STDERR "$column\n";
+#    print STDERR "$name\n";
+
     $column ||= 'name';
     my $schema = $self->schema;
     my $resultset = $schema->resultset('Mutagen');    
-    my $row = $resultset->update_or_create({ $column => $name });
+    my $row = $resultset->update_or_create({ $column => "$name" });
     return $row;
 }    
 

@@ -108,7 +108,7 @@ sub _get_type {
     
     # Confirmed?
     my @cds = $object->Corresponding_CDS;
-    my $confirmed = @cds ? $cds[0]->Prediction_status->name : 0;
+    my $confirmed = (@cds && $cds[0]->Prediction_status) ? $cds[0]->Prediction_status->name : 0;
     return ($type,$confirmed);
 }
 

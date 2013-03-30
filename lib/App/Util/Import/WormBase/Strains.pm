@@ -36,20 +36,39 @@ sub process_object {
 	$lab = $o->Laboratory;
     }
 
+    # Assume a single mutagen. This isn't, unfortunately, correct.
+    my $mutagen = $obj->Mutagen;
+
+#    print STDERR join("\n",
+#		      $obj->name,
+#		      $obj->Remark,
+#		      $obj->Outcrossed,
+#		      $made_by,
+#		      $lab,
+#		      $obj->Selfed,
+#		      $obj->Isofemale,
+#		      $obj->Multifemale,
+#		      $obj->Inbred,
+#		      $obj->Mutagen,
+#		      $obj->Genotype,
+#	) . "\n";
+
 #	    received    => $obj->CGC_received || undef,
 #	    reference_strain => $finder->($obj->Reference_strain,'Strain','name'),
+
     my $strain_row = $strain_rs->update_or_create(
 	{   name        => $obj->name         || '',
 	    description => $obj->Remark       || undef,
 	    outcrossed  => $obj->Outcrossed   || undef,
 	    made_by     => $made_by           || undef,
 	    laboratory_id => $lab ? $self->lab_finder($lab)->id : undef,
-	    males       => $obj->Males        || undef,	    
+	    males       => undef,	    
+#	    males       => $obj->Males        || undef,	   # This tag disappeared in WS236 
 	    inbreeding_state_selfed      => $obj->Selfed      || undef,
 	    inbreeding_state_isofemale   => $obj->Isofemale   || undef,
 	    inbreeding_state_multifemale => $obj->Multifemale || undef,
 	    inbreeding_state_inbred      => $obj->Inbred      || undef,
-	    mutagen_id       => $obj->Mutagen ? $self->mutagen_finder($obj->Mutagen)->id : undef,
+	    mutagen_id       => $obj->Mutagen ? $self->mutagen_finder($mutagen)->id : undef,
 	    genotype         => $obj->Genotype || undef,
 	    species_id       => $obj->Species ? $self->species_finder($obj->Species)->id : undef,
 	},
