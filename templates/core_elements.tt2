@@ -42,6 +42,14 @@
         [% END %]
 [% END %]
 
+[% MACRO strain_link(strain) BLOCK %]
+    <a href="[% c.uri_for('/strain',strain) %]">[% strain %]</a>
+
+        [% IF c.check_user_roles('admin') || c.check_user_roles('manager') || c.check_user_roles('employee') %]
+             (<a href="/strain/edit-strain/[% strain %]">edit</a>)
+        [% END %]
+[% END %]
+
 
 [%# Link to a species %]
 [% MACRO species_link_dynamic(species) BLOCK %]

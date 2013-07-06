@@ -4,6 +4,13 @@ $(function () {
 	});
 });
 
+//
+//$(function () {
+//	$('input.workflow-checkbox').prettyCheckable({
+//		color:'green';
+//	    })
+//	    })
+
 // SUBDOC
 !function ($) {
 	var Subdoc = function () {};
@@ -206,3 +213,6 @@ function getParameterByName(name) {
     if (results == null) return "";
     else return decodeURIComponent(results[1].replace(/\+/g, " "));
 }
+
+
+

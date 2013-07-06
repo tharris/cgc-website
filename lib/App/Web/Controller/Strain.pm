@@ -123,7 +123,7 @@ sub new_strain : Path('/strain/new-strain') : ActionClass('REST') {
 sub new_strain_GET {
     my ($self, $c) = @_;
 
-    # Get data for populating my form (or typeahead)
+    # Get data for populating my form (for typeahead)
     my @mutagen_rows = $c->model('CGC::Mutagen')
         ->search({}, { columns => [qw/name id/], });
 
@@ -196,7 +196,9 @@ sub new_strain_GET {
 
     # No need to state explicitly but I think it's clearer to do so.
     $c->stash->{template} = 'strain/form.tt2';
-    $self->status_ok($c, entity => {});
+    my $entity;
+    $entity->{action} = 'add'; 
+    $self->status_ok($c, entity => $entity);
 }
 
 sub new_strain_POST {
@@ -212,7 +214,7 @@ sub new_strain_POST {
     $c->stash->{template} = 'strain/index.tt2';
     
     if ($name) {
-        $c->stash->{message} = "New strain submitted successfully.";
+        $c->stash->{message} = "New strain submitted successfully. We will review your submission shortly.";
 
 #        $self->forward($c->uri_for('/'));
 	my $entity = { name => $name };
@@ -223,12 +225,104 @@ sub new_strain_POST {
     
 }
 
+
+sub edit_strain : Path('/strain/edit-strain') : ActionClass('REST') { }
+
+sub edit_strain_GET :Path('/strain/edit-strain') :Args(1)   {
+    my ($self, $c, $query) = @_;
+    $c->stash->{template} = 'strain/form.tt2';
+    $c->assert_any_user_role( qw/admin manager employee/ ); # users cannot edit strains.
+    my $entity = $self->_get_strain($c,$query);
+    $entity->{action} = 'edit'; 
+    $self->status_ok($c, entity => $entity);
+}
+
+
+# Used by edit strain
+sub _get_strain {
+    my ($self,$c,$query) = @_;
+
+    my $strain = $c->model('CGC::Strain')->single({ 'name' => $query });
+
+    my $entity;
+    if (defined($strain)) {
+	
+        # Get the event history for this sample.
+        my $strain_history
+            = $self->get_history($c, 'StrainEvent', 'strain_id', $strain->id);
+	
+        # All freezer samples, and history for those samples.
+        my @sample_rows = $c->model('CGC::FreezerSample')
+            ->search({ strain_id => $strain->id });
+	
+        # Pull out some admin level fields, mainly samples and their history.
+        my $freezer_samples;
+	
+        foreach my $sample (@sample_rows) {
+            my $freezer_history = $self->get_history($c, 'FreezerSampleEvent',
+						     'freezer_sample_id', $sample->id);
+            my $freezer = $sample->freezer;
+	    
+            # Kind of dumb. We reset this meta information each time around.
+            $freezer_samples->{ $freezer->name }->{id}   = $freezer->id;
+            $freezer_samples->{ $freezer->name }->{type} = $freezer->type;
+	    
+            push @{ $freezer_samples->{ $sample->freezer->name }->{samples} },
+	    {
+                sample_id        => $sample->id,
+                freezer_location => $sample->freezer_location,
+                vials            => $sample->vials,
+                history          => $freezer_history,
+	    };
+        }
+	
+        my $atomized_genotype
+            = $self->_build_atomized_genotype($c, $strain->id);
+	
+        $entity = {
+            name    => $strain->name,
+            species => $strain->species
+		? $strain->species->name
+		: 'No species',    # do these strings belong in View?
+		outcrossed => $strain->outcrossed,
+		mutagen    => $strain->mutagen
+		? $strain->mutagen->name
+		: 'No mutagen',
+		genotype => $strain->genotype,
+		#received => $strain->received,  # This is a join with the event table.
+		# lab_order  => $strain->lab_order,
+		made_by    => $strain->made_by,
+		laboratory => $strain->laboratory
+		? $strain->laboratory->name
+		: 'laboratory of origin unknown',
+		samples => $freezer_samples,
+		history => $strain_history,    # This is already flattened.
+		atomized_genotype => $atomized_genotype,
+		description       => $strain->description,
+        };
+	return $entity;
+    }
+}
+
+
 sub _process_form : Private {
     my ($self, $c) = @_;
 
     my $params    = $c->req->parameters;
     my $strain_rs = $c->model('CGC::Strain');
     $c->log->debug("Params: ", Dumper($params));
+
+
+    # Pass some messages for form processing.
+    my $action = $params->{action};
+    if ($action eq 'add') {
+	$c->log->warn("processing new laboratory submission");
+	$c->stash->{event} = 'new strain submitted to the CGC';
+    } else {
+	$c->log->warn("editing a strain...");
+	$c->stash->{event} = 'strain edited';
+    }
+
 
     # Does the strain already exist?  Should be part of form validation?
 

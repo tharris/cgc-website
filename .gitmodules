@@ -4,3 +4,6 @@
 [submodule "external/select2"]
 	path = external/select2
 	url = https://github.com/ivaynberg/select2.git
+[submodule "external/prettyCheckable"]
+	path = external/prettyCheckable
+	url = git://github.com/arthurgouveia/prettyCheckable.git

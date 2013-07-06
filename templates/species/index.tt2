@@ -5,6 +5,7 @@
 
 [% IF c.check_user_roles('admin') %]
 <div class="alert alert-info">
+     
 	<p><strong>TODO</strong></p>
 	<p><strong>Questions for CGC</strong></p>
 </div>
