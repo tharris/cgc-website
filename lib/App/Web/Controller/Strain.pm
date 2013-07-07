@@ -204,7 +204,7 @@ sub new_strain_GET {
 sub new_strain_POST {
     my ($self, $c) = @_;
 
-    $c->log->warn("processing new submission");
+    $c->log->warn("processing a new strain submission...");
 
     # Pass some messages for form processing.
     $c->stash->{event} = 'strain submitted for inclusion in the collection';
@@ -316,7 +316,7 @@ sub _process_form : Private {
     # Pass some messages for form processing.
     my $action = $params->{action};
     if ($action eq 'add') {
-	$c->log->warn("processing new laboratory submission");
+	$c->log->warn("processing new strain submission");
 	$c->stash->{event} = 'new strain submitted to the CGC';
     } else {
 	$c->log->warn("editing a strain...");
