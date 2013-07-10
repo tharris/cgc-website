@@ -38,6 +38,7 @@ requires 'Catalyst::Plugin::Session::State::Cookie';
 requires 'Catalyst::Plugin::Session::Store::DBI';
 requires 'Catalyst::Plugin::StackTrace';
 requires 'Catalyst::Plugin::Static::Simple';
+requires 'Catalyst::Requires';
 requires 'Catalyst::View::JSON';
 requires 'Catalyst::View::Email';
 # requires 'Catalyst::View::GD';
@@ -70,7 +71,8 @@ requires 'DBD::mysql';                                           #
 #requires 'HTML::Entities';                                       #
 #requires 'GD';                                                   #
 #requires 'GD::SVG';                                              #
-#requires 'JSON';                                                 #
+# requires 'JSON';                                                 #
+requires 'JSON::XS';                                                 #
 #requires 'List::MoreUtils';                                      #
 requires 'Log::Log4perl';                                        #
 #requires 'Math::BigInt::GMP';   # will need to install gmp.h header file first(on Debian/Ubuntu is the libgmp3-dev package)
@@ -105,7 +107,7 @@ requires 'Test::Unit::TestCase'; #PerlUnit TODO: Replace with Test::Class
 #requires 'Text::WikiText';                                       #
 requires 'Variable::Magic';
 #requires 'WWW::Mechanize';                                       #
-#requires 'XML::Simple';                                          #
+requires 'XML::Simple';                                          #
 #requires 'YAML';                                                 #
 
 #catalyst;
