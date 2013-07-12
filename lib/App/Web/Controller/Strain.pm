@@ -19,8 +19,8 @@ Catalyst Controller.
 =cut
 
 sub begin :Auto {
-	my ($self, $c) = @_;
-	$c->stash(model => 'Strain', default_model_columns => [
+    my ($self, $c) = @_;
+    $c->stash(model => 'Strain', default_model_columns => [
         { col => 'name',          name => 'Name' },
         { col => 'genotype',      name => 'Genotype' },
         { col => 'species_id',    name => 'Species' },
@@ -47,11 +47,11 @@ sub strain_GET {
 
     my $column;
     if ($key =~ /^\d+$/) {
-	$column = 'id';
+    $column = 'id';
     } elsif ($key =~ /^[A-Z]+/) {
-	$column = 'name';
+    $column = 'name';
     } else {
-	$column = 'genotype';
+    $column = 'genotype';
     }
     my $strain = $c->model('CGC::Strain')->single({ $column => $key });
 
@@ -147,7 +147,7 @@ sub new_strain_GET {
 #        ->search({}, { columns => [qw/name id/], });
 
 #    foreach (@gene_rows) {
-#	# Needs to be singular to match form element id
+#   # Needs to be singular to match form element id
 #        $c->stash->{gene}->{ $_->name } = {
 #            id   => $_->id,
 #            name => $_->name,
@@ -159,11 +159,11 @@ sub new_strain_GET {
         ->search({}, { columns => [qw/name id chromosome/], });
 
     foreach (@rearrangement_rows) {
-	# Needs to be singular to match form element id
+    # Needs to be singular to match form element id
         $c->stash->{rearrangement}->{ $_->name } = {
             id   => $_->id,
             name => $_->name,
-	    chromosome => $_->chromosome,
+        chromosome => $_->chromosome,
         };
     }
 
@@ -172,11 +172,11 @@ sub new_strain_GET {
         ->search({}, { columns => [qw/name id chromosome/], });
 
     foreach (@transgene_rows) {
-	# Needs to be singular to match form element id
+    # Needs to be singular to match form element id
         $c->stash->{transgene}->{ $_->name } = {
             id   => $_->id,
             name => $_->name,
-	    chromosome => $_->chromosome,
+        chromosome => $_->chromosome,
         };
     }
 
@@ -217,8 +217,8 @@ sub new_strain_POST {
         $c->stash->{message} = "New strain submitted successfully. We will review your submission shortly.";
 
 #        $self->forward($c->uri_for('/'));
-	my $entity = { name => $name };
-	$self->status_ok($c, entity => $entity);
+    my $entity = { name => $name };
+    $self->status_ok($c, entity => $entity);
 
     }
 
@@ -246,81 +246,79 @@ sub _get_strain {
 
     my $entity;
     if (defined($strain)) {
-	
+    
         # Get the event history for this sample.
         my $strain_history
             = $self->get_history($c, 'StrainEvent', 'strain_id', $strain->id);
-	
+    
         # All freezer samples, and history for those samples.
         my @sample_rows = $c->model('CGC::FreezerSample')
             ->search({ strain_id => $strain->id });
-	
+    
         # Pull out some admin level fields, mainly samples and their history.
         my $freezer_samples;
-	
+    
         foreach my $sample (@sample_rows) {
             my $freezer_history = $self->get_history($c, 'FreezerSampleEvent',
-						     'freezer_sample_id', $sample->id);
+                             'freezer_sample_id', $sample->id);
             my $freezer = $sample->freezer;
-	    
+        
             # Kind of dumb. We reset this meta information each time around.
             $freezer_samples->{ $freezer->name }->{id}   = $freezer->id;
             $freezer_samples->{ $freezer->name }->{type} = $freezer->type;
-	    
+        
             push @{ $freezer_samples->{ $sample->freezer->name }->{samples} },
-	    {
+        {
                 sample_id        => $sample->id,
                 freezer_location => $sample->freezer_location,
                 vials            => $sample->vials,
                 history          => $freezer_history,
-	    };
+        };
         }
-	
+    
         my $atomized_genotype
             = $self->_build_atomized_genotype($c, $strain->id);
-	
+    
         $entity = {
             name    => $strain->name,
             species => $strain->species
-		? $strain->species->name
-		: 'No species',    # do these strings belong in View?
-		outcrossed => $strain->outcrossed,
-		mutagen    => $strain->mutagen
-		? $strain->mutagen->name
-		: 'No mutagen',
-		genotype => $strain->genotype,
-		#received => $strain->received,  # This is a join with the event table.
-		# lab_order  => $strain->lab_order,
-		made_by    => $strain->made_by,
-		laboratory => $strain->laboratory
-		? $strain->laboratory->name
-		: 'laboratory of origin unknown',
-		samples => $freezer_samples,
-		history => $strain_history,    # This is already flattened.
-		atomized_genotype => $atomized_genotype,
-		description       => $strain->description,
+        ? $strain->species->name
+        : 'No species',    # do these strings belong in View?
+        outcrossed => $strain->outcrossed,
+        mutagen    => $strain->mutagen
+        ? $strain->mutagen->name
+        : 'No mutagen',
+        genotype => $strain->genotype,
+        #received => $strain->received,  # This is a join with the event table.
+        # lab_order  => $strain->lab_order,
+        made_by    => $strain->made_by,
+        laboratory => $strain->laboratory
+        ? $strain->laboratory->name
+        : 'laboratory of origin unknown',
+        samples => $freezer_samples,
+        history => $strain_history,    # This is already flattened.
+        atomized_genotype => $atomized_genotype,
+        description       => $strain->description,
         };
-	return $entity;
+    return $entity;
     }
 }
-
 
 sub _process_form : Private {
     my ($self, $c) = @_;
 
-    my $params    = $c->req->parameters;
+    my $params    = $c->request->parameters;
     my $strain_rs = $c->model('CGC::Strain');
     $c->log->debug("Params: ", Dumper($params));
-
 
     # Pass some messages for form processing.
     my $action = $params->{action};
     if ($action eq 'add') {
-	$c->log->warn("processing new strain submission");
-	$c->stash->{event} = 'new strain submitted to the CGC';
+        $c->log->warn("processing new strain submission");
+        $c->stash->{event} = 'new strain submitted to the CGC';
     } else {
-	$c->log->warn("editing a strain...");
-	$c->stash->{event} = 'strain edited';
+        $c->log->warn("editing a strain...");
+        $c->stash->{event} = 'strain edited';
     }
 
 
