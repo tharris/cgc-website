@@ -52,7 +52,6 @@ $(function () {
                 type: "POST",
                 data: { email: email, password: password, inline: 1 },
                 success: function (data) {
-                    console.log("Success!");
                     App.showAlert({
                         prependTo: $(".modal-body"),
                         title: "Login successful"
@@ -61,7 +60,6 @@ $(function () {
                     window.setTimeout("location.reload()", 1200);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    console.log("Error!");
                     App.showAlert({
                         prependTo: $("#modal .modal-body"),
                         title: "Login error",
@@ -72,7 +70,7 @@ $(function () {
                     });
                 }
             });
-            console.log("Called AJAX, now what");
+            return false;
         }
     });
 });

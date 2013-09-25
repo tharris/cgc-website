@@ -3,8 +3,6 @@ package App::Web::Controller::Auth;
 use strict;
 use warnings;
 use parent 'App::Web::Controller';
-#use Net::Twitter;
-#use Facebook::Graph;
 use Crypt::SaltedHash;
 use Data::GUID;
 
