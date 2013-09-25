@@ -1,15 +1,40 @@
-[% WRAPPER admin_content title="TODO" %]
 
+
+[% DEFAULT data = rest %]
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+[% IF data.action == 'add' %]
+     [% IF c.check_user_roles('admin') %]
+         <h1>Add a new strain to the collection</h1>
+     [% ELSE %]
+         <h1>Submit a new strain for consideration</h1>
+     [% END %]
+[% ELSE %]
+     [% IF c.check_user_roles('admin') %]
+         <h1>Update a strain</h1>     
+     [% ELSE %]
+         <h1>Submit a new strain for consideration</h1>
+     [% END %]
+[% END %]
+</div>
+
+[% IF c.check_user_roles('admin') %]
+[% WRAPPER admin_content title="TODO" %]
      <ul>
+          <b>For end users submitting strain for consideration:</b>
           <li> Preview submission.
           <li> Add timestamps.
+	  <li> add documentation on how to submit strains
+
+	  <b>for CGC personnel adding a new strain to the collection</b>
 	  <li> Add automatic calculation of freezer positions.
-	  <li>Submitted by: (tracked in strain).
-	  <li>Entered By: tracked in event
-	  <li>Made By: string entered by user.
-	  <li>Differentiate updates from adds
-	  <li>Add remarks for each event
-	  <li>form verification (strain unique, error checking, etc)
+	  <li> Submitted by: (tracked in strain).
+	  <li> Entered By: tracked in event
+	  <li> Made By: string entered by user.
+	  <li> Differentiate updates from adds
+	  <li> Add remarks for each event
+	  <li> form verification (strain unique, error checking, etc)
 	  <li> add documentation on how to submit strains
      </ul>
 
@@ -20,33 +45,27 @@
      <li>TH: need to explain difference between genotype and constructed genotype
      </ul>
 [% END %]
-
-
-
-[% DEFAULT data = rest %]
-
-<!-- PAGE HEADER -->
-<div class="page-header">
-[% IF data.action == 'add' %]
-    <h1>Submit a new strain to the collection</h1>
-[% ELSE %]
-    <h1>Update a strain</h1>
 [% END %]
-</div>
+
+
 
 
 [% IF c.user_exists %]
-
-
    [% IF data.action == 'add' %]
+      [% IF c.check_user_roles('admin') %]   
+           <p>This form is used to add a new strain to the collection.</p>
+      [% ELSE %]
         <p>
-        Thank you for your interest in submitting a new strain to the CGC.
+		Thank you for your interest in submitting a new strain to the CGC.
 	</p>
 	<p>
-	Unfortunately, the CGC is unable to accept all strains. We ask that you before sending us your strain, you first fill out this brief form. We'll review your submission and if it fills a gap in our collection, will then ask you to send it along for incorporation.
+		Unfortunately, the CGC is unable to accept all strains. We ask that
+		before sending us your strain, you first fill out this brief form.
+		We'll review your submission and if it fills a gap in our collection,
+		we will send instructions on how to send it to us for incorporation.
 	</p>
+      [% END %]
    [% END %]
-
 
 
    [%# Dynamically select action - PUT or POST %]
