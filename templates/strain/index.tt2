@@ -45,91 +45,91 @@
         <tr><th>Name</th>       <td>[% strain_link(strain.name) %]</td></tr>
         <tr><th>Species</th>    <td>[% species_link(strain.species) %]</td></tr>
         <tr><th>Genotype</th>   <td>[% strain.genotype %]
-	     <span class="label label-important"> To be replaced by the constructed genotype.</span>
-	     </td></tr>
+         <span class="label label-important"> To be replaced by the constructed genotype.</span>
+         </td></tr>
         <tr><th>Constructed Genotype</th>   <td>
 
 
-	  [% constructed_genotype(strain.atomized_genotype) %]
-           </td></tr>	
+      [% constructed_genotype(strain.atomized_genotype) %]
+           </td></tr>   
         <tr><th>Description</th>    <td>[% strain.description %]</td></tr>
         <tr><th>Mutagen</th>    <td>[% strain.mutagen %]</td></tr>
         <tr><th>Outcrossed</th> <td>[% strain.outcrossed %]</td></tr>
         <tr><th>Received</th>   <td>[% strain.received %][% IF c.check_user_roles('admin') %]
-	     <span class="label label-important"> Received by will be replaced by history in the StrainEvent table.</span>
-	     [% END %]
+         <span class="label label-important"> Received by will be replaced by history in the StrainEvent table.</span>
+         [% END %]
 </td></tr>
-	[% IF strain.made_by %]
-         	<tr><th>Made by</th>    <td>[% strain.made_by %] ([% link_to_wormbase('Person',strain.made_by,'view at WormBase') %])</td></tr>
-	[% END %]
-	[% IF strain.laboratory %]
-   		<tr><th>Laboratory</th> <td>[% laboratory_link(strain.laboratory) %]</td></tr>
-	[% END %]
+    [% IF strain.made_by %]
+            <tr><th>Made by</th>    <td>[% strain.made_by %] ([% link_to_wormbase('Person',strain.made_by,'view at WormBase') %])</td></tr>
+    [% END %]
+    [% IF strain.laboratory %]
+        <tr><th>Laboratory</th> <td>[% laboratory_link(strain.laboratory) %]</td></tr>
+    [% END %]
 
        [% format_history(items=strain.history) %]
 
     </tbody>
     </table>
-	[% IF c.user_exists %]
+    [% IF c.user_exists %]
     <a class="btn" id="addToCartButton"><i class="icon-shopping-cart"></i> Add to Cart</a>
-[%#	<div rel="popover" data-selector="addToCartButton" id="addToCart" data-title="Add to cart: Are you sure?" data-content="<button id='cartCancel' class='btn'>No, cancel</button> <button class='btn btn-primary'>Yes, please</button>"></div> %]
+[%# <div rel="popover" data-selector="addToCartButton" id="addToCart" data-title="Add to cart: Are you sure?" data-content="<button id='cartCancel' class='btn'>No, cancel</button> <button class='btn btn-primary'>Yes, please</button>"></div> %]
 
         [% IF c.check_user_roles('admin') || c.check_user_roles('manager') || c.check_user_roles('employee') %]
            <a class="btn" id="updateStrainButton">
               <i class="icon-shopping-cart"></i> Update Strain</a>
-	      [%#	<div rel="popover" data-selector="addToCartButton" id="addToCart" data-title="Add to cart: Are you sure?" data-content="<button id='cartCancel' class='btn'>No, cancel</button> <button class='btn btn-primary'>Yes, please</button>"></div> %]
-		
+          [%#   <div rel="popover" data-selector="addToCartButton" id="addToCart" data-title="Add to cart: Are you sure?" data-content="<button id='cartCancel' class='btn'>No, cancel</button> <button class='btn btn-primary'>Yes, please</button>"></div> %]
+        
            <a class="btn" id="thawStrainButton">
                <i class="icon-shopping-cart"></i> Thaw Strain</a>
-	      [%#	<div rel="popover" data-selector="addToCartButton" id="addToCart" data-title="Add to cart: Are you sure?" data-content="<button id='cartCancel' class='btn'>No, cancel</button> <button class='btn btn-primary'>Yes, please</button>"></div> %]
-	[% END %]	
+          [%#   <div rel="popover" data-selector="addToCartButton" id="addToCart" data-title="Add to cart: Are you sure?" data-content="<button id='cartCancel' class='btn'>No, cancel</button> <button class='btn btn-primary'>Yes, please</button>"></div> %]
+    [% END %]   
     </div>
-	<script type="text/javascript" charset="utf-8">
-	$(function () {
-		$("#addToCartButton").popover({
-			title: "Add to cart: Are you sure?",
-			trigger: 'focus',
-			content: "<button id='cartCancel' class='btn'>No, cancel</button>"
-				+ "<button id='doCartAdd' class='btn btn-primary'>Yes, please</button>"
-		});
-		$("#addToCartButton").click(function () {
-			$("#addToCartButton").popover("show");
-			$("#cartCancel").click(function () {
-				$("#addToCartButton").popover("hide")
-			});
-			$("#doCartAdd").click(function () {
-				$("#addToCartButton").popover("hide")
-				$.ajax({
-					url: "[% cart_path %]",
-					type: "POST",
-					data: { add: "[% strain.name %]", inline: 1 },
-					success: function (data) {
-						$("#modal").html(data);
-						$("#modal").modal('show');
-						// Don't forget to update the count
-						$("#navbar-cart-items")
-							.text($(data).find("#cart-items").text());
-					},
-					error: function (jqXHR, textStatus, errorThrown) {
-						App.showAlert({
-							title: "Cart error",
-							items: [
-								jqXHR.getResponseHeader('Entity'),
-							]
-						});
-					}
-				});
-			});
-		});
-	});
-	</script>
-	[% ELSE %]
-		<div class="alert alert-info">
-			<a href="#modal" data-toggle="modal" data-uri="/login"><strong>Sign in</strong></a>
-			or
-			<a href="#modal" data-toggle="modal" data-uri="/register"><strong>register an account</strong></a> if you want to order this strain.
-		</div>
-	[% END %]
+    <script type="text/javascript" charset="utf-8">
+    $(function () {
+        $("#addToCartButton").popover({
+            title: "Add to cart: Are you sure?",
+            trigger: 'focus',
+            content: "<button id='cartCancel' class='btn'>No, cancel</button>"
+                + "<button id='doCartAdd' class='btn btn-primary'>Yes, please</button>"
+        });
+        $("#addToCartButton").click(function () {
+            $("#addToCartButton").popover("show");
+            $("#cartCancel").click(function () {
+                $("#addToCartButton").popover("hide")
+            });
+            $("#doCartAdd").click(function () {
+                $("#addToCartButton").popover("hide")
+                $.ajax({
+                    url: "[% cart_path %]",
+                    type: "POST",
+                    data: { add: "[% strain.name %]", inline: 1 },
+                    success: function (data) {
+                        $("#modal").html(data);
+                        $("#modal").modal('show');
+                        // Don't forget to update the count
+                        $("#navbar-cart-items")
+                            .text($(data).find("#cart-items").text());
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        App.showAlert({
+                            title: "Cart error",
+                            items: [
+                                jqXHR.getResponseHeader('Entity'),
+                            ]
+                        });
+                    }
+                });
+            });
+        });
+    });
+    </script>
+    [% ELSE %]
+        <div class="alert alert-info">
+            <a href="#modal" data-toggle="modal" data-uri="/login"><strong>Sign in</strong></a>
+            or
+            <a href="#modal" data-toggle="modal" data-uri="/register"><strong>register an account</strong></a> if you want to order this strain.
+        </div>
+    [% END %]
 
 
 <!--</div> -->
@@ -150,12 +150,12 @@
  
      [% FOREACH freezer IN strain.samples.keys %] 
 <!--         <div class="well span4 offset6"> -->
-	     <div class="well">
+         <div class="well">
                <table id="strain-view" class="table table-striped">
                  <thead><h3>[% freezer %]<small><em><a href="[% c.uri_for('/freezer/' _ strain.samples.$freezer.id) %]"> (View all samples in this freezer)</a></em></small></h3></thead>
                  <tbody>
                     <tr><th>Freezer Type</th>       <td>[% strain.samples.$freezer.type %]</td></tr>
-		 </tbody>
+         </tbody>
                 </table>
 
            [% FOREACH sample IN strain.samples.$freezer.samples %]
@@ -163,13 +163,13 @@
                  <thead><h3>Freezer location: [% sample.freezer_location %]</h3></thead>
                  <tbody>
                     <tr><th>Vials</th><td>[% sample.vials %]</td></tr>
-				 </tbody>
-                </table>		
+                 </tbody>
+                </table>        
 
                 [% format_history(items=sample.history) %]
 
              [% END %]
-	  </div>
+      </div>
                [% END %]
       </div>
 </div><!-- close row -->
