@@ -38,7 +38,6 @@ requires 'Catalyst::Plugin::Session::State::Cookie';
 requires 'Catalyst::Plugin::Session::Store::DBI';
 requires 'Catalyst::Plugin::StackTrace';
 requires 'Catalyst::Plugin::Static::Simple';
-requires 'Catalyst::Requires';
 requires 'Catalyst::View::JSON';
 requires 'Catalyst::View::Email';
 # requires 'Catalyst::View::GD';
