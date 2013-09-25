@@ -1,17 +1,17 @@
 [% WRAPPER admin_content title="TODO" %]
 
-     <ul>
-          <li> Preview submission.
-          <li> Add timestamps.
-	  <li> Add automatic calculation of freezer positions.
-	  <li>Submitted by: (tracked in strain).
-	  <li>Entered By: tracked in event
-	  <li>Made By: string entered by user.
-	  <li>Differentiate updates from adds
-	  <li>Add remarks for each event
-	  <li>form verification (strain unique, error checking, etc)
-	  <li> add documentation on how to submit strains
-     </ul>
+    <ul>
+        <li>Preview submission.</li>
+        <li>Add timestamps.</li>
+        <li> Add automatic calculation of freezer positions.</li>
+        <li>Submitted by: (tracked in strain).</li>
+        <li>Entered By: tracked in event</li>
+        <li>Made By: string entered by user.</li>
+        <li>Differentiate updates from adds</li>
+        <li>Add remarks for each event</li>
+        <li>form verification (strain unique, error checking, etc)</li>
+        <li> add documentation on how to submit strains</li>
+    </ul>
 
      <p><strong>Questions for CGC</strong></p>
      <ul>
@@ -41,16 +41,16 @@
    [% IF data.action == 'add' %]
         <p>
         Thank you for your interest in submitting a new strain to the CGC.
-	</p>
-	<p>
-	Unfortunately, the CGC is unable to accept all strains. We ask that you before sending us your strain, you first fill out this brief form. We'll review your submission and if it fills a gap in our collection, will then ask you to send it along for incorporation.
-	</p>
+    </p>
+    <p>
+    Unfortunately, the CGC is unable to accept all strains. We ask that you before sending us your strain, you first fill out this brief form. We'll review your submission and if it fills a gap in our collection, will then ask you to send it along for incorporation.
+    </p>
    [% END %]
 
 
 
    [%# Dynamically select action - PUT or POST %]
-      <form class="form-horizontal" method="POST" id="strain-form" action="/strain/new-strain">
+      <form class="form-horizontal" id="strain-form">
 <!--      <form class="form-horizontal" id="strain-form" action="#"> -->
         <fieldset>
           <legend>Origin</legend>
@@ -69,9 +69,9 @@
             <div class="controls">
                   <select id="laboratory">
                      <option></option>
-	      [% FOREACH lab IN labs.keys.sort %]
+          [% FOREACH lab IN labs.keys.sort %]
                      <option value="[% labs.$lab.id %]">[% lab %] ([% labs.$lab.head %])</option>
-	      [% END %]
+          [% END %]
               </select>
             </div>
           </div>
@@ -94,9 +94,9 @@
             <div class="controls">
                   <select id="species">
                      <option></option>
-	      [% FOREACH this_species IN species.keys.sort %]
+          [% FOREACH this_species IN species.keys.sort %]
                      <option value="[% species.$this_species %]">[% this_species %]</option>
-	      [% END %]
+          [% END %]
               </select>
             </div>
           </div>
@@ -142,9 +142,9 @@
             <div class="controls">
                   <select id="mutagen">
                      <option></option>
-	      [% FOREACH mutagen IN mutagens.keys.sort %]
+          [% FOREACH mutagen IN mutagens.keys.sort %]
                      <option value="[% mutagens.$mutagen %]">[% mutagen %]</option>
-	      [% END %]
+          [% END %]
               </select>
             </div>
           </div>
@@ -153,50 +153,50 @@
           <div class="control-group">
             <label class="control-label" for="contains-type">Contains</label>
             <div class="controls containsDuplicatable" id="contains1">
-	         [% types = [ 'gene', 'variation', 'transgene' , 'rearrangement'] %]
+             [% types = [ 'gene', 'variation', 'transgene' , 'rearrangement'] %]
 
 
                   <select id="contains-type1" class="contains-selecter">
                      <option></option>
-      	             [% FOREACH thistype IN types.sort %]
+                     [% FOREACH thistype IN types.sort %]
                          <option value="[% thistype %]">[% thistype %]</option>
-     	             [% END %]
+                     [% END %]
                   </select>
 
-      	             [% FOREACH thistype IN types.sort %]		  
+                     [% FOREACH thistype IN types.sort %]         
                   <select id="contains-name1" type="[% thistype %]" style="display:none">
                      <option></option>
-     	                [% FOREACH item IN $thistype.keys.sort %]
+                        [% FOREACH item IN $thistype.keys.sort %]
                            <option value="[% $thistype.$item.id %]">[% $thistype.$item.name %] [% $thistype.$item.chromosome %]</option>
-      	                [% END %]
+                        [% END %]
                      </select>
-		     [% END %]
+             [% END %]
 
 <!--              <input type="text" class="input-xlarge" id="contains-name1"> -->
-		   <a href="#" class="btn btn-mini btnAdd"><i class="icon-plus"></i></a> <a href="#" class="btn btn-mini btnDel"><i class="icon-minus"></i></a>
+           <a href="#" class="btn btn-mini btnAdd"><i class="icon-plus"></i></a> <a href="#" class="btn btn-mini btnDel"><i class="icon-minus"></i></a>
             </div>
           </div>
 
-	  </fieldset>
+      </fieldset>
 
 
 [% IF c.check_user_roles('admin') || c.check_user_roles('manager') || c.check_user_roles('employee') %]
 
-	  <fieldset>
-	  <legend>Workflow</legend>
-	  <em><p>This section is only visible to CGC staff. It's used to track progress once a new strain has been submitted.</p>
-	  <p>Each step should be unique and trackable by user and date. Right now just checkboxes.</em>
+      <fieldset>
+      <legend>Workflow</legend>
+      <em><p>This section is only visible to CGC staff. It's used to track progress once a new strain has been submitted.</p>
+      <p>Each step should be unique and trackable by user and date. Right now just checkboxes.</em>
 
 
           <div class="well span6">
           <table id="workflow" class="table table-striped">
           <thead><h3>Workflow</h3></thead>
           <tbody>
-	  <tr><th>Event</th>       <td>Date</td><td>Status</td></tr>
+      <tr><th>Event</th>       <td>Date</td><td>Status</td></tr>
                <tr><th>Submitted For Consideration</th>       <td></td><td></td></tr>
 
                <tr><th>Submission Approved</th>
-		     <td></td>
+             <td></td>
                     <td>
                        <div class="control-group">
                          <div class="controls">
@@ -207,7 +207,7 @@
                 </tr>
 
                <tr><th>Strain Received</th>
-		     <td></td>
+             <td></td>
                     <td>
                        <div class="control-group">
                          <div class="controls">
@@ -218,7 +218,7 @@
                 </tr>
 
                <tr><th>Genotype verified</th>
-		     <td></td>
+             <td></td>
                     <td>
                        <div class="control-group">
                          <div class="controls">
@@ -230,7 +230,7 @@
 
 
                <tr><th>Strain Frozen</th>
-		     <td></td>
+             <td></td>
                     <td>
                        <div class="control-group">
                          <div class="controls">
@@ -241,7 +241,7 @@
                 </tr>
 
                <tr><th>Freeze Verified</th>
-		     <td></td>
+             <td></td>
                     <td>
                        <div class="control-group">
                          <div class="controls">
@@ -255,7 +255,7 @@
      </div>
     </fieldset>
 
-	  <!--
+      <!--
           <div class="control-group">
             <label class="control-label" for="multiSelect">Multicon-select</label>
             <div class="controls">
@@ -274,7 +274,7 @@
               <input class="input-file" id="fileInput" type="file">
             </div>
           </div>
-	  -->
+      -->
 
 [% END %]
 
@@ -288,29 +288,28 @@
 
 <script>
 $('#strain-submit').click(function (e) {
-	e.preventDefault(); 
+    e.preventDefault(); 
 
-	var parameters = {};
-	$("#strain-form").find('input[value!=""], select[value!=""]').each(
-		function () {
-			parameters[$(this).attr('id')] = $(this).val();
-		}
-	);
-	$.ajax({
-	    url: '/strain/new-strain',
-	    dataType: 'json',
-	    type: "POST", 
-	    data: parameters,
-		success: function (data) {
-			console.log("Successfully posted", data.name);
-                        $.session.set('message-text', 'Your strain has been submitted to the CGC.')
-		        window.location.assign('/strain/' + data.name);
-		},
-		error: function (jqXHR, status, err) {
-			console.log("Error! " + err, jqXHR);
-		}
-	});
-	return false;
+    var parameters = {};
+    $("#strain-form").find('input, select').each(function () {
+        var v = $(this).val();
+        if (v != "") parameters[$(this).attr('id')] = v;
+    });
+    $.ajax({
+        url: '/strain/new-strain',
+        dataType: 'json',
+        type: "POST", 
+        data: parameters,
+        success: function (data) {
+            $.session.set('message-text',
+                'Your strain has been submitted to the CGC.');
+            window.location.assign('/strain/' + data.name);
+        },
+        error: function (jqXHR, status, err) {
+            console.log("Error submitting new strain:", err, jqXHR);
+        }
+    });
+    return false;
 });
 </script>
 
@@ -318,70 +317,70 @@ $('#strain-submit').click(function (e) {
 <script type="text/javascript">
    $('.contains-selecter').change(function() {
         var myId = $(this).attr('id');
- 	var text = $('#' + myId + ' option:selected').text();
-	console.log(text);
-	
-	// Hide all the other drop down elements
-	$(this).siblings('[type]').hide();
+    var text = $('#' + myId + ' option:selected').text();
+    console.log(text);
+    
+    // Hide all the other drop down elements
+    $(this).siblings('[type]').hide();
 
-	// Make the appropriate select element visible 
-	$(this).siblings('[type=' + text + ']').show();
+    // Make the appropriate select element visible 
+    $(this).siblings('[type=' + text + ']').show();
 
-	return false;
-	});
+    return false;
+    });
 
 </script>      
 
 
     <script type="text/javascript">
             $('.btnAdd').click(function() {
-		
-	        // Assume that the +/- buttons are contained within
-		// a div that we wish to clone.
-		var toClone = $(this).parent();
+        
+            // Assume that the +/- buttons are contained within
+        // a div that we wish to clone.
+        var toClone = $(this).parent();
 
-		// The dynamic way of doing this doesn't work?
+        // The dynamic way of doing this doesn't work?
 //                var matches = (" " + toClone.attr('class') + " ").match(/\s(\w+Duplicatable)/);
 //                if (matches) {
-//		     var myClass = matches[0];
+//           var myClass = matches[0];
 //
-//		     // How many of these elements already exist?
-//		     var num = $('.' + myClass).length;
-////		     alert("number is " + num);	
+//           // How many of these elements already exist?
+//           var num = $('.' + myClass).length;
+////             alert("number is " + num); 
 //                }
 
 
-		// hard coded
+        // hard coded
                 var num     = $('.containsDuplicatable').length; // how many "duplicatable" input fields we currently have
 
                 var newNum  = new Number(num + 1);      // the numeric ID of the new input field being added
  
                 // create the new element via clone(), and manipulate it's ID using newNum value
-	 	// Again, the element to clone is hardcoded
+        // Again, the element to clone is hardcoded
                var newElem = $(toClone).clone().attr('id', 'contains' + newNum);
  
                 $(newElem).children('select,input').each(function() {
 
-		     // Replace the name and id numbers
-		     var id     = $(this).attr('id').match(/(.+)\d+/);
-		     var bareid = id[1];
+             // Replace the name and id numbers
+             var id     = $(this).attr('id').match(/(.+)\d+/);
+             var bareid = id[1];
 
                      $(this).attr('id',bareid + newNum);
                      console.log("Modified element to: ", bareid + newNum);
 
-		     // enable the delete button
+             // enable the delete button
                      $(this).children('class="btnDel').attr('disabled','');
                      })
                  
                 // insert the new element after the last "duplicatable" input field
                 $('#contains' + num).after(newElem);
-		return false;
+        return false;
              });
  
             $('.btnDel').click(function() {
-	        // Currently hard-coded
-		var toRemove = $(this).parent();
-		$(toRemove).remove();
+            // Currently hard-coded
+        var toRemove = $(this).parent();
+        $(toRemove).remove();
             });
  
             $('#btnDel').attr('disabled','disabled');
