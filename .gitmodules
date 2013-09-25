@@ -1,9 +1,9 @@
 [submodule "external/bootstrap"]
 	path = external/bootstrap
-	url = https://github.com/twitter/bootstrap.git
+	url = https://github.com/twbs/bootstrap.git
 [submodule "external/select2"]
 	path = external/select2
 	url = https://github.com/ivaynberg/select2.git
 [submodule "external/prettyCheckable"]
 	path = external/prettyCheckable
-	url = git://github.com/arthurgouveia/prettyCheckable.git
+	url = https://github.com/arthurgouveia/prettyCheckable.git
