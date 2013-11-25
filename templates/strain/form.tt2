@@ -18,31 +18,6 @@
 </div>
 
 [% IF c.check_user_roles('admin') %]
-[% WRAPPER admin_content title="TODO" %]
-     <ul>
-          <b>For end users submitting strain for consideration:</b>
-          <li> Preview submission.
-          <li> Add timestamps.
-	  <li> add documentation on how to submit strains
-
-	  <b>for CGC personnel adding a new strain to the collection</b>
-	  <li> Add automatic calculation of freezer positions.
-	  <li> Submitted by: (tracked in strain).
-	  <li> Entered By: tracked in event
-	  <li> Made By: string entered by user.
-	  <li> Differentiate updates from adds
-	  <li> Add remarks for each event
-	  <li> form verification (strain unique, error checking, etc)
-	  <li> add documentation on how to submit strains
-     </ul>
-
-     <p><strong>Questions for CGC</strong></p>
-     <ul>
-     <li>Can we standardize the mutagen data?</li>
-     <li>How often to new strains come in containgin genes or variations not yet listed in WormBase?
-     <li>TH: need to explain difference between genotype and constructed genotype
-     </ul>
-[% END %]
 [% END %]
 
 

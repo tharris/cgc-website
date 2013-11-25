@@ -2,15 +2,6 @@
   <h1>Variations</h1>
 </div>
 
-[% IF c.check_user_roles('admin') %]
-<div class="alert alert-info">
-<strong>TODO:</strong>
-<ul>
-<li>Sortable columns?
-<li>Serachable table?
-<li>bPagination or lazy load?
-</ul>
-
 <p><strong>Questions for CGC</strong></p>
 </div>
 [% END %]

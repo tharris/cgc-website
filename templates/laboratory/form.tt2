@@ -1,16 +1,3 @@
-[% WRAPPER admin_content title="TODO" %]
-    <strong>TODO:</strong>
-    <ul>
-        <li>admin level displays.
-        <li>back end OR logic isn't working as expected.
-    </ul>
-
-    <p><strong>Questions for CGC</strong></p>
-    <ul>
-       <li>How/when are gene classes assigned?  At the CGC or directly at WormBase via JH? In other words, does WormBase get this information from CGC?</li?
-    </ul>
-[% END %]
-
 [% DEFAULT data = rest %]
 
 <!-- PAGE HEADER -->

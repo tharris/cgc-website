@@ -1,17 +1,3 @@
-[% WRAPPER admin_content title="TODO" %]
-<ul>
-<li>need to handle empty or broekn fields in frzloc - check merge logs
-<li>whenever there is a strain "card" shown, it should have the add to cart. Maybe make this a macro?
-</ul>
-
-<p><strong>Questions for CGC</strong></p>
-<ul>
-<li>Some frzloc samples have no strain associated with them?
-</ul>
-
-[% END %]
-
-
 [% rest_error %]
 
 
@@ -45,7 +31,6 @@
         <tr><th>Name</th>       <td>[% strain_link(strain.name) %]</td></tr>
         <tr><th>Species</th>    <td>[% species_link(strain.species) %]</td></tr>
         <tr><th>Genotype</th>   <td>[% strain.genotype %]
-         <span class="label label-important"> To be replaced by the constructed genotype.</span>
          </td></tr>
         <tr><th>Constructed Genotype</th>   <td>
 
@@ -56,7 +41,6 @@
         <tr><th>Mutagen</th>    <td>[% strain.mutagen %]</td></tr>
         <tr><th>Outcrossed</th> <td>[% strain.outcrossed %]</td></tr>
         <tr><th>Received</th>   <td>[% strain.received %][% IF c.check_user_roles('admin') %]
-         <span class="label label-important"> Received by will be replaced by history in the StrainEvent table.</span>
          [% END %]
 </td></tr>
     [% IF strain.made_by %]
@@ -144,10 +128,6 @@
 
      <div class="span6">    
 
-     [% WRAPPER admin_content title="Freezer Samples" %]
-          Samples of this strain housed at the CGC.
-     [% END %]
- 
      [% FOREACH freezer IN strain.samples.keys %] 
 <!--         <div class="well span4 offset6"> -->
          <div class="well">
