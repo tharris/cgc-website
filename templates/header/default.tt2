@@ -46,9 +46,10 @@
                 <a href="#"
                    class="dropdown-toggle"
                    data-toggle="dropdown">
-                   [% c.user.username %] <b class="caret"></b>
+                   <i class="icon-user"></i> <b class="caret"></b>
                 </a>
                 <ul class="dropdown-menu">
+                    <li class="nav-header">Username: [% c.user.username %]</li>
                     [% user_path = "${c.req.base}user/${c.user.user_id}" %]
                     <li><a href="[% user_path %]/profile"
                            id="section-user">Profile</a></li>
@@ -61,7 +62,7 @@
                     <li class="divider"></li>
 
     [% IF c.check_user_roles('admin') %]
-                <li class="nav-header">Adminstration</li>
+                <li class="nav-header">Administration</li>
                 <li><a href="[% c.uri_for('/orders?status=new') %]">
                     Orders - New
                  </a></li>
