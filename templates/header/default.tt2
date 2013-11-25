@@ -6,12 +6,19 @@
     .navbar ul.nav .btn {
         line-height: 10px;
     }
+    .navbar .brand small {
+        font-size: 65%;
+        font-style: italic;
+    }
 </style>
 <div class="navbar navbar-fixed-top">
   <div class="navbar-inner">
     <div class="container">
-      <a class="brand" href="#">[% template.title or c.config.site_name %]</a>
-
+      <a class="brand" href="#">
+          [% template.title or c.config.site_name %]
+          <small>v[% c.config.version %]</small>
+      </a>
+      
         <ul class="nav">
 <!-- Redundant?
           <li class="active"><a href="#">Home</a></li>
