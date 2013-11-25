@@ -1,18 +1,6 @@
 [% WRAPPER basic_report_index_page(title="CGC Freezers") %]
 
 
-[% IF c.check_user_roles('admin') %]
-<div class="alert alert-info">
-<strong>TODO:</strong>
-<ul>
-<li> Admin only feature? Probably.
-</ul>
-
-<p><strong>Questions for CGC</strong></p>
-</div>
-[% END %]
-
-
 [% rest_error %]
 
 

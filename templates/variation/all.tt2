@@ -2,15 +2,11 @@
   <h1>Variations</h1>
 </div>
 
-<p><strong>Questions for CGC</strong></p>
-</div>
-[% END %]
-
 <table class="table table-striped">
 
     <thead>
         <tr>            
-            <th>Lab Designation</th>
+        <th>Lab Designation</th>
 	    <th>Allele Designation</th>
 	    <th>Lab Head</th>
 	    <th>Institution</th>

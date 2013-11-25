@@ -3,17 +3,6 @@
 </div>
 
 
-[% IF c.check_user_roles('admin') %]
-<div class="alert alert-info">
-<strong>TODO:</strong>
-<ul>
-</ul>
-
-<p><strong>Questions for CGC</strong></p>
-</div>
-[% END %]
-
-
 [% rest_error %]
 
 <table class="table table-striped">

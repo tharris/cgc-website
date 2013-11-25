@@ -3,14 +3,6 @@
 [% WRAPPER basic_report_index_page(title=page_title) %]
 
 
-[% IF c.check_user_roles('admin') %]
-<div class="alert alert-info">
-     
-	<p><strong>TODO</strong></p>
-	<p><strong>Questions for CGC</strong></p>
-</div>
-[% END %]
-
 [% rest_error %]
 
 

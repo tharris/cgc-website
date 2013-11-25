@@ -1,16 +1,5 @@
 [% WRAPPER basic_report_index_page(title="Gene classes tracked by the CGC") %]
 
-[% IF c.check_user_roles('admin') %]
-<div class="alert alert-info">
-<p><strong>TODO</strong>
-<ul>
-<li>
-</ul>
-<p><strong>Questions for CGC</strong></p>
-</div>
-[% END %]
-
-
 [% rest_error %]
 
 <div class="span6">

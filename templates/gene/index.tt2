@@ -2,20 +2,6 @@
 [% IF gene.name; page_title="Gene Report: " _ gene.name ; ELSE ; title="Gene Report"; END ; %]
 [% WRAPPER basic_report_index_page(title=page_title) %]
 
-
-[% IF c.check_user_roles('admin') %]
-<div class="alert alert-info">
-<strong>TODO:</strong>
-<ul>
-<li>Individual gene report data contains DBIx::Class objects; need to figure out mutliple joins.
-<li>Typeahead is really slow on big lists.
-</ul>
-
-<p><strong>Questions for CGC</strong></p>
-</div>
-[% END %]
-
-
 [% rest_error %]
 
 <div class="span6">
@@ -28,7 +14,7 @@
 <div class="span6">
     <h2>Search</h2>
     <!--
-    <p>Search and view laboratories.</p>
+    <p>Search and view laboratories.</p>f
 -->
     <div class="well">
         <input id="search-gene" type="text" class="span3"
