@@ -1,7 +1,7 @@
 
 <div class="hero-unit span8 offset1" style="text-align:center">
 	<header class="jumbotron masthead">
-	<h1 style="font-size:81pt">CGC</h1>
+	<h1 style="font-size:81pt">CGC<small>v[% c.config.version %]</small></h1>
 	<p style="font-size:24pt">The Caenorhabditis Genetics Center</p>
 	<p>Providing strains to the nematode research community.</p>
 	</header>
